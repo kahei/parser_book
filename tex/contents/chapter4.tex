@@ -165,9 +165,15 @@
 
 \texttt{P}は「括弧のパターン」を表します。この定義は再帰的になっていることに注目してください。\texttt{P}の定義の中に\texttt{P}自身が現れています。これこそが、入れ子構造を表現する鍵なのです。
 
-このBNFは上記の2つのパターンと直接対応しています： -
-\texttt{""}：空文字列（パターン1） -
-\texttt{"("\ P\ ")"\ P}：開き括弧、内側の構造、閉じ括弧、続きの構造（パターン2）
+このBNFは上記の2つのパターンと直接対応しています。
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{""}：空文字列（パターン1）
+\item
+  \texttt{"("\ P\ ")"\ P}：開き括弧、内側の構造、閉じ括弧、続きの構造（パターン2）
+\end{itemize}
 
 \hypertarget{chapter4-bnfux304bux3089ux6587ux8108ux81eaux7531ux6587ux6cd5ux3078}{%
 \section{BNFから文脈自由文法へ}\label{chapter4-bnfux304bux3089ux6587ux8108ux81eaux7531ux6587ux6cd5ux3078}}
