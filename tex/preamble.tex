@@ -189,6 +189,31 @@
   pdfcreator={LuaLaTeX}}
 \urlstyle{same} % disable monospaced font for URLs
 
+% コラム用ボックス（番号なし、淡色背景＋細枠、バンド型タイトル）
+\definecolor{columnbg}{RGB}{240,247,255}     % 淡い青背景
+\definecolor{columnframe}{RGB}{70,110,170}   % 青系の枠／タイトルバー
+\newtcolorbox{kokocolumnbox}[1]{
+  enhanced,
+  breakable,
+  colback=columnbg,
+  colframe=columnframe,
+  colbacktitle=columnframe,
+  coltitle=white,
+  fonttitle=\bfseries,
+  title={コラム：#1},
+  boxrule=0.5pt,
+  arc=2mm,
+  left=4mm, right=4mm, top=3mm, bottom=3mm,
+  before skip=10pt, after skip=10pt,
+}
+\newenvironment{kokocolumn}[1]{%
+  \phantomsection
+  \addcontentsline{toc}{section}{コラム：#1}%
+  \begin{kokocolumnbox}{#1}%
+}{%
+  \end{kokocolumnbox}%
+}
+
 \title{構文解析のしくみ}
 \renewcommand{\bibname}{参考文献}
 \renewcommand{\indexname}{索引}
