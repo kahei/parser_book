@@ -170,9 +170,9 @@
 \begin{itemize}
 \tightlist
 \item
-  \texttt{""}：空文字列（パターン1）
+  \texttt{"("\ P\ ")"\ P}：開き括弧、内側の構造、閉じ括弧、続きの構造（パターン1）
 \item
-  \texttt{"("\ P\ ")"\ P}：開き括弧、内側の構造、閉じ括弧、続きの構造（パターン2）
+  \texttt{""}：空文字列（パターン2）
 \end{itemize}
 
 \hypertarget{chapter4-bnfux304bux3089ux6587ux8108ux81eaux7531ux6587ux6cd5ux3078}{%
@@ -551,7 +551,7 @@ Java 8がJava 5の後方互換であることを、集合の包含関係で表�
 
 皆さんは日常的に正規表現を使っているでしょう。ファイル検索、テキスト処理、入力値の検証など、様々な場面で活躍しています。
 
-たとえば、Javaで電話番号の形式をチェックする時、以下のような正規表現を使うことがあります：
+たとえば、Javaで電話番号の形式を簡易チェックする時、以下のような正規表現を使うことがあります：
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -616,8 +616,7 @@ Java 8がJava 5の後方互換であることを、集合の包含関係で表�
 正規表現は、実は非常にシンプルな3つの基本演算から構成されています。現代の正規表現エンジンは多くの便利な記法を提供していますが、理論的にはすべて以下の1-3の基本演算に帰着できます（ただし、後方参照など「非正規表現」とでも呼ぶべき機能を除く）。
 
 \hypertarget{chapter4-ux9023ux63a5concatenation}{%
-\subsubsection{1.
-連接（Concatenation）}\label{chapter4-ux9023ux63a5concatenation}}
+\subsubsection{連接（Concatenation）}\label{chapter4-ux9023ux63a5concatenation}}
 
 2つの正規表現を続けて書くことを\textbf{連接}と呼びます。
 
@@ -632,7 +631,7 @@ Java 8がJava 5の後方互換であることを、集合の包含関係で表�
 連接は最も基本的な演算で、「次に」という順序関係を表現します。
 
 \hypertarget{chapter4-ux9078ux629ealternation}{%
-\subsubsection{2. 選択（Alternation）}\label{chapter4-ux9078ux629ealternation}}
+\subsubsection{選択（Alternation）}\label{chapter4-ux9078ux629ealternation}}
 
 \texttt{\textbar{}}記号を使って、複数の選択肢を表現します。
 
@@ -659,8 +658,7 @@ Java 8がJava 5の後方互換であることを、集合の包含関係で表�
 \end{itemize}
 
 \hypertarget{chapter4-ux7e70ux308aux8fd4ux3057kleene-star}{%
-\subsubsection{3. 繰り返し（Kleene
-Star）}\label{chapter4-ux7e70ux308aux8fd4ux3057kleene-star}}
+\subsubsection{繰り返し（Kleene Star）}\label{chapter4-ux7e70ux308aux8fd4ux3057kleene-star}}
 
 \texttt{*}記号は、直前の要素を0回以上繰り返すことを意味します。この演算は数学者Stephen
 Cole Kleene（ステファン・クリーネ）にちなんで「Kleene
@@ -745,7 +743,7 @@ Star」と呼ばれます。
   \item
     100円投入 → 300円状態へ遷移
   \item
-    商品ボタンを押す → 商品と、お釣りをだして初期状態へ遷移
+    商品ボタンを押す → 商品と、お釣り100円をだして初期状態へ遷移
   \end{itemize}
 \item
   300円状態
@@ -755,7 +753,7 @@ Star」と呼ばれます。
   \item
     100円投入 → 300円状態のまま、100円を返却
   \item
-    商品ボタンを押す → 商品と、お釣りをだして初期状態へ遷移
+    商品ボタンを押す → 商品と、お釣り200円をだして初期状態へ遷移
   \end{itemize}
 \end{itemize}
 
@@ -781,13 +779,13 @@ Star」と呼ばれます。
 \path (q0) edge[bend left] node[above] {100円} (q1);
 \path (q1) edge[bend left] node[above] {100円} (q2);
 \path (q2) edge[bend left] node[above] {100円} (q3);
-\path (q3) edge[loop above] node {100円/返却} (q3);
+\path (q3) edge[loop above] node {100円/返} (q3);
 
 % 商品ボタンによる遷移
-\path (q0) edge[loop below] node {ボタン/不足} (q0);
-\path (q1) edge[bend right] node[below] {ボタン/商品} (q0);
-\path (q2) edge[bend right=40] node[below] {ボタン/商品+釣} (q0);
-\path (q3) edge[bend right=50] node[below] {ボタン/商品+釣} (q0);
+\path (q0) edge[loop below] node {ボ/不} (q0);
+\path (q1) edge[bend right] node[below] {ボ/商} (q0);
+\path (q2) edge[bend right=40] node[below] {ボ/（商，釣）} (q0);
+\path (q3) edge[bend right=50] node[below] {ボ/（商，釣）} (q0);
 
 \end{tikzpicture}
 \end{center}
@@ -823,13 +821,13 @@ Star」と呼ばれます。
     \item
       「100円」：100円硬貨を投入
     \item
-      「ボタン/商品」：商品ボタンを押すと商品が出る
+      「ボ/商」：商品ボタンを押すと商品が出る
     \item
-      「ボタン/不足」：商品ボタンを押すがお金が不足
+      「ボ/不」：商品ボタンを押すがお金が不足
     \item
-      「ボタン/商品+釣」：商品ボタンを押すと商品とお釣りが出る
+      「ボ/（商，釣）」：商品ボタンを押すと商品とお釣りが出る
     \item
-      「100円/返却」：100円を投入するが満杯なので返却される
+      「100円/返」：100円を投入するが満杯なので返却される
     \end{itemize}
   \end{itemize}
 \item
@@ -862,7 +860,7 @@ Star」と呼ばれます。
 \item
   \texttt{a}（bが0個）
 \item
-  \texttt{ab}（bが1個）\\
+  \texttt{ab}（bが1個）
 \item
   \texttt{abb}（bが2個）
 \item
@@ -908,13 +906,13 @@ Star」と呼ばれます。
 \begin{itemize}
 \tightlist
 \item
-  入力``a''：状態0→状態1（\textbf{受理}）
+  入力\verb|"a"|：状態0→状態1（\textbf{受理}）
 \item
-  入力``ab''：状態0→状態1→状態1（\textbf{受理}）
+  入力\verb|"ab"|：状態0→状態1→状態1（\textbf{受理}）
 \item
-  入力``abb''：状態0→状態1→状態1→状態1（\textbf{受理}）
+  入力\verb|"abb"|：状態0→状態1→状態1→状態1（\textbf{受理}）
 \item
-  入力``b''：状態0で'b'を読めない（\textbf{非受理}）
+  入力\verb|"b"|：状態0で\verb|"b"|を読めない（\textbf{非受理}）
 \end{itemize}
 
 \hypertarget{chapter4-ux7a2eux985eux306eux30aaux30fcux30c8ux30deux30c8ux30f3}{%
@@ -931,7 +929,7 @@ Star」と呼ばれます。
   \begin{itemize}
   \tightlist
   \item
-    「非決定性」とは、同じ文字を読んだときに複数の選択肢がある
+    「非決定性」とは、同じ文字を読んだときに複数の選択肢があることを指します
   \item
     文字を読まずに状態を移動できる（ε遷移）
   \item
@@ -943,7 +941,7 @@ Star」と呼ばれます。
   \begin{itemize}
   \tightlist
   \item
-    「決定性」とは、各状態で各文字に対して次の状態が一意に決まる
+    「決定性」とは、各状態で各文字に対して次の状態が一意に決まることを指します
   \item
     文字を読まずに移動することはできない
   \item
@@ -981,7 +979,7 @@ Star」と呼ばれます。
 \item
   \texttt{(())}：2重
 \item
-  \texttt{((()))}：3重\\
+  \texttt{((()))}：3重
 \item
   \texttt{(((())))}：4重
 \item
@@ -1069,8 +1067,8 @@ Star」と呼ばれます。
 \hypertarget{chapter4-ux30e1ux30fcux30ebux30a2ux30c9ux30ecux30b9ux3068ux6b63ux898fux8868ux73feux306eux6ce8ux610fux70b9}{%
 \subsection{メールアドレスと正規表現の注意点}\label{chapter4-ux30e1ux30fcux30ebux30a2ux30c9ux30ecux30b9ux3068ux6b63ux898fux8868ux73feux306eux6ce8ux610fux70b9}}
 
-ところで、メールアドレスの検証は一見簡単だと思われていますが、実は完全な仕様（RFC
-5322）は非常に複雑で、厳密にはコメントの入れ子などを許可するため、正規表現では完全に表現できません。たとえば、以下のような入れ子構造をもったメールアドレスも仕様上は有効です：
+メールアドレスの検証は簡単だと思われがちですが、完全な仕様（RFC
+5322）は非常に複雑で、厳密にはコメントの入れ子などを許可するため、正規表現では表現しきれません。たとえば、以下のような入れ子構造をもったメールアドレスも仕様上は有効です：
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1081,7 +1079,7 @@ Star」と呼ばれます。
 
 実用上はaddr-spec（\texttt{local-part@domain}の形式）の簡略化されたパターンを正規表現で検証することが一般的ですが、完全な仕様準拠が必要な場合は、専用のパーサーを使用するべきです。
 
-たとえメールアドレスの検証ですら、完全な仕様準拠を目指すなら文脈自由文法の理解が必要になるのです。
+メールアドレスの検証ですら、完全な仕様準拠を目指すなら文脈自由文法の理解が必要になるのです。
 
 \hypertarget{chapter4-ux306aux305cux6587ux8108ux81eaux7531ux306aux306eux304b}{%
 \subsection{なぜ「文脈自由」なのか？}\label{chapter4-ux306aux305cux6587ux8108ux81eaux7531ux306aux306eux304b}}
@@ -1094,8 +1092,7 @@ Star」と呼ばれます。
 A → abc
 \end{verbatim}
 
-この規則では、Aはどこに現れても常に\texttt{abc}に置き換えることができます。周りの文脈（前後の文字）に関係なく適用できるので「文脈自由」です。自由というと一見「好きにできる」という印象を受けますが、ここの「自由」は、たとえば、アルコールフリー＝アルコールが含まれない、というのと同じ意味での「自由」です。Context-free
-Grammarを「文脈自由文法」と訳したのはあまりよくないのではないか、という意見もあります。
+この規則では、Aはどこに現れても常に\texttt{abc}に置き換えることができます。周りの文脈（前後の文字）に関係なく適用できるので「文脈自由」です。自由というと一見「好きにできる」という印象を受けますが、ここの「自由」は、たとえば、アルコールフリー＝アルコールが含まれない、というのと意味での「自由」です。形式言語を扱う研究者の中にはContext-free Grammarを「文脈自由文法」と訳したのは誤解を招きやすいので、あまりよくなかったのではないか、という人もいます。
 
 \textbf{文脈依存の例}：
 
@@ -1141,7 +1138,7 @@ xAy → xabcy
   \item
     文脈依存文法で表現できる\textbf{言語の集合}
   \item
-    例：\texttt{a\^{}n\ b\^{}n\ c\^{}n}（n個のa、n個のb、n個のcがこの順で並ぶ集合）など、文脈自由文法では捉えきれない制約
+    例：$a^nb^nc^n$ （n個のa、b、ｃがこの順で並ぶ集合）
   \item
     文脈自由言語をすべて含む（CFL ⊂ CSL）
   \end{itemize}
@@ -1151,7 +1148,7 @@ xAy → xabcy
   \begin{itemize}
   \tightlist
   \item
-    コンピュータで計算できるすべてのもの
+    （汎用）コンピュータが出力できる全ての記号列の集合
   \item
     JavaやPythonなどのプログラミング言語の計算能力はこのレベル
   \item
@@ -1165,19 +1162,19 @@ xAy → xabcy
 \begin{tikzpicture}
   % 最外側の楕円 (RE)
   \draw[fill=purple!10,draw=purple!60,thick] (0,0) ellipse (6cm and 4cm);
-  \node at (4.5,0) {\textcolor{purple!60}{\large RE}};
+  \node at (5.0,0) {\textcolor{black!60}{\large RE}};
 
   % 文脈依存言語 (CSL)
   \draw[fill=blue!10,draw=blue!60,thick] (0,0) ellipse (4.5cm and 3cm);
-  \node at (3.2,-0.7) {\textcolor{blue!60}{\large CSL}};
+  \node at (3.5,-0.7) {\textcolor{black!60}{\large CSL}};
 
   % 文脈自由言語 (CFL)
   \draw[fill=green!10,draw=green!60,thick] (0,0) ellipse (3.25cm and 2.125cm);
-  \node at (2.2,-1.2) {\textcolor{green!60}{\large CFL}};
+  \node at (2.2,-1.2) {\textcolor{black!60}{\large CFL}};
 
   % 正規言語 (RL)
   \draw[fill=orange!10,draw=orange!60,thick] (0,0) ellipse (2cm and 1.25cm);
-  \node at (0,0) {\textcolor{orange!60}{\large RL}};
+  \node at (0,0) {\textcolor{black!60}{\large RL}};
 \end{tikzpicture}
 \end{center}
 
@@ -1275,7 +1272,7 @@ Dyck言語の文法をもう一度見てみましょう：
 \hypertarget{chapter4-ux6700ux5de6ux5c0eux51faux3068ux6700ux53f3ux5c0eux51fa}{%
 \subsection{最左導出と最右導出}\label{chapter4-ux6700ux5de6ux5c0eux51faux3068ux6700ux53f3ux5c0eux51fa}}
 
-このように、好きな順番で非終端記号を展開できるのですが、導出の過程を統一するために2つの標準的な方法が定義されています。
+このように好きな順番で非終端記号を展開できるのですが、導出の過程を統一するために2つの標準的な方法が定義されています。
 
 \begin{itemize}
 \tightlist
@@ -1285,7 +1282,7 @@ Dyck言語の文法をもう一度見てみましょう：
   \textbf{最右導出}：常に一番右の非終端記号を展開
 \end{itemize}
 
-より複雑な例で見てみましょう。以下の文法は「1個以上のa」の後に「1個以上のb」が続く文字列を表します：
+簡単な例で見てみましょう。以下の文法は「1個以上のa」の後に「1個以上のb」が続く文字列を表します：
 
 \begin{Shaded}
 \begin{Highlighting}[]
