@@ -107,7 +107,7 @@ JSONは元々はJavaScriptのオブジェクトリテラル構文を参考にし
 \end{Highlighting}
 \end{Shaded}
 
-のような形になっており、整数または小数です。JSONでの数値の解釈は特に規定されていない点に注意してください。たとえば、\texttt{0.1}は2進法での小数だと解釈しても良いですし、10進法での小数と解釈しても構いません。つまり、特に、IEEEの浮動小数点数である、といった規定はありません。
+のような形になっており、整数または小数です。JSONでの数値の解釈は特に規定されていない点に注意してください。たとえば、\texttt{0.1}は2進法での小数だと解釈しても良いですし、10進法での小数と解釈しても構いません。特に、IEEEの浮動小数点数であるといった規定はありません。
 
 \hypertarget{chapter3-ux6587ux5b57ux5217}{%
 \subsection{文字列}\label{chapter3-ux6587ux5b57ux5217}}
@@ -500,7 +500,7 @@ JSONのBNFは、非常に少数の規則だけで表現することができま�
 \end{Highlighting}
 \end{Shaded}
 
-再帰的な規則は、構文解析において非常に重要な要素なので、これから本書を読み進める上でも念頭に置いてください。
+再帰的な規則は構文解析において非常に重要な要素なので、これから本書を読み進める上でも念頭に置いてください。
 
 \hypertarget{chapter3-jsonux306eux62bdux8c61ux69cbux6587ux6728}{%
 \section{JSONの抽象構文木}\label{chapter3-jsonux306eux62bdux8c61ux69cbux6587ux6728}}
@@ -808,7 +808,8 @@ Expression Grammar）に基づくトップダウン解析を採用します。
         \CommentTok{// 後で解説}
 \NormalTok{    \}}
 
-    \CommentTok{/**}\NormalTok{ BNF}\CommentTok{:}\NormalTok{ array }\CommentTok{=}\NormalTok{ LBRACKET RBRACKET }\CommentTok{|}\NormalTok{ LBRACKET value }\CommentTok{\{}\NormalTok{COMMA value}\CommentTok{\}}\NormalTok{ RBRACKET }\CommentTok{*/}
+    \CommentTok{/**}\NormalTok{ BNF}\CommentTok{:}\NormalTok{ array }\CommentTok{=}\NormalTok{ LBRACKET RBRACKET }\CommentTok{|}\NormalTok{ LBRACKET value }\CommentTok{\{}\NormalTok{COMMA value}\CommentTok{\}}
+    \NormalTok{ RBRACKET }\CommentTok{*/}
     \KeywordTok{public}\NormalTok{ JsonAst.}\FunctionTok{JsonArray} \FunctionTok{parseArray}\NormalTok{() \{}
         \CommentTok{// 後で解説}
 \NormalTok{    \}}
@@ -1374,7 +1375,7 @@ We are parsers.
 
 前節で出てきたJSONの構文解析器では\texttt{skipWhitespace()}の呼び出しが頻出していましたが、字句解析器を使う場合、空白を読み飛ばす処理を先に行うことで、構文解析器では空白の読み飛ばしという作業をしなくてよくなります。
 
-この点はトレードオフがあって、たとえば、空白に関する規則がある言語（Pythonのオフサイドルール＝インデントでブロックを表す規則など）では、字句解析という前処理を安易に入れると逆に扱いづらくなることすらあります。ともあれ、字句解析という前処理を通すことには一定のメリットがあるのは確かです。
+この点はトレードオフがあって、空白に関する規則がある言語では、字句解析という前処理を安易に入れると逆に扱いづらくなることすらあります。ともあれ、字句解析という前処理を通すことには一定のメリットがあるのは確かです。
 
 以下では字句解析器を使った構文解析器の全体像を示します。ここでは、コアとなるアイデアに絞って説明します。完全なソースコードは巻末の付録を参照してください。
 
@@ -1677,7 +1678,8 @@ PEG版と異なり、途中で失敗したら後戻り（バックトラック�
 
 \begin{Shaded}
 \begin{Highlighting}[]
-    \CommentTok{/**}\NormalTok{ BNF}\CommentTok{:}\NormalTok{ array }\CommentTok{=}\NormalTok{ LBRACKET RBRACKET }\CommentTok{|}\NormalTok{ LBRACKET value }\CommentTok{\{}\NormalTok{COMMA value}\CommentTok{\}}\NormalTok{ RBRACKET }\CommentTok{*/}
+    \CommentTok{/**}\NormalTok{ BNF}\CommentTok{:}\NormalTok{ array }\CommentTok{=}\NormalTok{ LBRACKET RBRACKET }\CommentTok{|}\NormalTok{ LBRACKET value }\CommentTok{\{}\NormalTok{COMMA value}\CommentTok{\}}
+    \NormalTok{ RBRACKET }\CommentTok{*/}
     \KeywordTok{private}\NormalTok{ JsonAst.}\FunctionTok{JsonArray} \FunctionTok{parseArray}\NormalTok{() \{}
         \KeywordTok{if}\NormalTok{(}\FunctionTok{current}\NormalTok{().}\FunctionTok{type}\NormalTok{ != Token.}\FunctionTok{Type}\NormalTok{.}\FunctionTok{LBRACKET}\NormalTok{) \{}
             \KeywordTok{throw} \KeywordTok{new} \BuiltInTok{ParseException}\NormalTok{(}
