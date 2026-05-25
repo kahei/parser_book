@@ -66,14 +66,18 @@ Grammar）}という手法の素朴な実装でした。次に実装した\textt
 
 本章は構文解析の主要アルゴリズムを網羅的に扱うため、内容がやや重くなっています。特にLR系（LR(0)、SLR(1)、LR(1)、LALR(1)）は、概念の積み重ねが多く、初読でつまずく読者が一定数います。そこで、本章をどのように読むかについて、二つのおすすめルートを示します。
 
-まず構文解析の全体像を掴みたい方には、「下向きと上向きの2つの世界観」「LL(1)」「シフト還元構文解析の基本」「PEG」「Packrat
-Parsing」までを必読として読み、それ以降のLR(0)〜LALR(1)の詳細は後回しにすることをおすすめします。各節の冒頭に置いた「要点」と章末の比較表を眺めるだけでも、本書の主旨はおおむね掴めるはずです。LRの実装は構文解析器生成系（第6章で詳述）に任せるのが普通なので、ひとまずは「LRという上向き手法の系譜があり、Yacc/BisonはLALR(1)を使う」程度に押さえておけば次に進めます。
+まず構文解析の全体像を掴みたい方には、「下向きと上向きの2つの世界観」「LL(1)」「シフト還元構文解析の基本」「PEG」「Packrat Parsing」を必読として読み、LR(0)〜LALR(1)の詳細は後回しにすることをおすすめします。各節の冒頭に置いた「要点」と章末の比較表を眺めるだけでも、本章の主旨はおおむね掴めるはずです。LRの実装は構文解析器生成系（第6章で詳述）に任せるのが普通なので、ひとまずは「LRという上向き手法の系譜があり、Yacc/BisonはLALR(1)を使う」程度に押さえておけば次に進めます。
 
 仕組みまで踏み込みたい方は、上から順番に読むのが自然です。LR(0)→SLR(1)→LR(1)→LALR(1)は、それぞれが前の手法の限界を克服する形で発展しているので、なぜ次の手法が必要だったのかを意識すると理解が深まります。
 
-LR系の各節は、後で実務で必要になったときに参照しやすい構成にしてあります。Yaccで
-shift/reduce conflict
-のメッセージに遭遇した、自分でパーサジェネレータの中身を読みたい------そんなときに、該当する節だけ読み返して理解できるよう、各節を可能な限り独立した「リファレンス」として書いています。初読ですべて理解できなくても、まったく問題ありません。
+LR系の各節は、後で実務で必要になったときに参照しやすい構成にしてあります。
+
+\begin{itemize}
+\item Yaccでshift/reduce conflictのメッセージに遭遇した
+\item 自分でパーサジェネレータの中身を読みたい
+\end{itemize}
+
+そんなときに、該当する節だけ読み返して理解できるように、各節を可能な限り独立した「リファレンス」として書いています。初読で全てを理解できなくても、まったく問題ありません。
 
 \hypertarget{chapter5-ux69cbux6587ux89e3ux6790ux5668ux751fux6210ux7cfbux3068ux306eux95a2ux4fc2}{%
 \section{構文解析器生成系との関係}\label{chapter5-ux69cbux6587ux89e3ux6790ux5668ux751fux6210ux7cfbux3068ux306eux95a2ux4fc2}}
@@ -86,19 +90,17 @@ shift/reduce conflict
 \index{ALL(*)}
 \index{LL(*)}
 
-各アルゴリズムには、対応する\textbf{構文解析器生成系}（パーサージェネレータ）が存在します（自作することもできます）：
+各アルゴリズムには、対応する\textbf{構文解析器生成系}（パーサージェネレータ）が存在することが多いです。以下、よく知られているものを列挙しますが、それ以外にも多数の構文解析器生成系が存在します：
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Yacc/Bison}（以降、基本的にYaccと表記します）：
+  \textbf{Yacc/Bison}（以降、Yaccと表記します）：
 
   \begin{itemize}
   \tightlist
   \item
-    LALR(1)を採用
-  \item
-    C言語向け
+    LALR(1)を採用、C言語向け
   \end{itemize}
 \item
   \textbf{JavaCC}：
@@ -106,9 +108,7 @@ shift/reduce conflict
   \begin{itemize}
   \tightlist
   \item
-    LL(1)を採用
-  \item
-    Java向け
+    LL(k)を採用（デフォルトはk=1）、 Java向け
   \end{itemize}
 \item
   \textbf{ANTLR}：
@@ -122,12 +122,10 @@ shift/reduce conflict
       Terence Parr, Sam Harwell, Kathleen Fisher, ``Adaptive LL(*)
       Parsing: The Power of Dynamic Analysis'', OOPSLA '14, 2014
       を参照。\texttt{LL(*)} の元論文は Parr \& Fisher, ``LL(*): The
-      Foundation of the ANTLR Parser Generator'', PLDI '11, 2011。}を採用（拡張されたLL系を採用）
-  \item
-    多言語対応
+      Foundation of the ANTLR Parser Generator'', PLDI '11, 2011。}を採用（拡張されたLL系を採用）、 多言語対応
   \end{itemize}
 \item
-  \textbf{各種PEGパーサジェネレータ}：PEG\footnote{Bryan Ford, ``Parsing
+  \textbf{各種PEGパーサージェネレータ}：PEG\footnote{Bryan Ford, ``Parsing
     expression grammars: a recognition-based syntactic foundation'',
     POPL '04, 2004. PEGの形式的な定義と意味論を与えた原典です。}を採用
 \end{itemize}
@@ -142,7 +140,7 @@ shift/reduce conflict
 \index{Top-down parsing}
 \index{Bottom-up parsing}
 
-構文解析アルゴリズムの世界には、大きく分けて2つの「世界観」があります。それが\textbf{下向き（Top-down）}と\textbf{上向き（Bottom-up）}です。この2つは、同じ構文解析という仕事を、まったく逆のアプローチで実現します。
+構文解析アルゴリズムの世界には、大きく分けて2つの「世界観」があります。\textbf{下向き（Top-down）}と\textbf{上向き（Bottom-up）}です。この2つは、同じ構文解析という仕事を、まったく逆のアプローチで実現します。
 
 \hypertarget{chapter5-ux306aux305c2ux3064ux306eux30a2ux30d7ux30edux30fcux30c1ux304cux5fc5ux8981ux306aux306eux304b}{%
 \subsection{なぜ2つのアプローチが必要なのか？}\label{chapter5-ux306aux305c2ux3064ux306eux30a2ux30d7ux30edux30fcux30c1ux304cux5fc5ux8981ux306aux306eux304b}}
@@ -184,15 +182,14 @@ P -> ( P ) P
 P -> ε
 \end{verbatim}
 
-入力文字列 \texttt{(())}
-に対して、この文法が受理するかどうかを判定してみましょう。
+この文法が、入力文字列 \texttt{(())} を受理するかどうかを判定してみましょう。
 
 \hypertarget{chapter5-ux30b9ux30bfux30c3ux30afux3092ux4f7fux3063ux305fux89e3ux6790ux306eux8ffdux8de1}{%
 \subsection{スタックを使った解析の追跡}\label{chapter5-ux30b9ux30bfux30c3ux30afux3092ux4f7fux3063ux305fux89e3ux6790ux306eux8ffdux8de1}}
 
-予測型下向き構文解析では、\textbf{スタック}を使って解析の進行状況を管理します。スタックには、「今どの規則のどの位置を解析しているか」という情報を記録します。
+ナイーヴな予測型下向き構文解析では、\textbf{スタック}を使って解析の進行状況を管理します。スタックには、「今どの規則のどの位置を解析しているか」という情報を記録します。
 
-ドット記号「・」（中黒）を使って、規則内の現在位置を表します。例えば：
+ドット記号「・」（中黒）を使って、規則内の現在位置を表すことにします。例えば、以下のようになります：
 
 \begin{itemize}
 \tightlist
@@ -207,7 +204,7 @@ P -> ε
 
 このドット記号は、Javaでいえばデバッガーでステップ実行する時の「現在の実行位置」のようなものだと考えてください。
 
-では、実際に解析を開始しましょう：
+では、実際に解析を開始しましょう。スタックは右が一番上で左に行くほど下になる、つまり最右がスタックトップであることに注意してください：
 
 \begin{verbatim}
 入力: $ ( ( ) ) $
@@ -249,11 +246,13 @@ P -> ε
   \texttt{P\ -\textgreater{}\ ε} ：空文字列（何もない）
 \end{itemize}
 
-ここで、どちらを選ぶかを事前に決める必要があります。先読み文字が\texttt{(}なので、\texttt{P\ -\textgreater{}\ (\ P\ )\ P}を選択します。この規則をスタックに追加します：
+ここで、どちらを選ぶかを事前に決める必要があります。ここでは、先読み文字が\texttt{(}の時は前者、それ以外のときは後者を選ぶこととします。
+
+というわけで、先読み文字が\texttt{(}なので、\texttt{P\ -\textgreater{}\ (\ P\ )\ P}を選択します。この規則をスタックに追加します：
 
 \begin{verbatim}
 入力: ( ( ) ) $
-スタック: [P -> ・( P ) P, D -> $・P $]
+スタック: [D -> $・P $, P -> ・( P ) P]
 \end{verbatim}
 
 \begin{enumerate}
@@ -267,7 +266,7 @@ P -> ε
 
 \begin{verbatim}
 入力: ( ) ) $
-スタック: [P -> (・ P ) P, D -> $・P $]
+スタック: [D -> $・P $, P -> (・ P ) P]
 \end{verbatim}
 
 \begin{enumerate}
@@ -284,7 +283,7 @@ P -> ε
 
 \begin{verbatim}
 入力: ( ) ) $
-スタック: [P -> ・ ( P ) P, P -> ( ・ P ) P, D -> $・P $]
+スタック: [D -> $・P $, P -> ( ・ P ) P, P -> ・ ( P ) P]
 \end{verbatim}
 
 \begin{enumerate}
@@ -298,7 +297,7 @@ P -> ε
 
 \begin{verbatim}
 入力: ) ) $
-スタック: [P -> ( ・ P ) P, P -> ( ・P ) P, D -> $・P $]
+スタック: [D -> $・P $, P -> ( ・P ) P, P -> ( ・ P ) P]
 \end{verbatim}
 
 \begin{enumerate}
@@ -314,7 +313,7 @@ P -> ε
 
 \begin{verbatim}
 入力: ) ) $
-スタック: [P -> ( P ・ ) P, P -> ( ・P ) P, D -> $・P $]
+スタック: [D -> $・P $, P -> ( ・P ) P, P -> ( P ・ ) P]
 \end{verbatim}
 
 \begin{enumerate}
@@ -328,7 +327,7 @@ P -> ε
 
 \begin{verbatim}
 入力: ) $
-スタック: [P -> ( P ) ・ P, P -> ( ・P ) P, D -> $・P $]
+スタック: [D -> $・P $, P -> ( ・P ) P, P -> ( P ) ・ P]
 \end{verbatim}
 
 \begin{enumerate}
@@ -344,7 +343,7 @@ P -> ε
 
 \begin{verbatim}
 入力: ) $
-スタック: [P -> ( P ) P ・, P -> ( ・P ) P, D -> $・P $]
+スタック: [D -> $・P $, P -> ( ・P ) P, P -> ( P ) P ・]
 \end{verbatim}
 
 \begin{enumerate}
@@ -352,12 +351,12 @@ P -> ε
 \setcounter{enumi}{8}
 \tightlist
 \item
-  スタックトップの規則のドットが最後まで進んだので、スタックからその規則を除去すると同時に、新たなスタックトップのドットを進めます：
+  スタックトップの規則のドットが最後まで進んだので、スタックからその規則を除去すると同時に、新たなスタックトップのドットを進めます。ちょうどメソッド呼び出しが終わったのでそこから返って続きから再開するようなものです：
 \end{enumerate}
 
 \begin{verbatim}
 入力: ) $
-スタック: [P -> ( P ・) P, D -> $・P $]
+スタック: [D -> $・P $, P -> ( P ・) P]
 \end{verbatim}
 
 \begin{enumerate}
@@ -371,7 +370,7 @@ P -> ε
 
 \begin{verbatim}
 入力: $
-スタック: [P -> ( P ) ・ P, D -> $・P $]
+スタック: [D -> $・P $, P -> ( P ) ・ P]
 \end{verbatim}
 
 \begin{enumerate}
@@ -388,7 +387,7 @@ P -> ε
 
 \begin{verbatim}
 入力: $
-スタック: [P -> ( P ) P ・, D -> $ ・ P $]
+スタック: [D -> $ ・ P $, P -> ( P ) P ・]
 \end{verbatim}
 
 \begin{enumerate}
@@ -455,7 +454,7 @@ P -> ε
   \begin{itemize}
   \tightlist
   \item
-    スタックトップが非終端記号の場合、先読み文字に基づいて適用する規則を「予測」
+    スタックトップの・の次が非終端記号の場合、先読み文字に基づいて適用する規則を「予測」
   \item
     選択した規則をスタックに追加
   \item
@@ -467,7 +466,7 @@ P -> ε
   \begin{itemize}
   \tightlist
   \item
-    スタックトップが終端記号の場合、入力文字と比較
+    スタックトップの・の次が終端記号の場合、入力文字と比較
   \item
     一致すれば入力を消費してドットを進める
   \item
@@ -574,10 +573,10 @@ P -> ε
   \begin{itemize}
   \tightlist
   \item
-    最初に \texttt{P\ -\textgreater{}\ (\ P\ )\ P}
-    を試す：先読み文字が\texttt{(}か確認
+    先読み文字が\texttt{(}の場合、 \texttt{P\ -\textgreater{}\ (\ P\ )\ P}
+    を試す
   \item
-    適用できない場合は \texttt{P\ -\textgreater{}\ ε}
+    それ以外の場合は \texttt{P\ -\textgreater{}\ ε}
     を適用：常に\texttt{true}を返す
   \end{itemize}
 \item
@@ -622,7 +621,7 @@ Javaコード： private boolean P() {
 \hypertarget{chapter5-ux518dux5e30ux4e0bux964dux3068ux3044ux3046ux540dux524dux306eux7531ux6765}{%
 \subsection{「再帰」「下降」という名前の由来}\label{chapter5-ux518dux5e30ux4e0bux964dux3068ux3044ux3046ux540dux524dux306eux7531ux6765}}
 
-この実装方法が「再帰下降」と呼ばれる理由は：
+この実装方法が「再帰下降」と呼ばれるのは以下の理由によるものです：
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -654,14 +653,14 @@ parse() -> D() -> P() -> P() -> P() -> ...
 \hypertarget{chapter5-ux30b7ux30d5ux30c8ux9084ux5143ux69cbux6587ux89e3ux6790ux306eux57faux672cux30a2ux30a4ux30c7ux30a2}{%
 \subsection{シフト還元構文解析の基本アイデア}\label{chapter5-ux30b7ux30d5ux30c8ux9084ux5143ux69cbux6587ux89e3ux6790ux306eux57faux672cux30a2ux30a4ux30c7ux30a2}}
 
-ナイーブな（素直な）上向き構文解析は\textbf{シフト還元構文解析}とも呼ばれます。この名前は、2つの基本操作から来ています：
+ナイーヴな上向き構文解析は\textbf{シフト還元構文解析}とも呼ばれます。この名前は、2つの基本操作から来ています：
 
 \begin{itemize}
 \tightlist
 \item
   シフト（Shift）：入力から1文字読み込んでスタックに積む
 \item
-  還元（Reduce）：スタック上の記号列が某規則の右辺と一致したら、左辺に置き換える
+  還元（Reduce）：スタック上の記号列が規則の右辺と一致したら、左辺に置き換える
 \end{itemize}
 
 下向き構文解析が「文法から入力へ」と進むのに対し、上向き構文解析は「入力から文法へ」と進みます。入力文字列を徐々に「縮めて」いって、最終的に開始記号に辿り着けるかを確認するのです。
@@ -675,7 +674,7 @@ parse() -> D() -> P() -> P() -> P() -> ...
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  \textbf{基本的には入力をスタックに積んでいく}（シフト操作）
+  入力をスタックに積んでいく（シフト操作）
 \item
   \textbf{スタックの中身を見て、文法規則にマッチするパターンがあれば還元操作を行う}
 \item
@@ -689,11 +688,11 @@ parse() -> D() -> P() -> P() -> P() -> ...
 \hypertarget{chapter5-ux4f8bux3067ux5b66ux3076ux30b7ux30d5ux30c8ux9084ux5143ux69cbux6587ux89e3ux6790}{%
 \subsection{例で学ぶシフト還元構文解析}\label{chapter5-ux4f8bux3067ux5b66ux3076ux30b7ux30d5ux30c8ux9084ux5143ux69cbux6587ux89e3ux6790}}
 
-同じDyck言語を例にしますが、ナイーブな上向き構文解析では空文字列規則（ε規則）が扱いづらいので、等価な別の文法を使います：
+同じDyck言語を例にしますが、ナイーヴな上向き構文解析では空文字列規則（ε規則）が扱いづらいので、等価な別の文法を使います：
 
 \begin{verbatim}
 D -> $ P $
-D -> $ ε $
+D -> $ ε$
 P -> P X
 P -> X
 X -> ( P )
@@ -1302,8 +1301,8 @@ Rightmost derivation」を表します。
 プログラマがこのコードを見たとき、最初のトークンだけで文の種類を判断できます：
 
 \begin{verbatim}
-- `if`で始まる → if文だ！
-- `while`で始まる → while文だ！
+- ifで始まる → if文だ！
+- whileで始まる → while文だ！
 \end{verbatim}
 
 LL(1)は、まさにこの「最初の1トークンで判断」というアイデアをアルゴリズム化したものです。
@@ -1373,7 +1372,7 @@ Javaのif文には、else節があるものとないものがあります：
 \end{Highlighting}
 \end{Shaded}
 
-else節は「あってもなくてもいい」要素です。このような場合、else節の後に何が来るかを知る必要があります。これが\textbf{FOLLOW集合}（その非終端記号の後に来る可能性のあるトークンの集合）です。
+else節は「あってもなくてもいい」要素です。このような場合、else節の後に何が来る「可能性がある」かを知る必要があります。これが\textbf{FOLLOW集合}（その非終端記号の後に来る可能性のあるトークンの集合）です。
 
 \hypertarget{chapter5-firstux96c6ux5408ux3068followux96c6ux5408}{%
 \subsection{FIRST集合とFOLLOW集合}\label{chapter5-firstux96c6ux5408ux3068followux96c6ux5408}}
@@ -1411,7 +1410,7 @@ FIRST(E) = { '(', '-', N }
 \subsubsection{nullable -
 空文字列を生成できるか}\label{chapter5-nullable---ux7a7aux6587ux5b57ux5217ux3092ux751fux6210ux3067ux304dux308bux304b}}
 
-LL(1)構文解析で重要な概念として、\textbf{nullable}（ヌラブル）があります。これは、ある非終端記号が空文字列（ε）を生成できるかどうかを示すブール値です。
+LL(1)構文解析で重要な概念として、\textbf{nullable}（ヌラブル）があります。これは、ある非終端記号が空文字列εを生成できるかどうかを示すものです。
 
 \textbf{nullable}という名前はJavaの\texttt{null}とは関係ありません。「空にできる」つまり「何も生成しないことができる」という意味です。
 
@@ -1466,15 +1465,15 @@ Eに続く可能性のあるトークンは、入力の終端記号\texttt{\$}�
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  すべての非終端記号について\texttt{nullable\ =\ false}に初期化
+  全ての非終端記号Eについて\texttt{nullable(E)\ =\ false}に初期化
 \item
   \(A \to \varepsilon\) の形の規則があれば\texttt{nullable(A)\ =\ true}
 \item
   \(A \to X_1\,X_2\,\ldots\,X_k\) について、すべての \(X_i\)
   が\texttt{nullable}なら\texttt{nullable(A)\ =\ true}
 \item
-  \texttt{false} -\textgreater{}
-  \texttt{true}への変化がなくなるまで繰り返す
+        \texttt{nullable = false} -\textgreater{}
+        \texttt{nullable = true}への変化がなくなるまで繰り返す
 \end{enumerate}
 
 ここで \(X_1, X_2, \ldots\)
@@ -1617,26 +1616,26 @@ E → - E
 初期状態：
 
 \begin{verbatim}
-- `FOLLOW(E) = {$}`（開始記号として）
+- \verb|FOLLOW(E) = {$}|（開始記号として）
 \end{verbatim}
 
 規則 \texttt{E\ →\ (\ E\ )} から：
 
 \begin{verbatim}
-- `E`の後に`)`が来るので、`)`を`FOLLOW(E)`に追加
-- `FOLLOW(E) = {$, ')'}`
+- Eの後に)が来るので、)をFOLLOW(E)に追加
+- \verb|FOLLOW(E) = {$, ')'}|
 \end{verbatim}
 
 規則 \texttt{E\ →\ -\ E} から：
 
 \begin{verbatim}
-- `E`が末尾にあるので、`FOLLOW(E)`を`FOLLOW(E)`に追加（変化なし）
+- Eが末尾にあるので、\verb|FOLLOW(E)|を\verb|FOLLOW(E)|に追加（変化なし）
 \end{verbatim}
 
 規則 \texttt{E\ →\ (\ E\ )} から（2回目）：
 
 \begin{verbatim}
-- すでに`)`は追加済みなので、変化なし
+- すでに ) は追加済みなので、変化なし
 \end{verbatim}
 
 規則 \texttt{E\ →\ -\ E} から（2回目）：
@@ -1660,17 +1659,21 @@ LL(1)構文解析の核心は、FIRST集合とFOLLOW集合を使って「どの�
 
 LL(1)構文解析では、現在解析中の非終端記号と次の入力トークンの組み合わせから、適用する規則を一意に決定します：
 
-\textbf{1. FIRST集合による判断} - ある規則 \texttt{A\ →\ α}
-について、\texttt{α} が特定のトークン集合で始まる可能性がある場合 -
-先読みトークン\texttt{a}が\texttt{FIRST(α)}に含まれている場合、この規則を適用する
+\textbf{1. FIRST集合による判断} - ある規則 \texttt{A\ →\ α}について：
+\begin{itemize}
+\item \texttt{α} が特定のトークン集合で始まる可能性がある場合、先読みトークン\texttt{a}が\texttt{FIRST(α)}に含まれている場合、この規則を適用する
+\end{itemize}
 
-\textbf{2. FOLLOW集合による判断}\\
-- 規則 \texttt{A\ →\ ε}（空文字列規則）について - 先読みトークンが
-FOLLOW(A) に含まれる場合、空文字列規則を適用する
+\textbf{2. FOLLOW集合による判断} - 規則 \texttt{A\ →\ ε}（空文字列規則）について：
+\begin{itemize}
+\item 先読みトークンがFOLLOW(A) に含まれる場合、空文字列規則を適用する
+\end{itemize}
 
-\textbf{3. 決定性の保証} -
-各状況で適用可能な規則が一意に決まる場合、その文法は LL(1) である -
-複数の規則が適用可能な場合、LL(1)コンフリクトが発生する
+\textbf{3. 決定性の保証} - 各状況で適用可能な規則が：
+\begin{itemize}
+\item 一意に決まる場合、その文法は LL(1) である
+\item 複数の規則が適用可能な場合、LL(1)コンフリクトが発生する
+\end{itemize}
 
 以上がLL(1)構文解析の基本的な考え方です。これにより、構文解析器は先読みトークンを1つだけ見て、次に適用すべき規則を決定できます。
 
@@ -1720,7 +1723,7 @@ S' -> C
 A → a A a | b A b | ε
 \end{verbatim}
 
-は、どれだけ変形しても先頭の文字だけでは分岐できず、LL(1)にはなりません。共通前置辞をほぐしてもLL(1)に収まらない文法が存在する、という具体例です。また、左因子化を重ねると非終端記号が増えて抽象構文木との対応が見えにくくなり、規則の直感的な形を失いやすいという副作用もあります。
+は、どれだけ変形しても先頭の文字だけでは分岐できず、LL(1)にはなりません。左因子化をほどこしても、LL(1)に収まらない文法が存在する、という具体例です。また、左因子化を重ねると非終端記号が増えて抽象構文木との対応が見えにくくなり、規則の直感的な形を失いやすいという副作用もあります。
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -1730,7 +1733,7 @@ A → a A a | b A b | ε
   左再帰の問題
 \end{enumerate}
 
-LL(1)の最大の欠点は、\textbf{左再帰}を扱えないことです。例えば、以下のような左再帰文法を扱うことができません：
+LL(1)の別の欠点は、\textbf{左再帰}を扱えないことです。例えば、以下のような左再帰文法を扱うことができません：
 
 \begin{verbatim}
 E → E + T
