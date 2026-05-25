@@ -1851,7 +1851,7 @@ F → ( E ) | id
   その後、\texttt{(\ P\ )}を\texttt{X}に還元する
 \end{enumerate}
 
-つまり、\textbf{今どの状態にいるか}が分かれば、\textbf{次の行動が決まる}のです。
+\textbf{今どの状態にいるか}が分かれば、\textbf{次の行動が決まる}のです。
 
 \hypertarget{chapter5-ux72b6ux614bux306eux767aux898b}{%
 \subsection{状態の発見}\label{chapter5-ux72b6ux614bux306eux767aux898b}}
@@ -1904,12 +1904,12 @@ F → ( E ) | id
 状態「(を読んだ直後」 + 記号「)」 → 状態「( ) を読んだ」
 \end{verbatim}
 
-この状態遷移は決定的で、事前にすべて計算できます。ここで4章で学んだことを思い出してください。このような状態遷移はオートマトンとして表現できるのです。
+この状態遷移は決定的で、事前にすべて計算できます。4章で学んだことを思い出してください。このような状態遷移はオートマトンとして表現できるのです。
 
 \hypertarget{chapter5-ux30aaux30fcux30c8ux30deux30c8ux30f3ux306eux5fc5ux7136ux6027}{%
 \subsection{オートマトンの必然性}\label{chapter5-ux30aaux30fcux30c8ux30deux30c8ux30f3ux306eux5fc5ux7136ux6027}}
 
-というわけで、状態と状態遷移を定義することで、素朴なシフト還元構文解析でやっていた流れをオートマトンとして表現できます。たとえば、以下はDyck言語の文法
+状態と状態遷移を定義することで、素朴なシフト還元構文解析でやっていた流れをオートマトンとして表現できます。たとえば、以下はDyck言語の文法
 
 \begin{verbatim}
 D → P
@@ -2146,8 +2146,6 @@ T → ・x
   最終的に、LR(0)項\texttt{S\textquotesingle{}\ →\ ・S\ \$}の閉包は以下のようになります：
 \end{enumerate}
 
-この閉包は次の項集合になります：
-
 \begin{verbatim}
 {
   S' → ・S $,
@@ -2318,11 +2316,11 @@ LR(0)項集合を先取りで示しておきます。具体的な作り方は5.1
 \hypertarget{chapter5-ux30b9ux30c6ux30c3ux30d71ux521dux671fux72b6ux614bi_0ux306eux4f5cux6210}{%
 \subsection{\texorpdfstring{ステップ1：初期状態（\(I_0\)）の作成}{ステップ1：初期状態（I\_0）の作成}}\label{chapter5-ux30b9ux30c6ux30c3ux30d71ux521dux671fux72b6ux614bi_0ux306eux4f5cux6210}}
 
-初期状態は、拡張開始記号から始まる項目のクロージャです：
+初期状態は、拡張開始記号から始まる項目の閉包です：
 
 \(I_0\) = closure(\{S' → ・S \$\})
 
-クロージャを計算すると：
+項目の閉包を計算すると：
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -2957,6 +2955,26 @@ X = {
 
 LR(0)のコンフリクトを解決するため、\textbf{先読み}（次の入力を見る）を導入した手法が開発されました。
 
+\begin{kokocolumn}{LR系構文解析の歴史}
+
+本書ではLR(0) → SLR(1) → LR(1) → LALR(1)の順に解説していますが、これは「先読み機構が単純な順」に並べた教育上の順序であり、\textbf{歴史的な発見順とは逆向き}です。実際の年表は次のようになっています。
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{1965年}：Donald E. Knuth, ``On the Translation of Languages from Left to Right'' でLR(k)を導入。LR(1)を含む一般的なLR(k)が決定的文脈自由言語をきれいに扱えることを示しました。ただしLR(1)は状態数が膨大で、当時の計算機資源では実装が困難でした。
+\item
+  \textbf{1969年}：Frank DeRemerが博士論文 ``Practical Translators for LR(k) Languages''（MIT）で、LR(1)を実装可能なサイズに圧縮する手法としてLALR(1)を提案。
+\item
+  \textbf{1971年}：Frank DeRemer, ``Simple LR(k) grammars''（CACM）で、LR(0)オートマトンをそのまま使いFOLLOW集合で先読みを賄う、さらに簡素なSLR(k)を提案。SLRの``S''は``Simple''、つまり「LRをいかに単純化するか」という当時の問題意識を表しています。
+\item
+  \textbf{1982年}：DeRemer \& Pennello, ``Efficient Computation of LALR(1) Look-Ahead Sets''（TOPLAS）でLALR(1)の効率的構築アルゴリズムが確立され、Yacc/Bisonなど実用システムに広く採用されました。
+\end{itemize}
+
+つまり \textbf{LR(1)が先にあり、それを実用化するためにLALR・SLRという「刈り込み」が後から作られた}というのが実情です。本書が逆順を採る理由は、LR(0)の素朴な状態構築から先読み機構を段階的に積み上げる方が、各手法の存在意義（何の問題を解いたのか）を把握しやすいからです。実装上の発見の順序と概念理解の順序は別物として整理しておくと、第6章で構文解析器生成系を選ぶ際にも感覚が掴みやすくなります。
+
+\end{kokocolumn}
+
 \hypertarget{chapter5-slr1---followux96c6ux5408ux306bux3088ux308bux6539ux826f}{%
 \subsection{SLR(1) -
 FOLLOW集合による改良}\label{chapter5-slr1---followux96c6ux5408ux306bux3088ux308bux6539ux826f}}
@@ -3034,11 +3052,6 @@ LR(0)では「還元可能な状態では全ての入力に対して還元」し
 SLR(1)が「文法全体から計算した大雑把なFOLLOW」を使うのに対し、LR(1)は項目自体に「この文脈で還元した直後に来うる記号」を埋め込んで持ち回ることで、文脈ごとに精密な判断を行う手法。理論上、あらゆる決定的文脈自由言語を解析できる最強クラスだが、状態数が爆発しやすい（→
 実用化のためにLALR(1)へ）。
 \end{quote}
-
-SLR(1)でも解決できないコンフリクトを解決するため、\textbf{LR(1)}\footnote{Donald
-  E. Knuth, ``On the Translation of Languages from Left to Right'',
-  Information and Control, 8(6), 1965. LR(k)
-  構文解析の概念を導入したオリジナル論文です。}が開発されました。
 
 \textbf{LR(1)の基本アイデア：}
 
@@ -3398,7 +3411,7 @@ PEGの最大の特徴は以下の通りです：
   いくつかの文脈依存言語を扱える：
   たとえば、\texttt{a\^{}n\ b\^{}n\ c\^{}n}も扱える
 \item
-  全てのLR(1)文法を表現可能
+  全ての決定的文脈自由言語を表現可能
 \item
   非常に単純：アルゴリズムが非常に単純で、実装が容易
 \end{enumerate}
