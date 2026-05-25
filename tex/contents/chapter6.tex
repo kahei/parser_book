@@ -415,7 +415,7 @@ PEGからJavaコードへの機械的な変換は、以下の規則に従いま�
 \begin{itemize}
 \tightlist
 \item
-  JavaCCはLL(1)構文解析器を出力するため、\textbf{LL(1)構文解析器生成系}
+  JavaCCはLL(k)構文解析器を出力するため、\textbf{LL(k)構文解析器生成系}
 \item
   YaccはLALR(1)構文解析器を出力するため、\textbf{LALR(1)構文解析器生成系}
 \end{itemize}
@@ -562,7 +562,7 @@ Microsystems（当時）は、Jackという構文解析器生成系をリリー�
 JavaCCという名前は「Java Compiler
 Compiler」の略で、Yacc同様「コンパイラを作るためのコンパイラ」という意味です。
 
-JavaCCはLL(1)法を元に作られており、構文定義ファイルからLL(1)パーサーを生成します。以下は四則演算を含む数式を計算できる電卓をJavaCCで書いた場合の例です。
+JavaCCはLL(k)法を元に作られており、構文定義ファイルからLL(k)パーサーを生成します。以下は四則演算を含む数式を計算できる電卓をJavaCCで書いた場合の例です。
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -718,7 +718,7 @@ JavaCCはLL(1)法を元に作られており、構文定義ファイルからLL(
 
 先読みトークン数が2ということは、「次の2つのトークンを見て、どの規則を適用するか決定できる」という意味です。LOOKAHEADは固定されていれば任意の正の整数にできるので、JavaCCはデフォルトではLL(1)だが、オプションを設定することによってLL(k)になるともいえます。
 
-JavaCCは構文定義ファイルの文法がかなりJavaに似ているため、生成されるコードの形を想像しやすいというメリットがあります。JavaCCはJavaの構文解析器生成系の中では最古の部類の割に今でも現役で使われているのは、Javaユーザにとっての使いやすさが背景にあるように思います。
+JavaCCは構文定義ファイルの文法がかなりJavaに似ているため、生成されるコードの形を想像しやすいというメリットがあります。Javaの構文解析器生成系の中では最古の部類の割に今でも現役で使われているのは、Javaユーザにとっての使いやすさが背景にあるように思います。
 
 \hypertarget{chapter6-yaccux69cbux6587ux89e3ux6790ux5668ux751fux6210ux7cfbux306eux8001ux8217}{%
 \section{Yacc：構文解析器生成系の老舗}\label{chapter6-yaccux69cbux6587ux89e3ux6790ux5668ux751fux6210ux7cfbux306eux8001ux8217}}
@@ -868,13 +868,12 @@ input :
       | input line
       ;
 
-line : expr EOL
-      { printf("Result: %d\n", $1); }
+line  : expr EOL
       | EOL
       | error EOL
       ;
 
-expr : NUM
+expr  : NUM
       | expr '+' expr
       | expr '-' expr
       | expr '*' expr
@@ -1074,7 +1073,7 @@ ANTLRは下向き型の構文解析が苦手とする左再帰も、規則の中
 \end{Highlighting}
 \end{Shaded}
 
-ここで空要素（\texttt{\textless{}e/\textgreater{}}など）に分岐するか、子要素を持つ要素（\texttt{\textless{}a\textgreater{}\textless{}b/\textgreater{}\textless{}/a\textgreater{}}など）に分岐するかを決定するには、\texttt{\textless{}}に加えて、任意の長さになり得るタグ名を先読みしなければいけません。通常のLLパーサーでは何文字（何トークン）先読みしているのは予め決定されているのでこのような文法定義を取り扱うことはできません。しかし、ANTLRの\texttt{ALL(*)}アルゴリズムとその前身となる\texttt{LL(*)}アルゴリズムでは任意個の文字数を先読みして分岐を決定することができます。
+ここで空要素（\texttt{\textless{}e/\textgreater{}}など）に分岐するか、子要素を持つ要素（\texttt{\textless{}a\textgreater{}\textless{}b/\textgreater{}\textless{}/a\textgreater{}}など）に分岐するかを決定するには、\texttt{\textless{}}に加えて、任意の長さになり得るタグ名を先読みしなければいけません。通常のLLパーサーでは何文字（何トークン）先読みできるかは予め決定されているのでこのような文法定義を取り扱うことはできません。しかし、ANTLRの\texttt{ALL(*)}アルゴリズムやその前身となる\texttt{LL(*)}アルゴリズムでは任意個の文字数を先読みして分岐を決定することができます。
 
 ANTLRでは通常のLLパーサーと違い文法を記述する上での大きな制約がなく、非常に強力です。理論的な意味でも\texttt{ALL(*)}アルゴリズムは任意の決定的な文脈自由言語を取り扱うことができます。
 
@@ -1105,7 +1104,7 @@ ANTLRはこういった実用上重要な痒いところにも手が届くよう
 
 手前味噌ですが、拙作のパーサーコンビネータである\href{https://github.com/kmizu/scomb}{SComb}も紹介しておきます。これまで紹介してきたものはすべて構文解析器生成系です。つまり、独自の言語を用いて作りたい言語の文法を記述し、そこから\textbf{対象言語}（CであったりJavaであったり様々ですが）で書かれた構文解析器を生成するものだったわけですが、パーサーコンビネータは少々違います。
 
-パーサーコンビネータでは対象言語のメソッドや関数、オブジェクトとして構文解析器を定義し、演算子やメソッドによって構文解析器を組み合わせることで構文解析器を組み立てていきます。「コンビネータ」という名前は「組み合わせる（combine）」から来ており、小さなパーサーを組み合わせて大きなパーサーを作るという意味です。パーサーコンビネータではメソッドや関数、オブジェクトとして規則自体を記述するため、特別にプラグインを作らなくてもIDEによる支援が受けられることや、対象言語が静的型システムを持っていた場合、型チェックによる支援を受けられることがメリットとして挙げられます。
+パーサーコンビネータでは対象言語のメソッドや関数、オブジェクトとして構文解析器を定義し、演算子やメソッドによって構文解析器を組み合わせることで構文解析器を組み立てていきます。「コンビネータ」という名前は「組み合わせる（combine）」から来ており、小さなパーサーを組み合わせて大きなパーサーを作るという意味です。パーサーコンビネータではメソッドや関数、オブジェクトとして規則自体を記述するため、特別にプラグインを作らなくてもIDEによる支援が受けられることや、対象言語が静的型システムを持っていた場合、型チェックによる支援を受けられることなどがメリットとして挙げられます。
 
 SCombで四則演算を解析できるプログラムを書くと以下のようになります。先程述べたようにSCombはパーサーコンビネータであり、これ自体がScalaのプログラム（\texttt{object}宣言）でもあります。
 
@@ -1144,17 +1143,17 @@ SCombで四則演算を解析できるプログラムを書くと以下のよう
 \end{Highlighting}
 \end{Shaded}
 
-ScalaはJavaとは異なるプログラミング言語ですが、構文にJavaと似た部分が多く（しかもJVM上でも動かせる処理系がある）、Javaユーザーの方でも比較的読み進めやすいはずです（同じJVMでもEtaのようにHaskellに近い文法の言語もあるので、「JVMだから読みやすい」というよりは「文法が近い」点がポイントです）。
+ScalaはJavaとは異なるプログラミング言語ですが、構文にJavaと似た部分が多く（JVM上で動く処理系がある）、Javaユーザーの方でも比較的読み進めやすいはずです。
 
-各メソッドに対応するBNFによる規則をコメントとして付加してみましたが、BNFと比較しても簡潔に記述できているのがわかります。Scalaは記号をそのままメソッドとして記述できるなど、元々DSL（ドメイン特化言語）に向いている特徴を持った言語なのですが、その特徴を活用しています。\texttt{chainl}というメソッドについてだけは見慣れない読者の方は多そうですが、これは
+各メソッドに対応するBNFによる規則をコメントとして付加してみましたが、BNFと比較しても簡潔に記述できています。Scalaは記号をそのままメソッドとして記述できるなど、元々DSL（ドメイン特化言語）に向いている特徴を持った言語なのですが、その特徴を活用しています。\texttt{chainl}というメソッドについてだけは見慣れない読者の方は多そうですが、これは
 
 \begin{verbatim}
 // M ::= P ("+" P | "-" P)*
 \end{verbatim}
 
-のような二項演算を簡潔に記述するためのコンビネータ（メソッド）です。パーサーコンビネータの別のメリットとして、BNF（あるいはPEG）に無いような演算子をこのように後付で導入できることも挙げられます。構文規則からの値（意味値）の取り出しもScalaのfor式（Javaのfor文とは異なり、値を生成する式です）を用いて簡潔に記述できています。
+のような二項演算を簡潔に記述するためのコンビネータ（メソッド）です。パーサーコンビネータの別のメリットとして、BNF（あるいはPEG）に無い演算子を後付けで導入できることも挙げられます。構文規則からの値（意味値）の取り出しもScalaのfor式（Javaのfor文とは異なり、値を生成する式です）を用いて簡潔に記述できています。
 
-筆者は自作言語Klassicの処理系作成のためにSCombを使っていますが、かなり複雑な文法を記述できるにも関わらず、SCombのコア部分はわずか600行ほどです。それでいて高い拡張性や簡潔な記述が可能なのは、Scalaという言語の能力と、SCombがベースとして利用しているPEGという手法のシンプルさがあってのものだと言えるでしょう。
+筆者は自作言語Klassicの処理系作成のためにSCombを使っていましたが、かなり複雑な文法を記述できるにも関わらず、SCombのコア部分はわずか600行ほどです。それでいて高い拡張性や簡潔な記述が可能なのは、Scalaという言語の能力と、SCombがベースとして利用しているPEGという手法のシンプルさがあってのものだと言えるでしょう。
 
 \hypertarget{chapter6-ux30d1ux30fcux30b5ux30fcux30b3ux30f3ux30d3ux30cdux30fcux30bfjcombux3092ux81eaux4f5cux3057ux3088ux3046}{%
 \section{パーサーコンビネータJCombを自作しよう！}\label{chapter6-ux30d1ux30fcux30b5ux30fcux30b3ux30f3ux30d3ux30cdux30fcux30bfjcombux3092ux81eaux4f5cux3057ux3088ux3046}}
@@ -1164,10 +1163,9 @@ ScalaはJavaとは異なるプログラミング言語ですが、構文にJava�
 \index{Result@\texttt{Result}}
 \index{じぇねりくす@ジェネリクス}
 
-コンパイラについて解説した本は数えきれないほどありますし、その中で構文解析アルゴリズムについて説明した本も少なからずあります。しかし、構文解析アルゴリズムについてのみフォーカスした本はParsing
-Techniquesほぼ一冊といえる現状です。その上でパーサーコンビネータの自作まで踏み込んだ書籍はほぼ皆無と言っていいでしょう。読者の方には「さすがにちょっとパーサーコンビネータの自作は無理があるのでは」と思われた方もいるのではないでしょうか。
+コンパイラについて解説した本は数えきれないほどありますし、その中で構文解析アルゴリズムについて説明した本も少なからずあります。しかし、構文解析アルゴリズムについてのみフォーカスした本はParsing Techniquesほぼ一冊といえる現状です。その上でパーサーコンビネータの自作まで踏み込んだ書籍はほぼ皆無と言っていいでしょう。読者の方には「さすがにちょっとパーサーコンビネータの自作は無理があるのでは」と思われた方もいるのではないでしょうか。
 
-しかし、驚くべきことに、現代的な言語であればパーサーコンビネータを自作するのは本当に簡単です。きっと、多くの読者の方々が拍子抜けしてしまうくらいに。この節ではJavaで書かれたパーサーコンビネータJCombを自作する過程を通じて皆さんにパーサーコンビネータとはどのようなものかを学んでいただきます。
+しかし、現代的な言語であればパーサーコンビネータを自作するのは本当に簡単です。多くの読者の方々が拍子抜けしてしまうくらいに。この節ではJavaで書かれたパーサーコンビネータJCombを自作する過程を通じて皆さんにパーサーコンビネータとはどのようなものかを学んでいただきます。
 
 パーサーコンビネータと構文解析器生成系の関係は、次のように考えることができます：
 
@@ -1191,9 +1189,9 @@ Techniquesほぼ一冊といえる現状です。その上でパーサーコン�
 \end{Highlighting}
 \end{Shaded}
 
-ここで構文解析器を表現するインタフェース\texttt{JParser\textless{}R\textgreater{}}は型パラメータ\texttt{R}を受け取ることに注意してください。Javaの型パラメータ（ジェネリクス）は、「このインタフェースは何かの型\texttt{R}に対して動作しますが、具体的な型は使用時に決まります」という意味です。
+ここで構文解析器を表現するインタフェース\texttt{JParser\textless{}R\textgreater{}}は型パラメータ\texttt{R}を受け取ることに注意してください。型パラメータ\texttt{R}は、「このインタフェースは何かの型\texttt{R}に対して動作しますが、具体的な型は使用時に決まります」という意味です。
 
-一般に構文解析の結果は抽象構文木になりますが、インタフェースを定義する時点では抽象構文木がどのような形になるかはわかりようがないので、型パラメータにしておくのです。\texttt{JParser\textless{}R\textgreater{}}はたった一つのメソッド\texttt{parse()}を持ちます。\texttt{parse()}は入力文字列\texttt{input}を受け取り、解析結果を\texttt{Result\textless{}R\textgreater{}}として返します。
+構文解析の結果は抽象構文木になりますが、インタフェースを定義する時点では抽象構文木がどのような形になるかはわかりようがないので、型パラメータにしておくのです。\texttt{JParser\textless{}R\textgreater{}}はたった一つのメソッド\texttt{parse()}を持ちます。\texttt{parse()}は入力文字列\texttt{input}を受け取り、解析結果を\texttt{Result\textless{}R\textgreater{}}として返します。
 
 \texttt{JParser\textless{}R\textgreater{}}の実装は一体全体どのようなものになるの？という疑問を脇に置いておけば理解は難しくないでしょう。次に解析結果\texttt{Result\textless{}V\textgreater{}}をレコードとして定義します。
 
@@ -1234,7 +1232,9 @@ Techniquesほぼ一冊といえる現状です。その上でパーサーコン�
 
 これはBNFで言えば文字列リテラルの表記に相当します。
 
-次に、解析に成功したとしてその値を別の値に変換するための方法もほしいところです。たとえば、\texttt{123}という文字列を解析したとして、これは最終的に文字列ではなくintに変換したいところです。Javaのラムダ式（無名関数）を使えば、このような変換を簡潔に書けます。このようなメソッドは、ラムダ式で変換を定義できるように、次のような\texttt{map()}メソッドとして提供したいところです。
+次に、解析に成功したとしてその値を別の値に変換するための方法もほしいところです。
+
+たとえば、\texttt{123}という文字列を解析したとして、Stringではなくintに変換したいところです。Javaのラムダ式（無名関数）を使えば、このような変換を簡潔に書けます。このようなメソッドは、ラムダ式で変換を定義できるように、次のような\texttt{map()}メソッドとして提供したいところです。
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1245,7 +1245,7 @@ Techniquesほぼ一冊といえる現状です。その上でパーサーコン�
 \end{Highlighting}
 \end{Shaded}
 
-これは構文解析器生成系でセマンティックアクションを書くのに相当すると言えるでしょう。つまり、単に文法をチェックするだけでなく、解析結果を使って何か計算をしたり、データ構造を構築したりする部分です。
+これは構文解析器生成系でセマンティックアクションを書くのに相当すると言えます。
 
 BNFで\texttt{a\ \textbar{}\ b}、つまり選択を書くのに相当するメソッドも必要です。これは次のような\texttt{alt()}メソッドとして提供します。
 
@@ -1270,7 +1270,7 @@ BNFで\texttt{a\ \textbar{}\ b}、つまり選択を書くのに相当するメ�
 \end{Highlighting}
 \end{Shaded}
 
-最後に、BNFで\texttt{a*}、つまり0回以上の繰り返しに相当する\texttt{rep0()}メソッド
+最後に、BNFで\texttt{a*}、つまり0回以上の繰り返しに相当する\texttt{rep0()}メソッドや、
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1278,7 +1278,7 @@ BNFで\texttt{a\ \textbar{}\ b}、つまり選択を書くのに相当するメ�
 \end{Highlighting}
 \end{Shaded}
 
-や\texttt{a+}、つまり1回以上の繰り返しに相当する\texttt{rep1()}メソッドもほしいところです。
+\texttt{a+}、つまり1回以上の繰り返しに相当する\texttt{rep1()}メソッドもほしいところです。
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1297,7 +1297,7 @@ BNFで\texttt{a\ \textbar{}\ b}、つまり選択を書くのに相当するメ�
 \index{JComb}
 \index{もじれつりてらる@文字列リテラル}
 
-まず最初に\texttt{string(String\ literal)}メソッドで返す\texttt{JLiteralParser\textless{}String\textgreater{}}の中身を作ってみましょう。\texttt{JLiteralParser}クラスはただ一つのメソッド\texttt{parse()}をもつので次のような実装になります。
+最初に\texttt{string(String\ literal)}メソッドで返す\texttt{JLiteralParser\textless{}String\textgreater{}}の中身を作ってみましょう。\texttt{JLiteralParser}クラスはただ一つのメソッド\texttt{parse()}を持ち、次のような実装になります。
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1322,7 +1322,8 @@ BNFで\texttt{a\ \textbar{}\ b}、つまり選択を書くのに相当するメ�
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{assert }\KeywordTok{new} \BuiltInTok{Result}\NormalTok{\textless{}}\BuiltInTok{String}\NormalTok{\textgreater{}(}\StringTok{"foo"}\NormalTok{, }\StringTok{""}\NormalTok{).}\FunctionTok{equals}\NormalTok{(}\KeywordTok{new} \FunctionTok{JLiteralParser}\NormalTok{(}\StringTok{"foo"}\NormalTok{).}\FunctionTok{parse}\NormalTok{(}\StringTok{"foo"}\NormalTok{));}
+\NormalTok{assert }\KeywordTok{new} \BuiltInTok{Result}\NormalTok{\textless{}}\BuiltInTok{String}\NormalTok{\textgreater{}(}\StringTok{"foo"}\NormalTok{, }\StringTok{""}\NormalTok{).}\FunctionTok{equals}
+  \NormalTok{(}\KeywordTok{new} \FunctionTok{JLiteralParser}\NormalTok{(}\StringTok{"foo"}\NormalTok{).}\FunctionTok{parse}\NormalTok{(}\StringTok{"foo"}\NormalTok{));}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1330,9 +1331,9 @@ BNFで\texttt{a\ \textbar{}\ b}、つまり選択を書くのに相当するメ�
 
 \texttt{startsWith}メソッドは、文字列がある文字列で始まるかを判定するJavaの標準メソッドです。\texttt{substring}メソッドは、文字列の一部を切り出すメソッドです。
 
-ここでは簡潔さを優先して失敗時に\texttt{null}を返していますが、SCombで使ったような\texttt{Success}/\texttt{Failure}の直和型にしておくと、戻り値に\texttt{null}が紛れ込む心配がなくなります。JCombでは説明を短くするため\texttt{null}にしていますが、実用では明示的な結果型にするのがおすすめです。
+ここでは簡潔さを優先して失敗時に\texttt{null}を返していますが、\texttt{Success}/\texttt{Failure}のような直和型にしておくと、戻り値に\texttt{null}が紛れ込む心配がなくなります。JCombでは説明を短くするため\texttt{null}にしていますが、実用では直和型を作るのがおすすめです。
 
-あとはこのクラスのインスタンスを返す\texttt{string()}メソッドを作成するだけです。なお、使うときの利便性のため、以降では各種メソッドはクラス\texttt{JComb}のstaticメソッドとして実装していきます。
+あとはこのクラスのインスタンスを返す\texttt{string()}メソッドを作成するだけです。利便性のため、以降では各種メソッドはクラス\texttt{JComb}のstaticメソッドとして実装していきます。
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1360,7 +1361,7 @@ BNFで\texttt{a\ \textbar{}\ b}、つまり選択を書くのに相当するメ�
 \index{せんたく@選択}
 \index{じゅんじょつきせんたく@順序付き選択}
 
-次に二つのパーサーを取って「選択」パーサーを返すメソッド\texttt{alt()}を実装します。先程のようにクラスを実装してもいいですが、メソッドは一つだけなのでラムダ式（Java
+二つのパーサーを取って「選択」パーサーを返すメソッド\texttt{alt()}を実装します。先程のようにクラスを実装してもいいですが、メソッドは一つだけなのでラムダ式（Java
 8から導入された無名関数）にします。
 
 \begin{Shaded}
@@ -1378,7 +1379,7 @@ BNFで\texttt{a\ \textbar{}\ b}、つまり選択を書くのに相当するメ�
 \end{Highlighting}
 \end{Shaded}
 
-ラムダ式について復習しておくと、これは実質的には以下のような匿名クラスを書いたのと同じになります。
+ラムダ式について復習しておきます。これは実質的に以下の匿名クラスを書いたのと同じになります。
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1419,7 +1420,9 @@ BNFで\texttt{a\ \textbar{}\ b}、つまり選択を書くのに相当するメ�
 という挙動をします。これはBNFの選択 \texttt{\textbar{}}
 とは異なり、PEGの「順序付き選択 \texttt{/}」に対応します。
 
-実は今ここで作っているパーサーコンビネータである\texttt{JComb}は（\texttt{SComb}と同様に）PEGをベースとしたパーサーコンビネータだったのです。もちろん、PEGベースでないパーサーコンビネータを作ることも出来るのですが実装がかなり複雑になってしまいます。PEGの挙動をそのままプログラミング言語に当てはめるのは非常に簡単であるため、今回はPEGを採用しましたが、もし興味があればBNFベース（文脈自由文法ベース）のパーサーコンビネータも作ってみてください。
+実は今ここで作っているパーサーコンビネータである\texttt{JComb}は（\texttt{SComb}と同様に）PEGをベースとしたパーサーコンビネータだったのです。
+
+PEGベースでないパーサーコンビネータを作ることも出来るのですが実装がかなり複雑になってしまいます。PEGの挙動をそのままプログラミング言語に当てはめるのは非常に簡単であるため、今回はPEGを採用しましたが、もし興味があればBNFベース（文脈自由文法ベース）のパーサーコンビネータも作ってみてください。
 
 \hypertarget{chapter6-sequx30e1ux30bdux30c3ux30c9}{%
 \subsection{\texorpdfstring{\texttt{seq()}メソッド}{seq()メソッド}}\label{chapter6-sequx30e1ux30bdux30c3ux30c9}}
@@ -1438,23 +1441,23 @@ BNFで\texttt{a\ \textbar{}\ b}、つまり選択を書くのに相当するメ�
     \KeywordTok{public} \DataTypeTok{static}\NormalTok{ \textless{}A, B\textgreater{} JParser\textless{}Pair\textless{}A, B\textgreater{}\textgreater{} }\FunctionTok{seq}\NormalTok{(}
 \NormalTok{        JParser\textless{}A\textgreater{} p1, JParser\textless{}B\textgreater{} p2) \{}
         \KeywordTok{return}\NormalTok{ (input) {-}\textgreater{} \{}
-\NormalTok{            var result1 = p1.}\FunctionTok{parse}\NormalTok{(input); }\CommentTok{//(1{-}1) p1を試す}
-            \KeywordTok{if}\NormalTok{(result1 == }\KeywordTok{null}\NormalTok{) }\KeywordTok{return} \KeywordTok{null}\NormalTok{; }\CommentTok{//(1{-}2) p1が失敗したら全体も失敗}
-\NormalTok{            var result2 = p2.}\FunctionTok{parse}\NormalTok{(result1.}\FunctionTok{rest}\NormalTok{()); }\CommentTok{//(2{-}1) p1の残り入力でp2を試す}
-            \KeywordTok{if}\NormalTok{(result2 == }\KeywordTok{null}\NormalTok{) }\KeywordTok{return} \KeywordTok{null}\NormalTok{; }\CommentTok{//(2{-}2) p2が失敗したら全体も失敗}
+\NormalTok{            var result1 = p1.}\FunctionTok{parse}\NormalTok{(input); }\CommentTok{// p1を試す}
+            \KeywordTok{if}\NormalTok{(result1 == }\KeywordTok{null}\NormalTok{) }\KeywordTok{return} \KeywordTok{null}\NormalTok{; }\CommentTok{// p1が失敗したら全体も失敗}
+\NormalTok{            var result2 = p2.}\FunctionTok{parse}\NormalTok{(result1.}\FunctionTok{rest}\NormalTok{()); }\CommentTok{// p1の残り入力でp2を試す}
+            \KeywordTok{if}\NormalTok{(result2 == }\KeywordTok{null}\NormalTok{) }\KeywordTok{return} \KeywordTok{null}\NormalTok{; }\CommentTok{// p2が失敗したら全体も失敗}
             \CommentTok{// 両方成功したら、結果をペアにして返す}
             \KeywordTok{return} \KeywordTok{new} \BuiltInTok{Result}\NormalTok{\textless{}\textgreater{}(}
                 \KeywordTok{new}\NormalTok{ Pair\textless{}A, B\textgreater{}(}
 \NormalTok{                    result1.}\FunctionTok{value}\NormalTok{(), result2.}\FunctionTok{value}\NormalTok{()}
 \NormalTok{                ), result2.}\FunctionTok{rest}\NormalTok{()}
-\NormalTok{            );}\CommentTok{//(2{-}3)}
+\NormalTok{            );}
 \NormalTok{        \};}
 \NormalTok{    \}}
 \NormalTok{\}}
 \end{Highlighting}
 \end{Shaded}
 
-先程の\texttt{alt()}メソッドと似通った実装ですが、\texttt{p1}が失敗したら全体が失敗する（1-2）のがポイントです。\texttt{p1}と\texttt{p2}の両方が成功した場合は、二つの値のペアを返しています（2-3）。
+先程の\texttt{alt()}メソッドと似通った実装ですが、\texttt{p1}が失敗したら全体が失敗するのがポイントです。\texttt{p1}と\texttt{p2}の両方が成功した場合は、二つの値のペアを返しています。
 
 \hypertarget{chapter6-rep0-rep1ux30e1ux30bdux30c3ux30c9}{%
 \subsubsection{\texorpdfstring{\texttt{rep0()},
@@ -1640,7 +1643,7 @@ BNFで\texttt{a\ \textbar{}\ b}、つまり選択を書くのに相当するメ�
 \hypertarget{chapter6-ux7b97ux8853ux5f0fux306eux30a4ux30f3ux30bfux30d7ux30eaux30bfux3092ux66f8ux3044ux3066ux307fux308b}{%
 \subsection{算術式のインタプリタを書いてみる}\label{chapter6-ux7b97ux8853ux5f0fux306eux30a4ux30f3ux30bfux30d7ux30eaux30bfux3092ux66f8ux3044ux3066ux307fux308b}}
 
-ここまでで作ったクラス\texttt{JComb}と\texttt{JParser}などを使っていよいよ簡単な算術式のインタプリタを書いてみましょう。仕様は次の通りです。
+ここまでで作ったクラス\texttt{JComb}と\texttt{JParser}などを使って簡単な算術式のインタプリタを書いてみましょう。仕様は次の通りです。
 
 \begin{itemize}
 \tightlist
@@ -1756,9 +1759,7 @@ BNFで\texttt{a\ \textbar{}\ b}、つまり選択を書くのに相当するメ�
 
 DSL（ドメイン特化言語）に向いたScalaに比べれば冗長になったものの、手書きで再帰下降パーサーを組み立てるのに比べると大幅に簡潔な記述を実現することができました。しかも、JComb全体を通しても500行にすら満たないのは特筆すべきところです。Javaがユーザ定義の中置演算子（\texttt{+}や\texttt{*}のような演算子を自分で定義できる機能）をサポートしていればもっと簡潔にできたのですが、そこは向き不向きといったところでしょうか。
 
-パーサーコンビネータを使うと、手書きでパーサーを書いたり、あるいは、対象言語に構文解析器生成系がないようなケースでも、比較的気軽にパーサーを組み立てるためのDSL（Domain
-Specific
-Language）を定義できるのです。また、それだけでなく、特にJavaのような静的型付き言語を使った場合ですが、IDEによる支援も受けられますし、BNFやPEGにはない便利な演算子を自分で導入することもできます。
+手書きでパーサーを書く必要に迫られた場合でも、パーサーコンビネータを自作すれば、気軽にパーサーを組み立てるためのDSL（Domain Specific Language）を定義できるのです。それだけでなく、Javaのような静的型付き言語を使った場合、IDEによる支援も受けられますし、BNFやPEGにはない便利な演算子を自分で導入することもできます。
 
 パーサーコンビネータはお手軽なだけあって各種プログラミング言語に実装されています。たとえば、Java用なら\href{https://github.com/jparsec/jparsec}{jparsec}があります。しかし、筆者としては、パーサーコンビネータが動作する仕組みを理解するために、是非とも\textbf{自分だけの}パーサーコンビネータを実装してみてほしいと思います。
 
