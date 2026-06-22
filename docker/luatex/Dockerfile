@@ -9,7 +9,9 @@ RUN apt-get update \
         texlive-fonts-recommended \
         texlive-lang-japanese \
         texlive-latex-extra \
+        texlive-latex-recommended \
         texlive-luatex \
+        texlive-plain-generic \
         texlive-pictures \
         fonts-noto-cjk \
         fonts-noto-cjk-extra \
