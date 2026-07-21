@@ -1,0 +1,228 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{space}{xeCJK}
+%
+\documentclass[
+  10pt,
+  a4paper,
+  oneside,
+  openany]{ltjsbook}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+    \usepackage{unicode-math}
+    \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+  \setmainfont[]{Latin Modern Roman}
+  \setsansfont[]{Latin Modern Sans}
+  \setmonofont[AutoFakeBold,AutoFakeSlant]{Latin Modern Mono}
+  \ifLuaTeX
+    \usepackage{luatexja-fontspec}
+    \setmainjfont[]{Noto Serif CJK JP}
+  \fi
+  \ifXeTeX
+    \usepackage{xeCJK}
+    \setCJKmainfont[]{Noto Serif CJK JP}
+  \fi
+  \ifLuaTeX
+    \setsansjfont[]{Noto Sans CJK JP}
+  \fi
+  \ifXeTeX
+    \setCJKsansfont[]{Noto Sans CJK JP}
+  \fi
+  \ifLuaTeX
+    \setmonojfont[AutoFakeBold,AutoFakeSlant]{Noto Sans Mono CJK JP}
+  \fi
+  \ifXeTeX
+    \setCJKmonofont[]{Noto Sans Mono CJK JP}
+  \fi
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% microtype is intentionally disabled here: ltjsbook/LuaTeX-ja on TeX Live 2022
+% emits noisy font-size parsing warnings for the generated Japanese classes.
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage{setspace}
+\usepackage[margin=2cm]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\newenvironment{Shaded}{}{}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+% Code blocks with rounded corners
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{codeframe}{RGB}{204,204,204}
+\newtcolorbox{myquote}{
+  colback=codebg,
+  colframe=codeframe,
+  grow to right by=-10mm,
+  grow to left by=-10mm,
+  boxrule=1pt,
+  boxsep=0pt,
+  arc=2mm,
+  breakable,
+  enhanced,
+  before skip=10pt,
+  after skip=10pt,
+  left=5mm,
+  right=5mm,
+  top=5mm,
+  bottom=5mm
+}
+% Redefine Shaded environment for code blocks
+\ifcsname Shaded\endcsname
+  \renewenvironment{Shaded}{\begin{myquote}}{\end{myquote}}
+\else
+  \newenvironment{Shaded}{\begin{myquote}}{\end{myquote}}
+\fi
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{3}
+\ifLuaTeX
+  \usepackage[bidi=basic]{babel}
+\else
+  \usepackage[bidi=default]{babel}
+\fi
+% get rid of language-specific shorthands (see #6817):
+\let\LanguageShortHands\languageshorthands
+\def\languageshorthands#1{}
+\usepackage{luatexja-fontspec}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning,calc,automata,chains,fit,decorations.pathmorphing}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\thepage}
+\setlength{\footskip}{8pt}
+\renewcommand{\headrulewidth}{0pt}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{makeidx}
+\makeindex
+% hyperref
+\usepackage{hyperref}
+\hypersetup{
+  pdftitle={構文解析のしくみ},
+  pdfauthor={水島宏太},
+  pdflang={ja},
+  hidelinks,
+  hypertexnames=false,
+  pdfcreator={LuaLaTeX}}
+\urlstyle{same} % disable monospaced font for URLs
+
+% コラム用ボックス（番号なし、淡色背景＋細枠、バンド型タイトル）
+\definecolor{columnbg}{RGB}{240,247,255}     % 淡い青背景
+\definecolor{columnframe}{RGB}{70,110,170}   % 青系の枠／タイトルバー
+\newtcolorbox{kokocolumnbox}[1]{
+  enhanced,
+  breakable,
+  colback=columnbg,
+  colframe=columnframe,
+  colbacktitle=columnframe,
+  coltitle=white,
+  fonttitle=\bfseries,
+  title={コラム：#1},
+  boxrule=0.5pt,
+  arc=2mm,
+  left=4mm, right=4mm, top=3mm, bottom=3mm,
+  before skip=10pt, after skip=10pt,
+}
+\newenvironment{kokocolumn}[1]{%
+  \phantomsection
+  \addcontentsline{toc}{section}{コラム：#1}%
+  \begin{kokocolumnbox}{#1}%
+}{%
+  \end{kokocolumnbox}%
+}
+
+\title{構文解析のしくみ}
+\renewcommand{\bibname}{参考文献}
+\renewcommand{\indexname}{索引}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{── 電卓から言語処理系まで自分で書く}
+\author{水島宏太}
+\date{2026年5月}

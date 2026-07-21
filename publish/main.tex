@@ -1,0 +1,177 @@
+%
+% 構文解析の仕組み
+%
+% B5変形判
+%%
+\documentclass[a4paper,9pt,openright,tombow,]{asciibook}
+\usepackage{lmodern}
+\usepackage[match]{luatexja-fontspec}
+
+% 用紙サイズ、版面設計
+
+% bxpapersize で紙のサイズ（A4）と、ターゲット（B5変型）を明示
+%\usepackage[size=a4, layout={182mm,234mm}, layoutcenter]{bxpapersize}
+
+% 印刷位置の調整
+\advance\hoffset 14mm
+\advance\voffset 32mm
+
+
+\usepackage[
+% 版面（B5変型）
+  paperwidth=182mm,
+  paperheight=234mm,
+  % A4の中央にB5変型（182x234）を配置し、さらにその中で
+  % 「上25mm、下25mm、左20mm、右20mm」の余白を取る場合の絶対マージン計算値
+  % 左: 14 + 20 = 34mm / 右: 14 + 20 = 34mm
+  % 上: 31.5 + 25 = 56.5mm / 下: 31.5 + 25 = 56.5mm
+  inner=20mm,
+  outer=20mm,
+  top=25mm,
+  bottom=25mm
+]{geometry}
+
+% 明朝体（リュウミン）の直接指定
+\setmainjfont[
+  Path = /Users/kahei/Library/Fonts/MorisawaFonts/, % フォルダのパス
+  BoldFont = AP-OTF-RyuminPr6N-Bold.otf,            % 太字のファイル名
+%  ItalicFont = AP-RyuminPr6N-R.otf                  % 必要なら指定
+]{AP-OTF-RyuminPr6N-Regular.otf}                    % 標準のファイル名
+
+% ゴシック体（新ゴ）の直接指定
+\setsansjfont[
+  Path = /Users/kahei/Library/Fonts/MorisawaFonts/,
+  BoldFont = AP-OTF-ShinGoPr6N-Bold.otf
+]{AP-OTF-ShinGoPr6N-Medium.otf}
+
+\usepackage{luatexja-ruby} % ルビ
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{setspace}
+\usepackage{array} % 表組みの罫線を改善する
+\usepackage{listings}
+% listingsの設定
+\lstset{
+  basicstyle=\ttfamily\small, % ここで上記2つをまとめた \ttfamily を適用
+  columns=fixed,               % 文字幅を完全に固定する設定
+  keepspaces=true,             % スペースを維持
+  showstringspaces=false       % 文字列中のスペースに記号を出さない
+%  frame=tb
+}
+
+
+% tikzで図を描く
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning,calc,automata,chains,fit,decorations.pathmorphing}
+
+
+\usepackage{xurl} % \urlコマンド中で改行できるようにする
+\usepackage[unicode]{hyperref}
+\hypersetup{%
+ bookmarksnumbered=true,%
+% colorlinks=true,%
+ colorlinks=false,%
+ hidelinks,%
+ linkcolor=blue,%
+ urlcolor=blue,%
+ citecolor=blue,%
+ linktocpage=true,%
+ setpagesize=false}
+
+%
+\usepackage[most,listings]{tcolorbox}
+\tcbuselibrary{breakable}
+\tcbuselibrary{skins}
+
+\newtcolorbox{notebox}[1]{%
+colframe=black, colback=white,
+coltitle=black, colbacktitle=white,
+boxrule=0.8pt, arc=0mm,
+fonttitle=\sffamily\bfseries,
+enhanced,
+attach boxed title to top left={xshift=10mm,yshift=-3mm},
+boxed title style={frame hidden},
+title=#1}
+
+% Note環境の定義
+% 使用するときは、\begin{important}{}〜\end{important}のように
+% 必ず{}をつけること。つけないと本文の1文字目が削除
+% されてしまう。
+\newenvironment{important}[1]{%
+  \begin{tcolorbox}[fontlower=\fontsize{8pt}{12pt}\selectfont \sffamily,before skip=4.5mm,after skip=4.5mm,blanker,sidebyside,lefthand width=1cm]%
+  \includegraphics[width=1.5cm]{img/aside-icons/important.pdf}%
+  \tcblower
+  }%
+  {\end{tcolorbox}}
+
+\newenvironment{tip}[1]{%
+  \begin{tcolorbox}[fontlower=\fontsize{8pt}{12pt}\selectfont \sffamily,before skip=4.5mm,after skip=4.5mm,blanker,sidebyside,lefthand width=1cm]%
+  \includegraphics[width=1.5cm]{img/aside-icons/tip.pdf}%
+  \tcblower
+  }%
+  {\end{tcolorbox}}
+
+\newenvironment{info}[1]{%
+  \begin{tcolorbox}[fontlower=\fontsize{8pt}{12pt}\selectfont \sffamily,before skip=4.5mm,after skip=4.5mm,blanker,sidebyside,lefthand width=1cm]%
+  \includegraphics[width=1.5cm]{img/aside-icons/info.pdf}%
+  \tcblower
+  }%
+  {\end{tcolorbox}}
+
+% 角丸のコード用環境「codescreen」を定義
+\newtcblisting{codescreen}[1]{
+  breakable,
+  arc=3mm,                      % 角丸の半径を指定
+  boxrule=0.5pt,                % 枠線の太さ
+  colback=gray!5,               % 背景色
+  colframe=gray!80,             % 枠線の色
+  listing only,
+  listing options={
+    basicstyle=\ttfamily\small, % フォント設定
+    breaklines=true             % 長い行の自動折り返し
+  },
+  title=#1,                     % タイトル（キャプション）の設定
+  % タイトルが不要な場合は title=#1 の行を削除してください
+}
+
+
+
+% 下線を引く
+\usepackage{lua-ul}
+
+% 部の番号を大文字のローマ数字（Ⅰ, Ⅱ, Ⅲ...）にする設定
+\renewcommand{\thepart}{\Roman{part}}
+
+% widowの禁止
+\widowpenalty=10000
+\clubpenalty=10000
+
+%
+% 索引
+\usepackage{makeidx}
+\makeindex
+
+%
+% 本文構成
+%
+\begin{document}
+{\pagestyle{frontheadings}
+\include{pref}}
+
+\pagestyle{asciiheadings}
+\tableofcontents
+\include{preface}
+\include{ch01}
+\include{ch02}
+\include{ch03}
+\include{ch04}
+\include{ch05}
+\include{ch06}
+\backmatter
+\include{afterword}
+% \include{author}
+\printindex
+% \include{okuduke_book}
+%\include{okuduke_ebook}
+
+\end{document}
