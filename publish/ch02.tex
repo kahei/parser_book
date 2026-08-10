@@ -14,7 +14,7 @@ JSON（JavaScript Object
 Notation）は、WebサービスにアクセスするためのAPIで非常に一般的に使われているデータフォーマットです。また、企業内サービス間で連携するときにも非常によく使われます。皆さんは何らかの形でJSONに触れたことがあるのではないかと思います。
 
 JSONは元々はJavaScriptのオブジェクトリテラル構文を参考にして設計されたデータ形式ですが、現在はECMA-404{[}\^{}1{]}およびIETFの\href{https://datatracker.ietf.org/doc/html/rfc8259}{RFC
-8259}で標準化されており、色々な言語でJSONを扱うライブラリがあります。なお、JSONはJavaScriptの厳密な部分集合ではなく、両者の仕様は別々に管理されている独立した規格です（U+2028/U+2029の扱いなど、歴史的に細かな差異がありました）。また、JSONはデータ交換用フォーマットの中でも非常にシンプルであるという特徴があり、そのシンプルさ故か、同じ言語でもJSONを扱うライブラリが乱立する程です。今のWebアプリケーション開発に携わる開発者にとってJSONは避けて通れないといってよいでしょう。
+8259}で標準化されており、いろいろな言語でJSONを扱うライブラリがあります。なお、JSONはJavaScriptの厳密な部分集合ではなく、両者の仕様は別々に管理されている独立した規格です（U+2028/U+2029の扱いなど、歴史的に細かな差異がありました）。また、JSONはデータ交換用フォーマットの中でも非常にシンプルであるという特徴があり、そのシンプルさ故か、同じ言語でもJSONを扱うライブラリが乱立する程です。今のWebアプリケーション開発に携わる開発者にとってJSONは避けて通れないといってよいでしょう。
 
 以降では簡単なJSONのサンプルを通してJSONの概要を説明します。
 
@@ -329,7 +329,7 @@ array = LBRACKET RBRACKET | LBRACKET value {COMMA value} RBRACKET ;
   開き大カッコ（\texttt{LBRACKET}）が来た後に、\texttt{value}が1回あらわれ、さらにその後に、「\texttt{COMMA}（カンマ）とそれに続く\texttt{value}」というペアが0回以上繰り返してあらわれた後、閉じ大カッコが来る（\texttt{RBRACKET})
 \end{itemize}
 
-のどちらかであることを表しています。よく見ると、先程の\texttt{object}と同様の構造を持っていることがわかります。
+のどちらかであることを表しています。よく見ると、先ほどの\texttt{object}と同様の構造を持っていることがわかります。
 
 \texttt{array}についても具体的なJSONを当てはめてみましょう。以下のJSONは\texttt{LBRACKET\ RBRACKET}にマッチします。
 
@@ -456,7 +456,7 @@ JSONのBNFは、非常に少数の規則だけで表現することができま�
 JSONの定義と、文法について見てきました。構文解析器を実装する前に、まずJSONの抽象構文木（AST:
 Abstract Syntax Tree）をJavaでどのように表現するかを定義しましょう。
 
-抽象構文木は、2章でも説明したとおり、プログラムの構造を表現するためのデータ構造です。重要な点は、抽象構文木では元の文字列に含まれていた「構文上のノイズ」が取り除かれることです。例えば：
+抽象構文木は、2章でも説明したとおり、プログラムの構造を表現するためのデータ構造です。重要な点は、抽象構文木では元の文字列に含まれていた「構文上のノイズ」が取り除かれることです。たとえば：
 
 \begin{itemize}
 \item
@@ -575,13 +575,13 @@ Expression Grammar）に基づくトップダウン解析を採用します。
 \begin{enumerate}
 \item
   トップダウン解析:
-  BNFの規則を上から順番に適用していく方式を採用します。例えば、\texttt{value}規則から始めて、それぞれの選択肢を試していきます。
+  BNFの規則を上から順番に適用していく方式を採用します。たとえば、\texttt{value}規則から始めて、それぞれの選択肢を試していきます。
 \item
   バックトラック:
   解析に失敗した場合、前の状態に戻って別の選択肢を試します。これにより、複数の可能性がある場合でも正しい解析結果を見つけることができます。
 \item
   順序付き選択（Ordered Choice）: BNFの \texttt{\textbar{}}
-  で区切られた選択肢を、左から右へ順番に試します。例えば、\texttt{value\ =\ true\ \textbar{}\ false\ \textbar{}\ null\ \textbar{}\ number\ \textbar{}\ string\ \textbar{}\ object\ \textbar{}\ array}
+  で区切られた選択肢を、左から右へ順番に試します。たとえば、\texttt{value\ =\ true\ \textbar{}\ false\ \textbar{}\ null\ \textbar{}\ number\ \textbar{}\ string\ \textbar{}\ object\ \textbar{}\ array}
   の場合、まず\texttt{true}を試し、失敗したら\texttt{false}を試す、という具合です。この順序は重要で、より具体的なパターンを先に配置することで、正しい解析を保証します。実装の\texttt{parseValue()}メソッドでも、BNFの定義順序と同じ順番で各選択肢を試すようにしています。
 \item
   例外による失敗の表現:
@@ -1317,7 +1317,7 @@ public class SimpleJsonTokenizer implements JsonTokenizer {
 }
 \end{codescreen}
 
-このコードは\texttt{SimpleJsonTokenizer}クラスの基本構造を示しています。主な特徴は以下の通りです：
+このコードは\texttt{SimpleJsonTokenizer}クラスの基本構造を示しています。主な特徴は以下のとおりです：
 
 \begin{itemize}
 \item
@@ -1641,7 +1641,7 @@ PEG版と異なり、途中で失敗したら後戻り（バックトラック�
 \index{こうぶんかいせきき@構文解析器!PEGベース}
 \index{じくかいせき@字句解析}
 
-前節のPEGベースの構文解析器と、この節の字句解析器を使った構文解析器の主な違いは以下の通りです：
+前節のPEGベースの構文解析器と、この節の字句解析器を使った構文解析器の主な違いは以下のとおりです：
 
 \begin{enumerate}
 \item

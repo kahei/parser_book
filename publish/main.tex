@@ -121,6 +121,10 @@ title=#1}
 % 角丸のコード用環境「codescreen」を定義
 \newtcblisting{codescreen}[1]{
   breakable,
+  enhanced jigsaw,          % 0ptの線が完全に消えるようにするスキン
+  % --- 改ページ時の横線を消す設定 ---
+  toprule at break=0pt,     % 次のページに続く部分の上の横線を消す
+  bottomrule at break=0pt,  % ページ下部で切れる部分の下の横線を消す
   arc=3mm,                      % 角丸の半径を指定
   boxrule=0.5pt,                % 枠線の太さ
   colback=gray!5,               % 背景色
@@ -159,8 +163,8 @@ title=#1}
 \include{pref}}
 
 \pagestyle{asciiheadings}
-\tableofcontents
 \include{maegaki}
+\tableofcontents
 \include{preface}
 \include{ch01}
 \include{ch02}

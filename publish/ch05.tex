@@ -826,7 +826,7 @@ Parrという方ですが、構文解析器一筋と言っていいくらいに�
 それだけに、ANTLRの完成度は非常に高いものになっています。また、一時期はLR法に比べてLL法の評価は低いものでしたが、Terence
 ParrがLL(k)を改良していく過程で、LL(\texttt{*})やALL(\texttt{*})のようなLR法に比べてもなんら劣らない、実用的にも使いやすい構文解析法が発明されました。
 
-ANTLRはJava、C++などいくつもの言語を扱うことができますが、特に安心して使えるのはJavaです。以下は先程と同様の、四則演算を解析できる数式パーサーをANTLRで書いた場合の例です。
+ANTLRはJava、C++などいくつもの言語を扱うことができますが、特に安心して使えるのはJavaです。以下は先ほどと同様の、四則演算を解析できる数式パーサーをANTLRで書いた場合の例です。
 
 ANTLRでは構文規則は、\texttt{規則名\ :\ 本体\ ;}
 という形で記述しますが、LLパーサー向けの構文定義を素直に書き下すだけでOKです。
@@ -882,7 +882,7 @@ WS  :   [ \t\n\r]+ -> skip ;
 
 のいずれかが出現した場合は読み飛ばすということを表現しています。
 
-ANTLRは下向き型の構文解析が苦手とする左再帰も、規則の中で直接的に自分自身を呼び出す形（直接左再帰）であれば扱うことができます（規則を経由した間接左再帰には対応していない点には注意してください）。先程の定義ファイルでは繰り返しを使っていましたが、これを直接左再帰に直した以下の定義ファイルも全く同じ挙動をします。
+ANTLRは下向き型の構文解析が苦手とする左再帰も、規則の中で直接的に自分自身を呼び出す形（直接左再帰）であれば扱うことができます（規則を経由した間接左再帰には対応していない点には注意してください）。先ほどの定義ファイルでは繰り返しを使っていましたが、これを直接左再帰に直した以下の定義ファイルも全く同じ挙動をします。
 
 \begin{codescreen}{}
 grammar LRExpression;
@@ -950,7 +950,7 @@ NAME:  [a-zA-Z_][a-zA-Z0-9]* ;
 WS :   [ \t\n\r]+ -> skip ;
 \end{codescreen}
 
-\texttt{PetitXML}の名の通り、属性やテキストなどは全く扱うことができず、\texttt{\textless{}a\textgreater{}}や\texttt{\textless{}a/\textgreater{}}、\texttt{\textless{}a\textgreater{}\textless{}b\textgreater{}\textless{}/b\textgreater{}\textless{}/a\textgreater{}}といった要素のみを扱うことができます。規則\texttt{element}が重要です。
+\texttt{PetitXML}の名のとおり、属性やテキストなどは全く扱うことができず、\texttt{\textless{}a\textgreater{}}や\texttt{\textless{}a/\textgreater{}}、\texttt{\textless{}a\textgreater{}\textless{}b\textgreater{}\textless{}/b\textgreater{}\textless{}/a\textgreater{}}といった要素のみを扱うことができます。規則\texttt{element}が重要です。
 
 \begin{codescreen}{}
 element returns [Element e]
@@ -976,7 +976,7 @@ ANTLRでは通常のLLパーサーと違い文法を記述する上での大き�
 
 この中の\texttt{\{\$begin.text.equals(\$end.text)\}?}という部分はsemantic
 predicate（意味的述語）と呼ばれ、プログラムとして書かれた条件式が真になるときにだけマッチします。この例では、開きタグの名前（\texttt{begin}）と閉じタグの名前（\texttt{end}）が一致しているかをJavaのコードで確認しています。semantic
-predicateのような機能はプログラミング言語をそのまま埋め込むという意味で、正直「あまり綺麗ではない」と思わなくもないですが、実用上はsemantic
+predicateのような機能はプログラミング言語をそのまま埋め込むという意味で、正直「あまりきれいではない」と思わなくもないですが、実用上はsemantic
 predicateを使いたくなる場面にしばしば遭遇します。
 
 ANTLRはこういった実用上重要な痒いところにも手が届くように作られており、非常によくできた構文解析器生成系といえるでしょう。
@@ -988,11 +988,11 @@ ANTLRはこういった実用上重要な痒いところにも手が届くよう
 \index{DSL}
 \index{chainl@\texttt{chainl}}
 
-手前味噌ですが、拙作のパーサーコンビネータである\href{https://github.com/kmizu/scomb}{SComb}も紹介しておきます。これまで紹介してきたものはすべて構文解析器生成系です。つまり、独自の言語を用いて作りたい言語の文法を記述し、そこから\textbf{対象言語}（CであったりJavaであったり様々ですが）で書かれた構文解析器を生成するものだったわけですが、パーサーコンビネータは少々違います。
+手前味噌ですが、拙作のパーサーコンビネータである\href{https://github.com/kmizu/scomb}{SComb}も紹介しておきます。これまで紹介してきたものはすべて構文解析器生成系です。つまり、独自の言語を用いて作りたい言語の文法を記述し、そこから\textbf{対象言語}（CであったりJavaであったりさまざまですが）で書かれた構文解析器を生成するものだったわけですが、パーサーコンビネータは少々違います。
 
 パーサーコンビネータでは対象言語のメソッドや関数、オブジェクトとして構文解析器を定義し、演算子やメソッドによって構文解析器を組み合わせることで構文解析器を組み立てていきます。「コンビネータ」という名前は「組み合わせる（combine）」から来ており、小さなパーサーを組み合わせて大きなパーサーを作るという意味です。パーサーコンビネータではメソッドや関数、オブジェクトとして規則自体を記述するため、特別にプラグインを作らなくてもIDEによる支援が受けられることや、対象言語が静的型システムを持っていた場合、型チェックによる支援を受けられることなどがメリットとして挙げられます。
 
-SCombで四則演算を解析できるプログラムを書くと以下のようになります。先程述べたようにSCombはパーサーコンビネータであり、これ自体がScalaのプログラム（\texttt{object}宣言）でもあります。
+SCombで四則演算を解析できるプログラムを書くと以下のようになります。先ほど述べたようにSCombはパーサーコンビネータであり、これ自体がScalaのプログラム（\texttt{object}宣言）でもあります。
 
 \begin{codescreen}{}
 object Calculator extends SCombinator {
@@ -1073,7 +1073,7 @@ interface JParser<R> {
 
 構文解析の結果は抽象構文木になりますが、インタフェースを定義する時点では抽象構文木がどのような形になるかはわかりようがないので、型パラメータにしておくのです。\texttt{JParser\textless{}R\textgreater{}}はたった一つのメソッド\texttt{parse()}を持ちます。\texttt{parse()}は入力文字列\texttt{input}を受け取り、解析結果を\texttt{Result\textless{}R\textgreater{}}として返します。
 
-\texttt{JParser\textless{}R\textgreater{}}の実装は一体全体どのようなものになるの？という疑問を脇に置いておけば理解は難しくないでしょう。次に解析結果\texttt{Result\textless{}V\textgreater{}}をレコードとして定義します。
+\texttt{JParser\textless{}R\textgreater{}}の実装はいったいぜんたいどのようなものになるの？という疑問を脇に置いておけば理解は難しくないでしょう。次に解析結果\texttt{Result\textless{}V\textgreater{}}をレコードとして定義します。
 
 \begin{codescreen}{}
 record Result<V>(V value, String rest){}
@@ -1213,7 +1213,7 @@ assert null == foo.parse("baz");
 \index{せんたく@選択}
 \index{じゅんじょつきせんたく@順序付き選択}
 
-二つのパーサーを取って「選択」パーサーを返すメソッド\texttt{alt()}を実装します。先程のようにクラスを実装してもいいですが、メソッドは一つだけなのでラムダ式（Java
+二つのパーサーを取って「選択」パーサーを返すメソッド\texttt{alt()}を実装します。先ほどのようにクラスを実装してもいいですが、メソッドは一つだけなのでラムダ式（Java
 8から導入された無名関数）にします。
 
 \begin{codescreen}{}
@@ -1276,7 +1276,7 @@ PEGベースでないパーサーコンビネータを作ることも出来る�
 \index{Pair@\texttt{Pair}}
 
 次に二つのパーサーを取って「連接」パーサーを返すメソッド\texttt{seq()}を実装します。これはPEGの連接
-\texttt{e1\ e2} に対応します。先程と同じくラムダ式にしてみます。
+\texttt{e1\ e2} に対応します。先ほどと同じくラムダ式にしてみます。
 
 \begin{codescreen}{}
 record Pair<A, B>(A a, B b){}
@@ -1300,7 +1300,7 @@ public class JComb {
 }
 \end{codescreen}
 
-先程の\texttt{alt()}メソッドと似通った実装ですが、\texttt{p1}が失敗したら全体が失敗するのがポイントです。\texttt{p1}と\texttt{p2}の両方が成功した場合は、二つの値のペアを返しています。
+先ほどの\texttt{alt()}メソッドと似通った実装ですが、\texttt{p1}が失敗したら全体が失敗するのがポイントです。\texttt{p1}と\texttt{p2}の両方が成功した場合は、二つの値のペアを返しています。
 
 \subsubsection{rep0(), rep1()メソッド}
 \index{rep0@\texttt{rep0()}}
@@ -1395,7 +1395,7 @@ public class JComb {
 \end{codescreen}
 
 \texttt{lazy}メソッドの必要性について補足します。Javaは先行評価（関数が呼ばれたらすぐに評価）を行う言語であるため、再帰的な文法規則を直接メソッド呼び出しで表現しようとすると、パーサーオブジェクトの構築時に無限再帰が発生し
-\texttt{StackOverflowError} となることがあります。例えば、算術式の文法で
+\texttt{StackOverflowError} となることがあります。たとえば、算術式の文法で
 \texttt{expression} が \texttt{additive} を呼び出し、\texttt{additive}
 が \texttt{primary} を呼び出し、\texttt{primary} が括弧表現の中で再び
 \texttt{expression} を呼び出すような相互再帰構造を考えてみましょう。
@@ -1466,7 +1466,7 @@ assert (new Result<Integer>(10, "")).equals(number.parse("10"));
 
 \subsection{算術式のインタプリタを書いてみる}
 
-ここまでで作ったクラス\texttt{JComb}と\texttt{JParser}などを使って簡単な算術式のインタプリタを書いてみましょう。仕様は次の通りです。
+ここまでで作ったクラス\texttt{JComb}と\texttt{JParser}などを使って簡単な算術式のインタプリタを書いてみましょう。仕様は次のとおりです。
 
 \begin{itemize}
 \item
