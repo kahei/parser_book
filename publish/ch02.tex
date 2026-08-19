@@ -2,7 +2,7 @@
 \index{JSON}
 \index{こうぶんかいせき@構文解析!JSON}
 
-2章で構文解析に必要な基本概念について学ぶことができました。この章ではJSONという実際に使われている言語を題材に、より実践的な構文解析のやり方を学んでいきます。
+1章で構文解析に必要な基本概念について学ぶことができました。この章ではJSONという実際に使われている言語を題材に、より実践的な構文解析のやり方を学んでいきます。
 
 \section{JSONの概要}
 \index{JSON!概要}
@@ -11,10 +11,9 @@
 \index{RFC 8259}
 
 JSON（JavaScript Object
-Notation）は、WebサービスにアクセスするためのAPIで非常に一般的に使われているデータフォーマットです。また、企業内サービス間で連携するときにも非常によく使われます。皆さんは何らかの形でJSONに触れたことがあるのではないかと思います。
+Notation）は、WebサービスにアクセスするためのAPIで一般的に使われているデータフォーマットです。また、企業内サービス間で連携するときにもよく使われます。皆さんは何らかの形でJSONに触れたことがあるのではないかと思います。
 
-JSONは元々はJavaScriptのオブジェクトリテラル構文を参考にして設計されたデータ形式ですが、現在はECMA-404{[}\^{}1{]}およびIETFの\href{https://datatracker.ietf.org/doc/html/rfc8259}{RFC
-8259}で標準化されており、いろいろな言語でJSONを扱うライブラリがあります。なお、JSONはJavaScriptの厳密な部分集合ではなく、両者の仕様は別々に管理されている独立した規格です（U+2028/U+2029の扱いなど、歴史的に細かな差異がありました）。また、JSONはデータ交換用フォーマットの中でも非常にシンプルであるという特徴があり、そのシンプルさ故か、同じ言語でもJSONを扱うライブラリが乱立する程です。今のWebアプリケーション開発に携わる開発者にとってJSONは避けて通れないといってよいでしょう。
+JSONは元々はJavaScriptのオブジェクトリテラル構文を参考にして設計されたデータ形式ですが、現在はECMA-404およびIETFのRFC 8259\footnote{\url{https://datatracker.ietf.org/doc/html/rfc8259}}で標準化されており、いろいろな言語でJSONを扱うライブラリがあります。なお、JSONはJavaScriptの厳密な部分集合ではなく、両者の仕様は別々に管理されている独立した規格です（U+2028/U+2029の扱いなど、歴史的に細かな差異がありました）。また、JSONはデータ交換用フォーマットの中でも非常にシンプルであるという特徴があり、そのシンプルさ故か、同じ言語でもJSONを扱うライブラリが乱立するほどです。今のWebアプリケーション開発に携わる開発者にとってJSONは避けて通れないといってよいでしょう。
 
 以降では簡単なJSONのサンプルを通してJSONの概要を説明します。
 
@@ -23,7 +22,7 @@ JSONは元々はJavaScriptのオブジェクトリテラル構文を参考にし
 \index{おぶじぇくと@オブジェクト}
 \index{ぺあ@ペア}
 
-以下は、二つの名前/値のペアからなる\textbf{オブジェクト}です。
+以下は、二つの名前/値のペアからなる\textgt{オブジェクト}です。
 
 \begin{codescreen}{}
 {
@@ -32,10 +31,10 @@ JSONは元々はJavaScriptのオブジェクトリテラル構文を参考にし
 }
 \end{codescreen}
 
-このJSONは、\texttt{name}と\texttt{"Kota\ Mizushima"}という文字列の\textbf{ペア}と、\texttt{age}と\texttt{41}という数値の\textbf{ペア}からなる\textbf{オブジェクト}であることを示しています。
+このJSONは、\texttt{name}と\texttt{"Kota\ Mizushima"}という文字列の\textgt{ペア}と、\texttt{age}と\texttt{41}という数値の\textgt{ペア}からなる\textgt{オブジェクト}であることを示しています。
 
 なお、用語については、ECMA-404の仕様書に記載されているものに準拠しています。名前/値のペアは、属性やプロパティと呼ばれることもあるので、適宜読み替えてください。
-日本語で表現すると、このオブジェクトは、名前が\texttt{Kota\ Mizushima}、年齢が\texttt{41}という人物一人分のデータを表していると考えることができます。オブジェクトは、\texttt{\{\}}で囲まれた、\texttt{"name":value}の対が\texttt{,}を区切り文字として続く形になります。後述しますが、\texttt{name}の部分は\textbf{文字列}である必要があります。
+日本語で表現すると、このオブジェクトは、名前が\texttt{Kota\ Mizushima}、年齢が\texttt{41}という人物一人分のデータを表していると考えられます。オブジェクトは、\texttt{\{\}}で囲まれた、\texttt{"name":value}の対が\texttt{,}を区切り文字として続く形になります。後述しますが、\texttt{name}の部分は\textgt{文字列}である必要があります。
 
 \subsection{配列}
 \index{JSON!配列}
@@ -64,7 +63,7 @@ JSONは元々はJavaScriptのオブジェクトリテラル構文を参考にし
   \texttt{"points"}と\texttt{{[}...{]}}のペア
 \end{itemize}
 
-からなるオブジェクトです。さらに、\texttt{"points"}に対応する値が\textbf{配列}になっていて、その中に以下の4つの要素が含まれています。
+からなるオブジェクトです。さらに、\texttt{"points"}に対応する値が\textgt{配列}になっていて、その中に以下の4つの要素が含まれています。
 
 \begin{itemize}
 \item
@@ -83,7 +82,7 @@ JSONは元々はJavaScriptのオブジェクトリテラル構文を参考にし
 
 \subsection{数値}
 
-これまで見てきたオブジェクトと配列は複合的なデータでしたが、既に出てきているように、JSONにはこれ以上分解できないデータもあります。先ほどから出てきている数値もそうです。数値は、
+これまで見てきたオブジェクトと配列は複合的なデータでしたが、すでに出てきているように、JSONにはこれ以上分解できないデータもあります。先ほどから出てきている数値もそうです。数値は、
 
 \begin{codescreen}{}
 1
@@ -106,8 +105,8 @@ JSONのデータには文字列もあります。
 "hogehoge"
 \end{codescreen}
 
-のように、\texttt{""}で囲まれたものが文字列となります。JSONの仕様では、オブジェクトのキーは必ずダブルクォーテーションで囲まれた文字列でなければなりません。たとえば、以下は\textbf{JavaScriptの}オブジェクトリテラルとしては許容されますが（\texttt{name}
-が識別子の命名規則に合致するため）、\textbf{JSON}の定義には従っていません。
+のように、\texttt{""}で囲まれたものが文字列となります。JSONの仕様では、オブジェクトのキーは必ずダブルクォーテーションで囲まれた文字列でなければなりません。たとえば、以下は\textbf{\sffamily JavaScript}\textgt{の}オブジェクトリテラルとしては許容されますが（\texttt{name}
+が識別子の命名規則に合致するため）、\textbf{\sffamily JSON}の定義には従っていません。
 
 \begin{codescreen}{}
 {
@@ -147,11 +146,11 @@ false
 
 \subsection{null}
 
-多くのプログラミング言語にある要素ですが、JSONには\texttt{null}もあります。多くのプログラミング言語のJSONライブラリでは、無効値に相当する値にマッピングされますが、JSONの仕様では\texttt{null}の解釈は定められていません。\texttt{null}に相当するリテラルがあればそれにマッピングされる事も多いですが、\texttt{Option}や\texttt{Maybe}といったデータ型によって\texttt{null}を表現する言語では、そのようなデータ型にマッピングされる事が多いようです。
+多くのプログラミング言語にある要素ですが、JSONには\texttt{null}もあります。多くのプログラミング言語のJSONライブラリでは、無効値に相当する値にマッピングされますが、JSONの仕様では\texttt{null}の解釈は定められていません。\texttt{null}に相当するリテラルがあればそれにマッピングされることも多いですが、\texttt{Option}や\texttt{Maybe}といったデータ型によって\texttt{null}を表現する言語では、そのようなデータ型にマッピングされることが多いようです。
 
 \subsection{JSONの全体像}
 
-ここまでで、JSONで現れる6つの要素について説明しましたが、JSONで使える要素は\textbf{これだけ}です。このシンプルさが、多くのプログラミング言語でJSONが使われる要因でもあるのでしょう。JSONで使える要素について改めて並べてみます。
+ここまでで、JSONで現れる6つの要素について説明しましたが、JSONで使える要素は\textgt{これだけ}です。このシンプルさが、多くのプログラミング言語でJSONが使われる要因でもあるのでしょう。JSONで使える要素について改めて並べてみます。
 
 \begin{itemize}
 \item
@@ -168,7 +167,7 @@ false
   \texttt{null}
 \end{itemize}
 
-次の節では、このJSONの\textbf{文法}が、どのような形で表現できるかについて見ていきます。
+次の節では、このJSONの\textgt{文法}が、どのような形で表現できるかについて見ていきます。
 
 \section{JSONのBNF}
 \index{JSON!BNF}
@@ -213,22 +212,22 @@ DIGIT = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 NONZERO = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 \end{lstlisting}
 
-これまで説明したJSONの要素と比較して見慣れない記号が出てきましたが、一つ一つ見て行きましょう。
+これまで説明したJSONの要素と比較して見慣れない記号が出てきましたが、一つ一つ見ていきましょう。
 
 なお、規則名の大文字・小文字の使い分けについてですが、\texttt{COMMA}、\texttt{LBRACE}のような大文字で書かれた規則は、後の字句解析の節で出てくる「トークン」に対応します。これらは単一の記号や固定の文字列を表すもので、構文解析の際には一つの単位として扱われます。一方、\texttt{json}、\texttt{value}のような小文字の規則は、より複雑な構造を表します。補助規則として、\texttt{ws}（空白）、\texttt{CHAR}（印字可能文字の集合）、\texttt{INT}（整数）、\texttt{DIGIT}（数字1桁）、\texttt{NONZERO}（非ゼロの数字）を定義しています。
 
 \subsection{json}
 
-一番上から読んでいきます。2章の復習になりますが、BNFでは、
+一番上から読んでいきます。1章の復習になりますが、BNFでは、
 
 \begin{lstlisting}
 json = ws value;
 \end{lstlisting}
 
-のような\textbf{規則}の集まりによって、文法を表現します。各規則はセミコロン（\texttt{;}）で終わります。\texttt{=}の左側である\texttt{json}が\textbf{左辺}で、右側（ここでは
-\texttt{ws\ value}）が\textbf{本体}になります。さらに、本体の中に出てくる、他の規則を参照する部分（ここでは\texttt{value}や\texttt{ws})を非終端記号と呼びます。非終端記号は同じBNFで定義されている規則の左辺と一致する必要があります。
+のような\textgt{規則}の集まりによって、文法を表現します。各規則はセミコロン（\texttt{;}）で終わります。\texttt{=}の左側である\texttt{json}が\textgt{左辺}で、右側（ここでは
+\texttt{ws\ value}）が\textgt{本体}になります。さらに、本体の中に出てくる、他の規則を参照する部分（ここでは\texttt{value}や\texttt{ws})を非終端記号と呼びます。非終端記号は同じBNFで定義されている規則の左辺と一致する必要があります。
 
-この規則を日本語で表現すると、「\texttt{json}という名前の規則は、\texttt{ws}の後に\texttt{value}が続く」と読むことができます。\texttt{value}は、JSONの値を表しているので、jsonという規則は\texttt{ws}（空白文字）の後にJSONの値が続くものを表しています。
+この規則を日本語で表現すると、「\texttt{json}という名前の規則は、\texttt{ws}の後に\texttt{value}が続く」と読めます。\texttt{value}は、JSONの値を表しているので、jsonという規則は\texttt{ws}（空白文字）の後にJSONの値が続くものを表しています。
 
 \subsection{object}
 
@@ -256,8 +255,8 @@ object = LBRACE RBRACE | LBRACE pair {COMMA pair} RBRACE;
   \texttt{LBRACE}が来た後に、\texttt{pair}が1回出現して、さらにその後に、「\texttt{COMMA}（カンマ）とそれに続く\texttt{pair}」というペアが0回以上繰り返して出現した後、\texttt{RBRACE}が来る
 \end{itemize}
 
-のどちらかであることを表しています。ここで \texttt{\{\ ...\ \}}
-は「0回以上の繰り返し」を表します（2章のBNFの説明を参照）。
+\noindent のどちらかであることを表しています。ここで \texttt{\{\ ...\ \}}
+は「0回以上の繰り返し」を表します（1章のBNFの説明を参照）。
 
 具体的なJSONを当てはめてみましょう。以下のJSONは\texttt{LBRACE\ RBRACE}にマッチします。
 
@@ -296,7 +295,7 @@ pair = string COLON value;
 "y":true
 \end{lstlisting}
 
-などがあります。一方で、以下のテキストは\texttt{pair}にマッチしません（JavaScriptのオブジェクトとJSONの違いについては後述のコラムを参照）。
+などがあります。一方で、以下のテキストは\texttt{pair}にマッチしません（JavaScriptのオブジェクトとJSONの違いについては前述のコラム「JSONとJavaScriptオブジェクトの違い」を参照）。
 
 \begin{lstlisting}
 x:1 // 文字列リテラルでないといけない
@@ -329,7 +328,7 @@ array = LBRACKET RBRACKET | LBRACKET value {COMMA value} RBRACKET ;
   開き大カッコ（\texttt{LBRACKET}）が来た後に、\texttt{value}が1回あらわれ、さらにその後に、「\texttt{COMMA}（カンマ）とそれに続く\texttt{value}」というペアが0回以上繰り返してあらわれた後、閉じ大カッコが来る（\texttt{RBRACKET})
 \end{itemize}
 
-のどちらかであることを表しています。よく見ると、先ほどの\texttt{object}と同様の構造を持っていることがわかります。
+\noindent のどちらかであることを表しています。よく見ると、先ほどの\texttt{object}と同様の構造を持っていることがわかります。
 
 \texttt{array}についても具体的なJSONを当てはめてみましょう。以下のJSONは\texttt{LBRACKET\ RBRACKET}にマッチします。
 
@@ -352,7 +351,7 @@ array = LBRACKET RBRACKET | LBRACKET value {COMMA value} RBRACKET ;
 \begin{codescreen}{}
 [1,] // ,で終わっている
 \end{codescreen}
-
+\clearpage
 \subsection{value}
 
 \begin{lstlisting}
@@ -378,7 +377,7 @@ value = true | false | null | number | string | object | array;
   配列（\texttt{array}）
 \end{itemize}
 
-のいずれかでなければいけない事を示しています。JSONを普段使っている皆さんにはお馴染みでしょう。
+\noindent のいずれかでなければいけないことを示しています。JSONを普段使っている皆さんにはおなじみでしょう。
 
 \subsection{true}
 
@@ -416,7 +415,7 @@ JSON仕様は\texttt{null}の意味付けを規定しません。多くの実装
 number = INT ws;
 \end{lstlisting}
 
-整数（\texttt{INT}）に続いて、\texttt{ws}が来るのが\texttt{number}であるということを表現しています。簡単のため、本章では数値を整数に限定し、小数部や指数部は扱いません（実装拡張の話題は章末の演習を参照）。
+整数（\texttt{INT}）に続いて、\texttt{ws}が来るのが\texttt{number}であるということを表現しています。簡単にするため、本章では数値を整数に限定し、小数部や指数部は扱いません（実装拡張の話題は章末の演習を参照）。
 
 \subsection{string}
 
@@ -428,18 +427,18 @@ string = "\"" {CHAR} "\"" ws;
 
 \texttt{"}で始まって、\texttt{CHAR}で定義される文字が0個以上続いて、
 \texttt{"}
-で終わります。\texttt{CHAR}の定義はBNF中に含まれており、ダブルクォーテーションとバックスラッシュを除く印字可能文字を表しています。なお、簡単のため本章ではエスケープシーケンスは扱いません。
+で終わります。\texttt{CHAR}の定義はBNF中に含まれており、ダブルクォーテーションとバックスラッシュを除く印字可能文字を表しています。なお、簡単にするため本章ではエスケープシーケンスは扱いません。
 
 \subsection{JSONのBNFまとめ}
 
-JSONのBNFは、非常に少数の規則だけで表現することができます。読者の中には、あまりにも簡潔過ぎて驚かれた方もいるのではないでしょうか。しかし、これだけ単純であるにも関わらず、JSONのBNFは\textbf{再帰的に定義されている}ため、非常に複雑な構造も表現することができます。たとえば、
+JSONのBNFは、非常に少数の規則だけで表現することができます。読者の中には、あまりにも簡潔過ぎて驚かれた方もいるのではないでしょうか。しかし、これだけ単純であるにも関わらず、JSONのBNFは\textgt{再帰的に定義されている}ため、非常に複雑な構造も表現できます。たとえば、
 
 \begin{itemize}
 \item
   一要素の配列があり、その要素はオブジェクトであり、キー\texttt{"a"}に対応する要素の中に配列があって、その配列は空配列である
 \end{itemize}
 
-といったことも、JSONでは以下のように表現することができます。
+\noindent といったことも、JSONでは以下のように表現できます。
 
 \begin{codescreen}{}
 [{"a":[]}]
@@ -456,7 +455,7 @@ JSONのBNFは、非常に少数の規則だけで表現することができま�
 JSONの定義と、文法について見てきました。構文解析器を実装する前に、まずJSONの抽象構文木（AST:
 Abstract Syntax Tree）をJavaでどのように表現するかを定義しましょう。
 
-抽象構文木は、2章でも説明したとおり、プログラムの構造を表現するためのデータ構造です。重要な点は、抽象構文木では元の文字列に含まれていた「構文上のノイズ」が取り除かれることです。たとえば：
+抽象構文木は、1章でも説明したとおり、プログラムの構造を表現するためのデータ構造です。重要な点は、抽象構文木では元の文字列に含まれていた「構文上のノイズ」が取り除かれることです。たとえば
 
 \begin{itemize}
 \item
@@ -467,7 +466,7 @@ Abstract Syntax Tree）をJavaでどのように表現するかを定義しま�
   括弧（\texttt{\{\}}、\texttt{{[}{]}}）も同様に、オブジェクトや配列という構造で表現されます
 \end{itemize}
 
-以下の\texttt{JsonAst}の定義を見ると、JSONの各要素をJavaのレコード・クラス（record）やインタフェースとして表現していることがわかります。これは、JSONという「文字列」を、Javaのオブジェクトという「構造化されたデータ」に変換するための定義です。
+以下の\texttt{JsonAst}の定義を見ると、JSONの各要素をJavaのレコードクラス（record）やインタフェースとして表現していることがわかります。これは、JSONという「文字列」を、Javaのオブジェクトという「構造化されたデータ」に変換するための定義です。
 
 \begin{codescreen}{}
 public interface JsonAst {
@@ -550,7 +549,7 @@ public interface JsonAst {
 \index{parseNumber@\texttt{parseNumber()}}
 \index{parseString@\texttt{parseString()}}
 
-この節では、BNFを元に、JSONのデータを\textbf{構文解析}するプログラムを実装していきます。以下のようなインタフェース\texttt{JsonParser}インタフェースを実装したクラスを「JSONの構文解析器」と考えることにします。
+この節では、BNFを元に、JSONのデータを\textgt{構文解析}するプログラムを実装していきます。以下のようなインタフェース\texttt{JsonParser}インタフェースを実装したクラスを「JSONの構文解析器」と考えることにします。
 
 \begin{codescreen}{}
 package parser;
@@ -578,17 +577,17 @@ Expression Grammar）に基づくトップダウン解析を採用します。
   BNFの規則を上から順番に適用していく方式を採用します。たとえば、\texttt{value}規則から始めて、それぞれの選択肢を試していきます。
 \item
   バックトラック:
-  解析に失敗した場合、前の状態に戻って別の選択肢を試します。これにより、複数の可能性がある場合でも正しい解析結果を見つけることができます。
+  解析に失敗した場合、前の状態に戻って別の選択肢を試します。これにより、複数の可能性がある場合でも正しい解析結果を見つけられます。
 \item
   順序付き選択（Ordered Choice）: BNFの \texttt{\textbar{}}
   で区切られた選択肢を、左から右へ順番に試します。たとえば、\texttt{value\ =\ true\ \textbar{}\ false\ \textbar{}\ null\ \textbar{}\ number\ \textbar{}\ string\ \textbar{}\ object\ \textbar{}\ array}
   の場合、まず\texttt{true}を試し、失敗したら\texttt{false}を試す、という具合です。この順序は重要で、より具体的なパターンを先に配置することで、正しい解析を保証します。実装の\texttt{parseValue()}メソッドでも、BNFの定義順序と同じ順番で各選択肢を試すようにしています。
 \item
   例外による失敗の表現:
-  構文解析の失敗は、\texttt{ParseException}という例外で表現します。これにより、深くネストした解析処理から簡潔に失敗を伝播させることができます。
+  構文解析の失敗は、\texttt{ParseException}という例外で表現します。これにより、深くネストした解析処理から簡潔に失敗を伝播させられます。
 \end{enumerate}
 
-本章の実装はPEGの順序付き選択とバックトラックという特徴を持っています。そのため、クラス名は\texttt{PegJsonParser}としています（PEGの詳細は第5章で解説します）。
+本章の実装はPEGの順序付き選択とバックトラックという特徴を持っています。そのため、クラス名は\texttt{PegJsonParser}としています（PEGの詳細は第4章で解説します）。
 
 \subsection{構文解析器の全体像}
 
@@ -792,7 +791,7 @@ public class PegJsonParser implements JsonParser {
 
 \texttt{parseValue()}の実装は、BNFの\texttt{value\ =\ true\ \textbar{}\ false\ \textbar{}\ null\ \textbar{}\ number\ \textbar{}\ string\ \textbar{}\ object\ \textbar{}\ array}という定義に対応しています。
 
-\texttt{\textbar{}}は「または」を意味するので、「valueは、trueまたはfalseまたはnullまたは\ldots」という意味になります。このコードでは、それぞれの可能性を順番に試していきます。
+\texttt{\textbar{}}は「または」を意味するので、「valueは、trueまたはfalseまたはnullまたは……」という意味になります。このコードでは、それぞれの可能性を順番に試していきます。
 
 \begin{enumerate}
 \item
@@ -800,7 +799,7 @@ public class PegJsonParser implements JsonParser {
 \item
   次に\texttt{parseFalse()}を試し、失敗したらカーソルを元に戻す
 \item
-  以下同様に続く\ldots{}
+  以下同様に続く……
 \end{enumerate}
 
 このように、失敗したら元の位置に戻って別の可能性を試すことを「バックトラック」と呼びます。
@@ -820,7 +819,7 @@ private JsonAst.JsonTrue parseTrue() {
 }
 \end{codescreen}
 
-このメソッドで行っていることを見ていきましょう。このメソッドでは、入力である\texttt{input}の現在位置が\texttt{"true"}という文字列で始まっているかをチェックします。もしそうなら、\textbf{JSONのtrue}をあらわす\texttt{JsonAst.JsonTrue}のインスタンスを返します。もし、先頭が\texttt{"true"}でなければ、構文解析は失敗なので例外を発生させますが、これは\texttt{recognize()}メソッドの中で行われています。\texttt{recognize()}の内部では、入力の現在位置と与えられた文字列を照合して、マッチしない場合例外を投げます。
+このメソッドで行っていることを見ていきましょう。このメソッドでは、入力である\texttt{input}の現在位置が\texttt{"true"}という文字列で始まっているかをチェックします。もしそうなら、\textbf{\sffamily JSON}\textgt{の}\textbf{\sffamily true}をあらわす\texttt{JsonAst.JsonTrue}のインスタンスを返します。もし、先頭が\texttt{"true"}でなければ、構文解析は失敗なので例外を発生させますが、これは\texttt{recognize()}メソッドの中で行われています。\texttt{recognize()}の内部では、入力の現在位置と与えられた文字列を照合して、マッチしない場合例外を投げます。
 
 次に、\texttt{skipWhitespace()}メソッドを呼び出して、「空白の読み飛ばし」を行っています。
 
@@ -982,7 +981,7 @@ private JsonAst.JsonNull parseNull() {
   入力の最初が\texttt{"}であること
 \end{itemize}
 
-をチェックしています。文字列は当然ながら、ダブルクォートで始まりますし、入力の終端にも達していないはずですから、それらの条件が満たされなければ例外が投げられるわけです。
+\noindent をチェックしています。文字列は当然ながら、ダブルクォートで始まりますし、入力の終端にも達していないはずですから、それらの条件が満たされなければ例外が投げられるわけです。
 
 \texttt{while}文の中では、各文字を読み込んで文字列を構築していきます。switch文の中で最も重要なのは\texttt{default}ケースで、ここで通常の文字を\texttt{StringBuilder}に追加して文字列を構築しています。ダブルクォート（\texttt{"}）が現れたら文字列の終端として処理し、バックスラッシュ（\texttt{\textbackslash{}}）が現れた場合はエラーとして処理します。実際のJSONパーサーではエスケープシーケンスの処理が必要ですが、構文解析の本質を理解する上では必須ではないため、本書では省略しています。
 
@@ -998,7 +997,7 @@ private JsonAst.JsonNull parseNull() {
         throw new RuntimeException("never reach here");
 \end{codescreen}
 
-というチェックを入れることによって、ダブルクォートで文字列が終端している事を確認した後、空白を読み飛ばしています。
+\noindent というチェックを入れることによって、ダブルクォートで文字列が終端していることを確認した後、空白を読み飛ばしています。
 
 \subsection{配列の構文解析メソッド}
 
@@ -1052,7 +1051,7 @@ parseLBracket();
 
 \texttt{recognize()}で、現在の入力位置が\texttt{{[}}と一致しているかチェックをした後、空白を読み飛ばしています。
 
-\texttt{{[}}の次には任意の\texttt{JsonValue}または\texttt{"{]}"}が来る可能性があります。この時、まず最初に、\texttt{{]}}が来ると\textbf{仮定}するのがポイントです。
+\texttt{{[}}の次には任意の\texttt{JsonValue}または\texttt{"{]}"}が来る可能性があります。この時、まず最初に、\texttt{{]}}が来ると\textgt{仮定}するのがポイントです。
 
 \begin{codescreen}{}
         int backup = cursor;
@@ -1086,14 +1085,14 @@ value = parseValue();
 values.add(value);
 \end{codescreen}
 
-を繰り返します。この繰り返しは、1回ごとに必ず入力を1以上進めます。失敗した時は、テキストが正しいJSONなら、\texttt{{]}}が来るはずなので、
+\noindent を繰り返します。この繰り返しは、1回ごとに必ず入力を1以上進めます。失敗した時は、テキストが正しいJSONなら、\texttt{{]}}が来るはずなので、
 
 \begin{codescreen}{}
 parseRBracket();
 return new JsonAst.JsonArray(values);
 \end{codescreen}
 
-とします。もし、テキストが正しいJSONでない場合、\texttt{parseRBracket()}から例外が投げられるはずですが、その例外は\textbf{より上位の層が適切にリカバーしてくれると期待して}放置します。JSONのような再帰的な構造を解析する時、このような、「自分の呼び出し元が適切にやってくれるはず」（何故なら、自分はその呼び出し元で適切にcatchしているのだから）という考え方が重要になります。
+\noindent とします。もし、テキストが正しいJSONでない場合、\texttt{parseRBracket()}から例外が投げられるはずですが、その例外は\textgt{より上位の層が適切にリカバーしてくれると期待して}放置します。JSONのような再帰的な構造を解析する時、このような、「自分の呼び出し元が適切にやってくれるはず」（何故なら、自分はその呼び出し元で適切にcatchしているのだから）という考え方が重要になります。
 
 多少複雑になりましたが、\texttt{parseArray()}の定義が、EBNFにおける表記
 
@@ -1101,7 +1100,7 @@ return new JsonAst.JsonArray(values);
 array = LBRACKET RBRACKET | LBRACKET {value {COMMA value}} RBRACKET ;
 \end{lstlisting}
 
-に対応していることがわかるでしょうか
+\noindent に対応していることがわかるでしょうか
 。読み方のポイントは、\texttt{\textbar{}}の後を、例外をキャッチした後の処理ととらえることです。
 
 \subsection{オブジェクトの構文解析メソッド}
@@ -1145,7 +1144,7 @@ array = LBRACKET RBRACKET | LBRACKET {value {COMMA value}} RBRACKET ;
 
 「あれ？これ、\texttt{parseArray()}とほとんど同じでは」
 
-と気づかれた読者の方が居るかも知れません。実際、\texttt{parseObject()}がやっていることは\texttt{parseArray()}と非常に類似しています。
+\noindent と気づかれた読者の方がいるかも知れません。実際、\texttt{parseObject()}がやっていることは\texttt{parseArray()}と類似しています。
 
 最初に、
 
@@ -1155,7 +1154,7 @@ parseRBrace();
 return new JsonAst.JsonObject(new ArrayList<>());
 \end{codescreen}
 
-としている箇所は、\texttt{\{\}}という形の空オブジェクトを読み取ろうとしていますが、これは、空配列\texttt{{[}{]}}を読み取るコードとほぼ同じです。
+\noindent としている箇所は、\texttt{\{\}}という形の空オブジェクトを読み取ろうとしていますが、これは、空配列\texttt{{[}{]}}を読み取るコードとほぼ同じです。
 
 続くコードも、対応する記号が\texttt{\{\}}か\texttt{{[}{]}}の違いこそあるものの、基本的に同じです。唯一の違いは、オブジェクトの各要素は、\texttt{name:value}というペアなため、\texttt{parseValue()}の代わりに\texttt{parsePair()}を呼び出しているところくらいです。
 
@@ -1191,29 +1190,29 @@ pair = string COLON value;
   \texttt{parseObject()\ -\textgreater{}\ parseValue()\ -\textgreater{}\ parseArray()}
 \end{itemize}
 
-のような再帰呼び出しが起こり得ることがわかります。このような再帰呼び出しでは、各ステップで必ず構文解析が1文字以上進むため、JSONがどれだけ深くなっても（スタックが溢れない限り）うまく構文解析ができるのです。
+\noindent のような再帰呼び出しが起こり得ることがわかります。このような再帰呼び出しでは、各ステップで必ず構文解析が1文字以上進むため、JSONがどれだけ深くなっても（スタックが溢れない限り）うまく構文解析ができるのです。
 
 \subsection{構文解析とPEG}
 
-このようにしてJSONの構文解析器を実装することができました。
+このようにしてJSONの構文解析器を実装できました。
 
-実は、ここで作った構文解析器には、以下のような特徴があります：
+実は、ここで作った構文解析器には、以下のような特徴があります。
 
 \begin{enumerate}
 \item
-  \textbf{バックトラック}：失敗したら元の位置に戻って別の可能性を試す
+  \textgt{バックトラック}：失敗したら元の位置に戻って別の可能性を試す
 \item
-  \textbf{順序付き選択}：\texttt{\textbar{}}で区切られた選択肢を左から順番に試す
+  \textgt{順序付き選択}：\texttt{\textbar{}}で区切られた選択肢を左から順番に試す
 \item
-  \textbf{文字列を直接解析}：特別な前処理なしに、入力文字列をそのまま解析する
+  \textgt{文字列を直接解析}：特別な前処理なしに、入力文字列をそのまま解析する
 \end{enumerate}
 
-このような構文解析の手法を\textbf{PEG（Parsing Expression
-Grammar、解析表現文法）}と呼びます。PEGは2004年に提案された比較的新しい手法で、プログラミング言語のような「曖昧さがない」言語の解析に適しています。最近ではPython（バージョン3.9以降）もPEGベースの構文解析器を使っています\footnote{PythonにおけるPEGパーサ採用の経緯と理由は
+このような構文解析の手法を\textbf{\sffamily PEG（Parsing Expression
+Grammar}\textgt{、解析表現文法）}と呼びます。PEGは2004年に提案された比較的新しい手法で、プログラミング言語のような「曖昧さがない」言語の解析に適しています。最近ではPython（バージョン3.9以降）もPEGベースの構文解析器を使っています\footnote{PythonにおけるPEGパーサ採用の経緯と理由は
   \href{https://peps.python.org/pep-0617/}{PEP 617 -- New PEG parser for
   CPython} で詳しく説明されています。}。
 
-厳密にはPEG自体はBNFと異なる文法の定義方法（形式文法）ですが、PEG自体が「どのように解析されるか」を定義するため、ここではPEG自体を構文解析の手法として扱います。この点については第5章で詳しく解説します。
+厳密にはPEG自体はBNFと異なる文法の定義方法（形式文法）ですが、PEG自体が「どのように解析されるか」を定義するため、ここではPEG自体を構文解析の手法として扱います。この点については第4章で詳しく解説します。
 
 PEGは直感的でシンプルなので、最初に学ぶのに適しています。ただし、従来から使われている別の構文解析手法も重要です。次の節では、その伝統的な手法について解説します。
 
@@ -1225,13 +1224,13 @@ PEGは直感的でシンプルなので、最初に学ぶのに適していま�
 
 前節では、PEGという手法を使って構文解析器を作りました。しかし、LL/LR系（例：LL(1)、LR(1)）に代表される伝統的な構文解析の手法では、少し違ったアプローチをとります。
 
-伝統的な手法では、構文解析を以下の2つのステップに分けます：
+伝統的な手法では、構文解析を以下の2つのステップに分けます。
 
 \begin{enumerate}
 \item
-  \textbf{字句解析（トークナイザー）}：文字列を「トークン」という単位に分割する
+  \textgt{字句解析（トークナイザー）}：文字列を「トークン」という単位に分割する
 \item
-  \textbf{構文解析（パーサー）}：トークンの列から構造を組み立てる
+  \textgt{構文解析（パーサー）}：トークンの列から構造を組み立てる
 \end{enumerate}
 
 たとえば、以下の英文があったとします。
@@ -1246,7 +1245,7 @@ We are parsers.
 [We, are, parsers]
 \end{lstlisting}
 
-という三つのトークン（単語）に分解すると考えるのが字句解析の発想法です。
+\noindent という三つのトークン（単語）に分解すると考えるのが字句解析の発想法です。
 
 古典的な構文解析の世界では、字句解析が必須とされていましたが、それは後の章で説明される構文解析アルゴリズムの都合に加えて、空白のスキップという処理を字句解析で行えるからでもあります。
 
@@ -1254,7 +1253,7 @@ We are parsers.
 
 この点はトレードオフがあって、空白に関する規則がある言語では、字句解析という前処理を安易に入れると逆に扱いづらくなることすらあります。ともあれ、字句解析という前処理を通すことには一定のメリットがあるのは確かです。
 
-以下では字句解析器を使った構文解析器の全体像を示します。ここでは、コアとなるアイデアに絞って説明します。完全なソースコードは巻末の付録を参照してください。
+以下では字句解析器を使った構文解析器の全体像を示します。ここでは、コアとなるアイデアに絞って説明します。完全なソースコードは本書のサポートサイト（\url{https://github.com/kahei/parser_book}）を参照してください。
 
 \subsection{JSONの字句解析器}
 
@@ -1317,7 +1316,7 @@ public class SimpleJsonTokenizer implements JsonTokenizer {
 }
 \end{codescreen}
 
-このコードは\texttt{SimpleJsonTokenizer}クラスの基本構造を示しています。主な特徴は以下のとおりです：
+このコードは\texttt{SimpleJsonTokenizer}クラスの基本構造を示しています。主な特徴は以下のとおりです。
 
 \begin{itemize}
 \item
@@ -1417,7 +1416,7 @@ public class SimpleJsonParser implements JsonParser {
 }
 \end{codescreen}
 
-このアプローチの重要な点は、\textbf{字句解析と構文解析の責任が明確に分離されている}ことです。\texttt{tokenizeAll()}メソッドが最初に入力全体をトークン列に変換し、パーサーはそのトークン列を処理します。これにより：
+このアプローチの重要な点は、\textgt{字句解析と構文解析の責任が明確に分離されている}ことです。\texttt{tokenizeAll()}メソッドが最初に入力全体をトークン列に変換し、パーサーはそのトークン列を処理します。これにより
 
 \begin{enumerate}
 \item
@@ -1435,7 +1434,7 @@ public class SimpleJsonParser implements JsonParser {
 
 PEG版と異なり、途中で失敗したら後戻り（バックトラック）するという処理も存在しません。トークン列が事前に確定しているため、より決定的な解析が可能になります。
 
-以下では構文解析のための各メソッドの詳細を説明します。残りのコードは、巻末の付録に掲載しています。
+以下では構文解析のための各メソッドの詳細を説明します。残りのコードは、本書のサポートサイト（\url{https://github.com/kahei/parser_book}）に掲載しています。
 
 \subsection{valueの構文解析メソッド（トークンベース）}
 
@@ -1468,7 +1467,7 @@ PEG版と異なり、途中で失敗したら後戻り（バックトラック�
 
 \subsection{parseObject}
 
-\texttt{parseObject()}メソッドは、規則\texttt{object}に対応するメソッドで、JSONのオブジェクトリテラルに対応するものを解析するメソッドでもあります。実装を示すと以下のようになります：
+\texttt{parseObject()}メソッドは、規則\texttt{object}に対応するメソッドで、JSONのオブジェクトリテラルに対応するものを解析するメソッドでもあります。実装を示すと以下のようになります。
 
 \begin{codescreen}{}
     private JsonAst.JsonObject parseObject() {
@@ -1513,7 +1512,7 @@ PEG版と異なり、途中で失敗したら後戻り（バックトラック�
   その次のトークンが\texttt{\}}であった場合：空オブジェクトを返す
 \item
   それ以外の場合： \texttt{parsePair()} を呼び出し、
-  \texttt{string:value} のようなペアを解析した後、以下のループに突入：
+  \texttt{string:value} のようなペアを解析した後、以下のループに突入
 
   \begin{itemize}
   \item
@@ -1525,11 +1524,11 @@ PEG版と異なり、途中で失敗したら後戻り（バックトラック�
   \end{itemize}
 \end{itemize}
 
-のような動作を行います。実際のJSONのオブジェクトと対応付けてみると、より理解が進むでしょう。
+\noindent のような動作を行います。実際のJSONのオブジェクトと対応付けてみると、より理解が進むでしょう。
 
 \subsection{parseArray}
 
-\texttt{parseArray()}メソッドは、規則\texttt{array}に対応するメソッドで、JSONの配列リテラルに対応するものを解析するメソッドでもあります。実装を示すと以下のようになります：
+\texttt{parseArray()}メソッドは、規則\texttt{array}に対応するメソッドで、JSONの配列リテラルに対応するものを解析するメソッドでもあります。実装を示すと以下のようになります。
 
 \begin{codescreen}{}
     /** BNF: array = LBRACKET RBRACKET | LBRACKET value {COMMA value} RBRACKET */
@@ -1575,7 +1574,7 @@ PEG版と異なり、途中で失敗したら後戻り（バックトラック�
   (\texttt{JsonAst.JsonArray}) を返す
 \item
   それ以外の場合： \texttt{parseValue()} を呼び出し、
-  \texttt{value}を解析した後、以下のループに突入：
+  \texttt{value}を解析した後、以下のループに突入
 
   \begin{itemize}
   \item
@@ -1587,18 +1586,18 @@ PEG版と異なり、途中で失敗したら後戻り（バックトラック�
   \end{itemize}
 \end{itemize}
 
-のような動作を行います。実際のJSONの配列と対応付けてみると、より理解が進むでしょう。
+\noindent のような動作を行います。実際のJSONの配列と対応付けてみると、より理解が進むでしょう。
 
-\texttt{parseArray()}のコードを読めばわかるように、ほとんどのコードは、\texttt{parseObject()}と共通のものになっています。もしこれが気になるようであれば、共通部分をくくりだすことも出来ます。他の割愛したメソッドも同様に、トークンを読み取って期待される構文を解析するという流れになっています。
+\texttt{parseArray()}のコードを読めばわかるように、ほとんどのコードは、\texttt{parseObject()}と共通のものになっています。もしこれが気になるようであれば、共通部分をくくりだすこともできます。他の割愛したメソッドも同様に、トークンを読み取って期待される構文を解析するという流れになっています。
 
 \subsection{字句解析器と構文解析器の連携}
 
 字句解析器を使った構文解析の流れを、\texttt{\{"key":\ "value"\}}
-を例に説明します：
+を例に説明します。
 
 \begin{enumerate}
 \item
-  \textbf{字句解析フェーズ}:
+  \textgt{字句解析フェーズ}:
   \texttt{tokenizeAll()}が入力全体を一度にトークン列に変換
 
 \begin{lstlisting}
@@ -1608,7 +1607,7 @@ PEG版と異なり、途中で失敗したら後戻り（バックトラック�
 \end{lstlisting}
 
 \item
-  \textbf{構文解析フェーズ}:
+  \textgt{構文解析フェーズ}:
   パーサーがトークン列を走査しながら抽象構文木を構築
 
 \begin{itemize}
@@ -1627,7 +1626,7 @@ PEG版と異なり、途中で失敗したら後戻り（バックトラック�
 \end{itemize}
 \end{enumerate}
 
-この方式ではトークン列が事前に確定しているため、以下の利点があります：
+この方式ではトークン列が事前に確定しているため、以下の利点があります。
 
 \begin{itemize}
 \item
@@ -1641,7 +1640,7 @@ PEG版と異なり、途中で失敗したら後戻り（バックトラック�
 \index{こうぶんかいせきき@構文解析器!PEGベース}
 \index{じくかいせき@字句解析}
 
-前節のPEGベースの構文解析器と、この節の字句解析器を使った構文解析器の主な違いは以下のとおりです：
+前節のPEGベースの構文解析器と、この節の字句解析器を使った構文解析器の主な違いは以下のとおりです。
 
 \begin{enumerate}
 \item
@@ -1655,7 +1654,7 @@ PEG版と異なり、途中で失敗したら後戻り（バックトラック�
   性能: 一般的に字句解析器を使う方式の方が高速
 \end{enumerate}
 
-PEGベースの構文解析器にはいいとこなしのように見えますが、PEGべースの構文解析器は、以下のような利点もあります：
+PEGベースの構文解析器にはいいとこなしのように見えますが、PEGべースの構文解析器には、以下のような利点もあります。
 
 \begin{enumerate}
 \item
@@ -1687,7 +1686,7 @@ PEGベースの構文解析器は、トークン列を生成する必要がな�
   JSONの構文解析器
 \end{itemize}
 
-といった順番で、JSONの定義から入って、PEGによるJSONパーサー、字句解析器を使った構文解析器の作り方について学んでもらいました。この書籍中で使ったJSONはECMA-404で定義されている正式なJSONのサブセットになっています。たとえば、浮動小数点数が完全に扱えないという制限がありますが、構文解析器全体から見ればささいなことなので、この章を理解出来れば、JSONの構文解析について理解できたと思って構いません。
+\noindent といった順番で、JSONの定義から入って、PEGによるJSONパーサー、字句解析器を使った構文解析器の作り方について学んでもらいました。この書籍中で使ったJSONはECMA-404で定義されている正式なJSONのサブセットになっています。たとえば、浮動小数点数が完全に扱えないという制限がありますが、構文解析器全体から見ればささいなことなので、この章を理解できれば、JSONの構文解析について理解できたと思って構いません。
 
 次の章では、文脈自由文法（Context-Free Grammar,
 CFG）の考え方について学んでもらいます。文脈自由文法は、現在使われているほとんどの構文解析アルゴリズムの基盤となっている概念であって、CFGの理解なくしては、その後の構文解析の理解もおぼつかないからです。
@@ -1695,8 +1694,8 @@ CFG）の考え方について学んでもらいます。文脈自由文法は�
 逆に、CFGの考え方さえわかってしまえば、個別の構文解析アルゴリズム自体は、それほど難しいとは感じられなくなって来るかもしれません。
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
-
-\textbf{演習問題}
+\clearpage
+\textgt{演習問題}
 
 \begin{enumerate}
 \item
