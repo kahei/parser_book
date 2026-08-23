@@ -5,12 +5,12 @@
 \index{CFG}
 \index{PEG}
 
-第5章では現在知られている構文解析手法について、アイデアと概要を説明しました。しかし、構文解析の世界ではよく知られていることなのですが、第5章で説明した手法は毎回プログラマが手で実装する必要はありません。
+第4章では現在知られている構文解析手法について、アイデアと概要を説明しました。しかし、構文解析の世界ではよく知られていることなのですが、第4章で説明した手法は毎回プログラマが手で実装する必要はありません。
 
-というのは、CFG（文脈自由文法）やPEG（その類似表記も含む）によって記述された文法定義から特定の構文解析アルゴリズムを用いた構文解析器を生成する\textbf{構文解析器生成系}（Parser
+というのは、CFG（文脈自由文法）やPEG（その類似表記も含む）によって記述された文法定義から特定の構文解析アルゴリズムを用いた構文解析器を生成する\textgt{構文解析器生成系}（Parser
 Generator、パーサージェネレータ）というソフトウェアがあるからです。
 
-簡単に言えば、「文法の定義を書いたら、対応したパーサーのコードを自動生成してくれるツール」です。これにより、複雑な構文解析アルゴリズムを知らなくても、文法定義さえ書ければ高性能なパーサーを作れるのです。
+簡単に言えば、「文法の定義を書いたら、対応したパーサーのコードを自動生成してくれるツール」です。これにより、複雑な構文解析アルゴリズムを知らなくても、文法定義さえ書ければ高性能なパーサーを作れます。
 
 構文解析器生成系でもっとも代表的なものはYacc（ヤック）あるいはその互換実装であるGNU
 Bison（バイソン）でしょう。YaccはLALR(1)法を利用したC言語の構文解析器を生成してくれるソフトウェアです。
@@ -20,7 +20,7 @@ Compiler」（また別のコンパイラコンパイラ）の略で、「コン
 
 この章では構文解析器生成系という種類のソフトウェアの背後にあるアイデアからはじまり、PEGから実際に対応する構文解析器を作る方法、多種多様な構文解析器生成系についての紹介を行います。
 
-また、この章の最後ではある意味構文解析器生成系の一種とも言える\textbf{パーサーコンビネータ}の実装方法について踏み込んで説明します。
+また、この章の最後ではある意味構文解析器生成系の一種とも言える\textgt{パーサーコンビネータ}の実装方法について踏み込んで説明します。
 
 パーサーコンビネータとは、簡単に言えば「プログラミング言語に備わったファーストクラス関数やオブジェクトを組み合わせてパーサーを構築する方法」です。通常の構文解析器生成系が「文法定義ファイル」から「Javaコード」を生成するのに対し、パーサーコンビネータではJavaのメソッドを組み合わせて直接パーサーを作ります。単なる手書きパーサーと違い、パーサーコンビネータは規則や文法に対応した関数やオブジェクトがライブラリとして備わっているため、再利用性が高く、柔軟な構文解析が可能です。
 
@@ -35,11 +35,11 @@ Compiler」（また別のコンパイラコンパイラ）の略で、「コン
 
 これまで何度も登場したDyck言語（括弧の対応が取れた文字列を表す言語）は明らかにLL(1)法でもLR(1)法でもPEGによっても解析可能な言語です。しかし、手書きでパーサーを実装しようとすると、退屈な繰り返しコードが多くなりがちです。
 
-実際のところ、Dyck言語を表現する文法があって、構文解析アルゴリズムがPEGということまで分かれば対応するJavaコードを\textbf{機械的に生成する}ことも可能そうに見えます。特に、構文解析はコード量が多いわりには退屈な繰り返しコードが多いものですから、文法からJavaコードを生成できれば劇的に工数を削減できそうです。
+実際のところ、Dyck言語を表現する文法があって、構文解析アルゴリズムがPEGということまで分かれば対応するJavaコードを\textgt{機械的に生成する}ことも可能そうに見えます。特に、構文解析はコード量が多いわりには退屈な繰り返しコードが多いものですから、文法からJavaコードを生成できれば劇的に工数を削減できそうです。
 
 このように「文法と構文解析手法が決まれば、後のコードは自動的に決定可能なはずだから、機械に任せてしまおう」という考え方が構文解析器生成系というソフトウェアの背後にあるアイデアです。
 
-早速ですが、以下のようにDyck言語を表す文法（第4章で示した
+早速ですが、以下のようにDyck言語を表す文法（第3章で示した
 \texttt{P\ -\textgreater{}\ (\ P\ )\ P\ \textbar{}\ ε}
 に近いもの）がPEGで与えられたとして、構文解析器を生成する方法を考えてみましょう。
 
@@ -48,8 +48,8 @@ Compiler」（また別のコンパイラコンパイラ）の略で、「コン
 PEGの記法では、\texttt{/}は「順序付き選択」を表し、BNFの\texttt{\textbar{}}とは異なり「最初の選択肢がマッチしたらそれを採用し、2番目以降は試さない」という意味になります。
 
 \begin{lstlisting}
-D <- P;
-P <- "(" P ")" P / ""; // "" は空文字列ε（イプシロン）を表す
+  D <- P;
+  P <- "(" P ")" P / ""; // "" は空文字列ε（イプシロン）を表す
 \end{lstlisting}
 
 このPEGは\texttt{P} が \texttt{(P)P}
@@ -82,20 +82,20 @@ public boolean parseP() {
 
 \subsection{Dyck言語の構文解析器を生成する}
 
-PEGからJavaコードへの機械的な変換は、以下の規則に従います：
+PEGからJavaコードへの機械的な変換は、以下の規則に従います。
 
 \begin{itemize}
 \item
-  \textbf{非終端記号}\texttt{N}： \texttt{parseN()}
+  \textgt{非終端記号}\texttt{N}： \texttt{parseN()}
   という名前のメソッドを生成
 \item
-  \textbf{文字列リテラル}\texttt{str}：\texttt{match(str)}
+  \textgt{文字列リテラル}\texttt{str}：\texttt{match(str)}
   の呼び出しに変換
 \item
-  \textbf{連接} \texttt{e1\ e2}：
+  \textgt{連接} \texttt{e1\ e2}：
   \texttt{e1}の中身を再帰的に変換した結果と\texttt{e2}の中身を再帰的に変換した結果を連結
 \item
-  \textbf{順序付き選択} \texttt{e1\ /\ e2}：
+  \textgt{順序付き選択} \texttt{e1\ /\ e2}：
   \texttt{e1}を試すコードと、失敗したらバックトラックするコード、\texttt{e2}を試すコードを連結する
 
   \begin{itemize}
@@ -103,7 +103,7 @@ PEGからJavaコードへの機械的な変換は、以下の規則に従いま�
     ここではバックトラックのために例外を使う
   \end{itemize}
 \item
-  \textbf{繰り返し}：ループ構造に変換
+  \textgt{繰り返し}：ループ構造に変換
 \end{itemize}
 
 \begin{codescreen}{}
@@ -173,15 +173,15 @@ public class DyckParser {
 
 \subsection{構文解析器生成系の実装}
 
-実際の構文解析器生成系では、以下のようなステップで自動生成を行います：
+実際の構文解析器生成系では、以下のようなステップで自動生成を行います。
 
 \begin{enumerate}
 \item
-  \textbf{PEG文法の解析}：PEG記法で書かれた文法定義自体を解析
+  \textbf{\sffamily PEG}\textgt{文法の解析}：PEG記法で書かれた文法定義自体を解析
 \item
-  \textbf{中間表現の生成}：文法規則を内部的なデータ構造に変換
+  \textgt{中間表現の生成}：文法規則を内部的なデータ構造に変換
 \item
-  \textbf{コード生成}：テンプレートを使ってJavaコードを出力
+  \textgt{コード生成}：テンプレートを使ってJavaコードを出力
 \end{enumerate}
 
 以下は中間表現が生成された後のコード生成の例です。ここでは、PEGの規則を表すクラス\texttt{Rule}と、各種PEG式を表す\texttt{Expr}クラスを定義し、Javaコードを生成しています。
@@ -372,11 +372,11 @@ public class Parser {
 }
 \end{codescreen}
 
-空文字列への分岐（\texttt{match("")}）を残しているので、\texttt{()}のように\texttt{P}が空になるケースも、\texttt{(())}のようにネストするケースも成功します。\texttt{try}ブロックで失敗したときに位置を巻き戻してから空文字列を選択する、という6.1.2節と同じ挙動を保っています。
+空文字列への分岐（\texttt{match("")}）を残しているので、\texttt{()}のように\texttt{P}が空になるケースも、\texttt{(())}のようにネストするケースも成功します。\texttt{try}ブロックで失敗したときに位置を巻き戻してから空文字列を選択する、という5.1.2節と同じ挙動を保っています。
 
-このコードは実際にDyck言語の変形版を解析することができます。\texttt{parseD()}メソッドを呼び出すことで、Dyck言語の文字列が正しいかどうかをチェックできます。
+このコードは実際にDyck言語の変形版を解析できます。\texttt{parseD()}メソッドを呼び出すことで、Dyck言語の文字列が正しいかどうかをチェックできます。
 
-このように、PEGの文法定義から機械的にJavaコードを生成することができます。本体のコードだけでいえばわずか140行程度です。これでPEGの構文解析器生成系が実装できるのです。もちろん、実用的には抽象構文木（AST）の生成や、エラーメッセージの改善などが必要になりますが、コアの部分はこのようにシンプルに実装できます。
+このように、PEGの文法定義から機械的にJavaコードを生成できます。本体のコードだけでいえばわずか140行程度です。これでPEGの構文解析器生成系が実装できるのです。もちろん、実用的には抽象構文木（AST）の生成や、エラーメッセージの改善などが必要になりますが、コアの部分はこのようにシンプルに実装できます。
 
 \section{構文解析器生成系の分類}
 \index{こうぶんかいせききせいせいけい@構文解析器生成系!分類}
@@ -389,13 +389,13 @@ public class Parser {
 
 構文解析器生成系は1970年代頃から研究の蓄積があり、数多くの構文解析器生成系がこれまで開発されています。
 
-基本的には、構文解析器生成系は採用している構文解析アルゴリズムによって分類されます。たとえば：
+基本的には、構文解析器生成系は採用している構文解析アルゴリズムによって分類されます。たとえば
 
 \begin{itemize}
 \item
-  JavaCCはLL(k)構文解析器を出力するため、\textbf{LL(k)構文解析器生成系}
+  JavaCCはLL(k)構文解析器を出力するため、\textbf{\sffamily LL(k)}\textgt{構文解析器生成系}
 \item
-  YaccはLALR(1)構文解析器を出力するため、\textbf{LALR(1)構文解析器生成系}
+  YaccはLALR(1)構文解析器を出力するため、\textbf{\sffamily LALR(1)}\textgt{構文解析器生成系}
 \end{itemize}
 
 一般的な構文解析器生成系の処理フローは、おおむね以下のようになります。ただし、PEGを採用している構文解析器生成系では、字句解析器の部分が丸ごと不要になります。
@@ -403,7 +403,7 @@ public class Parser {
 \begin{figure}[htb]
 \centering
 \begin{tikzpicture}[
-    scale=0.8, transform shape,
+    scale=0.7, transform shape,
     node distance=2.2cm,
     box/.style={draw, rectangle, minimum width=3cm, minimum height=0.8cm, align=center, font=\small},
     diamond/.style={draw, ellipse, minimum width=2.8cm, minimum height=1cm, align=center, font=\small},
@@ -537,7 +537,7 @@ public int primary() :
 }
 \end{codescreen}
 
-この\texttt{SKIP}から\texttt{TOKEN}までの部分はトークン定義になります。トークンとは、構文解析の基本単位となる要素で、「+」「123」「(」などのことです。第3章のJSONパーサーでも「文字列」「数値」「中括弧」などをトークンとして扱いましたね。ここでは、7つのトークンを定義しています。トークン定義の後が構文規則の定義になります。ここでは、
+この\texttt{SKIP}から\texttt{TOKEN}までの部分はトークン定義になります。トークンとは、構文解析の基本単位となる要素で、「+」「123」「(」などのことです。第2章のJSONパーサーでも「文字列」「数値」「中括弧」などをトークンとして扱いましたね。ここでは、7つのトークンを定義しています。トークン定義の後が構文規則の定義になります。ここでは、
 
 \begin{itemize}
 \item
@@ -552,15 +552,15 @@ public int primary() :
   \texttt{primary()}
 \end{itemize}
 
-の5つの構文規則が定義されています。各構文規則はJavaのメソッドに酷似した形で記述されますが、実際、ここから生成される.javaファイルには同じ名前のメソッドが定義されます。
+\noindent の5つの構文規則が定義されています。各構文規則はJavaのメソッドに酷似した形で記述されますが、実際、ここから生成される.javaファイルには同じ名前のメソッドが定義されます。
 
 \texttt{start()}と\texttt{expression()}は両方とも\texttt{add()}を呼び出すエントリポイントですが、違いは入力末尾の扱い方です。\texttt{expression()}は最後に\texttt{\textless{}EOF\textgreater{}}（入力終端トークン）を要求するため、入力全体が一つの式であることを厳密に検証したい場面（テストやファイル全体の構文チェックなど）に向きます。一方、\texttt{start()}は\texttt{\textless{}EOF\textgreater{}}を要求しないので、標準入力のような対話的な入力で「式を1つ読み終えたら抜ける」という使い方ができます。\texttt{main}メソッドでは標準入力を読むので\texttt{start()}を呼んでいます。
 
-\texttt{add()}が\texttt{mult()}を呼び出して、\texttt{mult()}が\texttt{primary()}を呼び出すという構図は第2章ですでにみた形ですが、第2章と違って単純に宣言的に各構文規則の関係を書けばそれでOKなのが構文解析器生成系の強みです。
+\texttt{add()}が\texttt{mult()}を呼び出して、\texttt{mult()}が\texttt{primary()}を呼び出すという構図は第1章ですでにみた形ですが、第1章と違って単純に宣言的に各構文規則の関係を書けばそれでOKなのが構文解析器生成系の強みです。
 
-ちなみに、\texttt{\{int\ r\ =\ 0;\}}のような部分はJavaコードの埋め込みで、構文解析中に実行される処理を記述しています。これを「セマンティックアクション」（意味的動作）と呼びます。セマンティックアクションを使うことで、単に文法が正しいかチェックするだけでなく、解析しながら計算や抽象構文木の構築などの処理を行うことができます。
+ちなみに、\texttt{\{int\ r\ =\ 0;\}}のような部分はJavaコードの埋め込みで、構文解析中に実行される処理を記述しています。これを「セマンティックアクション」（意味的動作）と呼びます。セマンティックアクションを使うことで、単に文法が正しいかチェックするだけでなく、解析しながら計算や抽象構文木の構築などの処理を行えます。
 
-このようにして定義した電卓プログラムは次のようにして利用することができます。
+このようにして定義した電卓プログラムは次のようにして利用できます。
 
 \begin{codescreen}{}
 package com.github.kmizu.calculator;
@@ -604,7 +604,7 @@ public class CalculatorTest {
 
 この\texttt{CalculatorTest}クラスではJUnit5を使って、JavaCCで定義した\texttt{Calculator}クラスの挙動をテストしています。空白や括弧を含む数式を問題なく計算できているのがわかるでしょう。
 
-このようなケースでは先読みトークン数が1のため、JavaCCのデフォルトで構いませんが、定義したい構文によっては先読み数を2以上に増やさなければいけないこともあります。以下のようにして先読み数を増やすことができます：
+このようなケースでは先読みトークン数が1のため、JavaCCのデフォルトで構いませんが、定義したい構文によっては先読み数を2以上に増やさなければいけないこともあります。以下のようにして先読み数を増やせます。
 
 \begin{codescreen}{}
 options {
@@ -634,31 +634,31 @@ JavaCCは構文定義ファイルの文法がかなりJavaに似ているため�
 \index{error token@\texttt{error}トークン}
 
 Yaccは1970年代にAT\&Tのベル研究所にいたStephen C.
-Johnson（スティーブン・ジョンソン）によって作られたソフトウェアで、非常に歴史がある構文解析器生成系です。第5章で学んだLALR(1)法の構文解析器生成系を実用化した最初のツールでもあります。
+Johnson（スティーブン・ジョンソン）によって作られたソフトウェアで、非常に歴史がある構文解析器生成系です。第4章で学んだLALR(1)法の構文解析器生成系を実用化した最初のツールでもあります。
 
 現在広く使われているGNU
 BisonはYaccのGNUによる再実装で、GNUプロジェクトの一部として開発されています。GNU
 BisonはYaccと互換性があり、Yaccの機能を拡張したものです。
 
 Yaccを使って、四則演算を行う電卓プログラムを作るにはまず字句解析器生成系であるLex（正確には、Vern
-Paxsonによる互換実装であるFlex）用の定義ファイルを書く必要があります。Lexの定義ファイル\texttt{token.l}は次のようになります：
+Paxsonによる互換実装であるFlex）用の定義ファイルを書く必要があります。Lexの定義ファイル\texttt{token.l}は次のようになります。
 
-\begin{lstlisting}
-%{
-#include "y.tab.h"
-extern int yylval;
-%}
+\begin{codescreen}{}
+  %{
+  #include "y.tab.h"
+  extern int yylval;
+  %}
 
-%%
-[0-9]+      { yylval = atoi(yytext); return NUM; }
-[-+*/()]    { return yytext[0]; }
-[ \t]       { /* ignore whitespace */ }
-"\r\n"      { return EOL; }
-"\r"        { return EOL; }
-"\n"        { return EOL; }
-.           { printf("Invalid character: %s\n", yytext); }
-%%
-\end{lstlisting}
+  %%
+  [0-9]+      { yylval = atoi(yytext); return NUM; }
+  [-+*/()]    { return yytext[0]; }
+  [ \t]       { /* ignore whitespace */ }
+  "\r\n"      { return EOL; }
+  "\r"        { return EOL; }
+  "\n"        { return EOL; }
+  .           { printf("Invalid character: %s\n", yytext); }
+  %%
+\end{codescreen}
 
 \texttt{\%\%}から\texttt{\%\%}までがトークンの定義です。これはそれぞれ次のように読むことができます。
 
@@ -690,118 +690,118 @@ extern int yylval;
 \item
   \texttt{.\ \ \ \ \ \ \ \ \ \ \ \{\ printf("Invalid\ character:\ \%s\textbackslash{}n",\ yytext);\ \}}
 
-  それ以外の文字が来たらエラーを吐きます
+  それ以外の文字がきたらエラーを吐きます
 \end{itemize}
 
 このトークン定義ファイルを入力として与えると、flexは\texttt{lex.yy.c}という形で字句解析器を出力します。
 
-次に、yaccの構文定義ファイルを書きます：
+次に、yaccの構文定義ファイルを書きます。
 
-\begin{lstlisting}
-%{
-#include <stdio.h>
-int yylex(void);
-void yyerror(char const *s);
-int yywrap(void) {return 1;}
-extern int yylval;
-%}
+\begin{codescreen}{}
+  %{
+  #include <stdio.h>
+  int yylex(void);
+  void yyerror(char const *s);
+  int yywrap(void) {return 1;}
+  extern int yylval;
+  %}
 
-%token NUM
-%token EOL
-%left '+' '-'
-%left '*' '/'
+  %token NUM
+  %token EOL
+  %left '+' '-'
+  %left '*' '/'
 
-%%
+  %%
 
-input :
-      | input line
-      ;
+  input :
+        | input line
+        ;
 
-line : expr EOL
-      { printf("Result: %d\n", $1); }
-      | EOL
-      | error EOL
-      { yyerrok; }
-      ;
+  line : expr EOL
+        { printf("Result: %d\n", $1); }
+        | EOL
+        | error EOL
+        { yyerrok; }
+        ;
 
-expr : NUM
-      { $$ = $1; }
-      | expr '+' expr
-      { $$ = $1 + $3; }
-      | expr '-' expr
-      { $$ = $1 - $3; }
-      | expr '*' expr
-      { $$ = $1 * $3; }
-      | expr '/' expr
-      {
-        if ($3 == 0) { yyerror("Cannot divide by zero."); YYERROR; }
-        else { $$ = $1 / $3; }
-      }
-      | '(' expr ')'
-      { $$ = $2; }
-      ;
+  expr : NUM
+        { $$ = $1; }
+        | expr '+' expr
+        { $$ = $1 + $3; }
+        | expr '-' expr
+        { $$ = $1 - $3; }
+        | expr '*' expr
+        { $$ = $1 * $3; }
+        | expr '/' expr
+        {
+          if ($3 == 0) { yyerror("Cannot divide by zero."); YYERROR; }
+          else { $$ = $1 / $3; }
+        }
+        | '(' expr ')'
+        { $$ = $2; }
+        ;
 
-%%
+  %%
 
-void yyerror(char const *s)
-{
-  fprintf(stderr, "Parse error: %s\n", s);
-}
+  void yyerror(char const *s)
+  {
+    fprintf(stderr, "Parse error: %s\n", s);
+  }
 
-int main()
-{
-  yyparse();
-}
-\end{lstlisting}
+  int main()
+  {
+    yyparse();
+  }
+\end{codescreen}
 
-flexの場合と同じく、\texttt{\%\%}から\texttt{\%\%}までが構文規則の定義の本体です。実行されるコードが入っているので読みづらくなっていますが、それを除くと以下のようになります：
+flexの場合と同じく、\texttt{\%\%}から\texttt{\%\%}までが構文規則の定義の本体です。実行されるコードが入っているので読みづらくなっていますが、それを除くと以下のようになります。
 
-\begin{lstlisting}
-%token NUM
-%token EOL
-%left '+' '-'
-%left '*' '/'
+\begin{codescreen}{}
+  %token NUM
+  %token EOL
+  %left '+' '-'
+  %left '*' '/'
 
-%%
-input :
-      | input line
-      ;
+  %%
+  input :
+        | input line
+        ;
 
-line  : expr EOL
-      | EOL
-      | error EOL
-      ;
+  line  : expr EOL
+        | EOL
+        | error EOL
+        ;
 
-expr  : NUM
-      | expr '+' expr
-      | expr '-' expr
-      | expr '*' expr
-      | expr '/' expr
-      | '(' expr ')'
-      ;
-%%
-\end{lstlisting}
+  expr  : NUM
+        | expr '+' expr
+        | expr '-' expr
+        | expr '*' expr
+        | expr '/' expr
+        | '(' expr ')'
+        ;
+  %%
+\end{codescreen}
 
 だいぶ見やすくなりましたね。入力を表す\texttt{input}規則は、0個以上の\texttt{line}からなります。\texttt{line}は式を表す\texttt{expr}と改行からなるので、式を1行ずつ読み取って結果を出力できます。
 
 次に、\texttt{expr}規則ですが、ここではyaccの優先順位を表現するための機能である\texttt{\%left}を使ったため、優先順位のためだけに規則を作る必要がなくなっており、定義が簡潔になっています。ともあれ、こうして定義された文法定義ファイルをyaccに与えると\texttt{y.tab.c}というファイルを出力します。
 
-flexとyaccが出力したファイルを結合して実行ファイルを作ると、次のような入力に対して：
+flexとyaccが出力したファイルを結合して実行ファイルを作ると、次のような入力に対して
 
 \begin{lstlisting}
-1 + 2 * 3
-2 + 3
-6 / 2
-3 / 0
+  1 + 2 * 3
+  2 + 3
+  6 / 2
+  3 / 0
 \end{lstlisting}
 
 それぞれ、次のような出力を返します。
 
 \begin{lstlisting}
-Result: 7
-Result: 5
-Result: 3
-Parse error: Cannot divide by zero.
+  Result: 7
+  Result: 5
+  Result: 3
+  Parse error: Cannot divide by zero.
 \end{lstlisting}
 
 Yaccはとても古いソフトウェアの一つですが、Rubyの文法定義ファイルparse.yはYacc用ですし、未だに各種言語処理系では現役で使われてもいます。
@@ -818,9 +818,7 @@ Yaccはとても古いソフトウェアの一つですが、Rubyの文法定義
 \index{semantic predicate}
 
 1989年にPurdue Compiler Construction Tool
-Set（PCCTS）というものがありました。ANTLRはその後継というべきもので、これまでに、LL(k)
--\textgreater{} LL(\texttt{*}) -\textgreater{}
-ALL(\texttt{*})と構文解析アルゴリズムを拡張し、取り扱える文法の幅を広げつつアクティブに開発が続けられています。作者はTerence
+Set（PCCTS）というものがありました。ANTLRはその後継というべきもので、これまでに、\texttt{LL(k) -> LL(*) -> ALL(*)}と構文解析アルゴリズムを拡張し、取り扱える文法の幅を広げつつアクティブに開発が続けられています。作者はTerence
 Parrという方ですが、構文解析器一筋と言っていいくらいに、ANTLRにこれまでの時間を費やしてきている人です。
 
 それだけに、ANTLRの完成度は非常に高いものになっています。また、一時期はLR法に比べてLL法の評価は低いものでしたが、Terence
@@ -868,7 +866,7 @@ WS  :   [ \t\n\r]+ -> skip ;
 
 数式を表す各規則についてはこれまで書いてきた構文解析器と同じ構造なので読むのに苦労はしないでしょう。
 
-規則\texttt{WS}は空白文字を表すトークンですが、これは数式を解析する上では読み飛ばす必要があります。
+規則\texttt{WS}は空白文字を表すトークンですが、これは数式を解析する上では読み飛ばす必要があります。\\
 \texttt{{[}\ \textbackslash{}t\textbackslash{}n\textbackslash{}r{]}+\ -\textgreater{}\ skip}は
 
 \begin{itemize}
@@ -880,9 +878,9 @@ WS  :   [ \t\n\r]+ -> skip ;
   改行文字
 \end{itemize}
 
-のいずれかが出現した場合は読み飛ばすということを表現しています。
+\noindent のいずれかが出現した場合は読み飛ばすということを表現しています。
 
-ANTLRは下向き型の構文解析が苦手とする左再帰も、規則の中で直接的に自分自身を呼び出す形（直接左再帰）であれば扱うことができます（規則を経由した間接左再帰には対応していない点には注意してください）。先ほどの定義ファイルでは繰り返しを使っていましたが、これを直接左再帰に直した以下の定義ファイルも全く同じ挙動をします。
+ANTLRは下向き型の構文解析が苦手とする左再帰も、規則の中で直接的に自分自身を呼び出す形（直接左再帰）であれば扱えます（規則を経由した間接左再帰には対応していない点には注意してください）。先ほどの定義ファイルでは繰り返しを使っていましたが、これを直接左再帰に直した以下の定義ファイルも全く同じ挙動をします。
 
 \begin{codescreen}{}
 grammar LRExpression;
@@ -915,9 +913,9 @@ fragment INT :   '0' | [1-9] [0-9]* ; // no leading zeros
 WS  :   [ \t\n\r]+ -> skip ;
 \end{codescreen}
 
-左再帰を使うことでより簡単に文法を定義できることもあるので、あると嬉しい機能だと言えます。
+左再帰を使うことでより簡単に文法を定義できることもあるので、あるとうれしい機能だと言えます。
 
-さらに、ANTLRは\texttt{ALL(*)}というアルゴリズムを採用しているため、通常のLLパーサーでは扱えないような文法定義も取り扱うことができます。以下の「最小XML」文法定義を見てみましょう。
+さらに、ANTLRは\texttt{ALL(*)}というアルゴリズムを採用しているため、通常のLLパーサーでは扱えないような文法定義も取り扱えます。以下の「最小XML」文法定義を見てみましょう。
 
 \begin{codescreen}{}
 grammar PetitXML;
@@ -950,7 +948,7 @@ NAME:  [a-zA-Z_][a-zA-Z0-9]* ;
 WS :   [ \t\n\r]+ -> skip ;
 \end{codescreen}
 
-\texttt{PetitXML}の名のとおり、属性やテキストなどは全く扱うことができず、\texttt{\textless{}a\textgreater{}}や\texttt{\textless{}a/\textgreater{}}、\texttt{\textless{}a\textgreater{}\textless{}b\textgreater{}\textless{}/b\textgreater{}\textless{}/a\textgreater{}}といった要素のみを扱うことができます。規則\texttt{element}が重要です。
+\texttt{PetitXML}の名のとおり、属性やテキストなどは全く扱えず、\texttt{\textless{}a\textgreater{}}や\texttt{\textless{}a/\textgreater{}}、\texttt{\textless{}a\textgreater{}\textless{}b\textgreater{}\textless{}/b\textgreater{}\textless{}/a\textgreater{}}といった要素のみを扱えます。規則\texttt{element}が重要です。
 
 \begin{codescreen}{}
 element returns [Element e]
@@ -962,9 +960,9 @@ element returns [Element e]
     ;
 \end{codescreen}
 
-ここで空要素（\texttt{\textless{}e/\textgreater{}}など）に分岐するか、子要素を持つ要素（\texttt{\textless{}a\textgreater{}\textless{}b/\textgreater{}\textless{}/a\textgreater{}}など）に分岐するかを決定するには、\texttt{\textless{}}に加えて、任意の長さになり得るタグ名を先読みしなければいけません。通常のLLパーサーでは何文字（何トークン）先読みできるかは予め決定されているのでこのような文法定義を取り扱うことはできません。しかし、ANTLRの\texttt{ALL(*)}アルゴリズムやその前身となる\texttt{LL(*)}アルゴリズムでは任意個の文字数を先読みして分岐を決定することができます。
+ここで空要素（\texttt{\textless{}e/\textgreater{}}など）に分岐するか、子要素を持つ要素（\texttt{\textless{}a\textgreater{}\textless{}b/\textgreater{}\textless{}/a\textgreater{}}など）に分岐するかを決定するには、\texttt{\textless{}}に加えて、任意の長さになり得るタグ名を先読みしなければいけません。通常のLLパーサーでは何文字（何トークン）先読みできるかは予め決定されているのでこのような文法定義を取り扱うことはできません。しかし、ANTLRの\texttt{ALL(*)}アルゴリズムやその前身となる\texttt{LL(*)}アルゴリズムでは任意個の文字数を先読みして分岐を決定できます。
 
-ANTLRでは通常のLLパーサーと違い文法を記述する上での大きな制約がなく、非常に強力です。理論的な意味でも\texttt{ALL(*)}アルゴリズムは任意の決定的な文脈自由言語を取り扱うことができます。
+ANTLRでは通常のLLパーサーと違い文法を記述する上での大きな制約がなく、非常に強力です。理論的な意味でも\texttt{ALL(*)}アルゴリズムは任意の決定的な文脈自由言語を取り扱えます。
 
 また、\texttt{ALL(*)}アルゴリズム自体とは関係ありませんが、XMLのパーサーを書くときには開きタグと閉じタグの名前が一致している必要があります。この条件を記述するために\texttt{PetitXML}では次のように記述されています。
 
@@ -988,9 +986,9 @@ ANTLRはこういった実用上重要な痒いところにも手が届くよう
 \index{DSL}
 \index{chainl@\texttt{chainl}}
 
-手前味噌ですが、拙作のパーサーコンビネータである\href{https://github.com/kmizu/scomb}{SComb}も紹介しておきます。これまで紹介してきたものはすべて構文解析器生成系です。つまり、独自の言語を用いて作りたい言語の文法を記述し、そこから\textbf{対象言語}（CであったりJavaであったりさまざまですが）で書かれた構文解析器を生成するものだったわけですが、パーサーコンビネータは少々違います。
+手前味噌ですが、拙作のパーサーコンビネータである\href{https://github.com/kmizu/scomb}{SComb}も紹介しておきます。これまで紹介してきたものはすべて構文解析器生成系です。つまり、独自の言語を用いて作りたい言語の文法を記述し、そこから\textgt{対象言語}（CであったりJavaであったりさまざまですが）で書かれた構文解析器を生成するものだったわけですが、パーサーコンビネータは少々違います。
 
-パーサーコンビネータでは対象言語のメソッドや関数、オブジェクトとして構文解析器を定義し、演算子やメソッドによって構文解析器を組み合わせることで構文解析器を組み立てていきます。「コンビネータ」という名前は「組み合わせる（combine）」から来ており、小さなパーサーを組み合わせて大きなパーサーを作るという意味です。パーサーコンビネータではメソッドや関数、オブジェクトとして規則自体を記述するため、特別にプラグインを作らなくてもIDEによる支援が受けられることや、対象言語が静的型システムを持っていた場合、型チェックによる支援を受けられることなどがメリットとして挙げられます。
+パーサーコンビネータでは対象言語のメソッドや関数、オブジェクトとして構文解析器を定義し、演算子やメソッドによって構文解析器を組み合わせることで構文解析器を組み立てていきます。「コンビネータ」という名前は「組み合わせる（combine）」からきており、小さなパーサーを組み合わせて大きなパーサーを作るという意味です。パーサーコンビネータではメソッドや関数、オブジェクトとして規則自体を記述するため、特別にプラグインを作らなくてもIDEによる支援が受けられることや、対象言語が静的型システムを持っていた場合、型チェックによる支援を受けられることなどがメリットとして挙げられます。
 
 SCombで四則演算を解析できるプログラムを書くと以下のようになります。先ほど述べたようにSCombはパーサーコンビネータであり、これ自体がScalaのプログラム（\texttt{object}宣言）でもあります。
 
@@ -1029,15 +1027,15 @@ object Calculator extends SCombinator {
 
 ScalaはJavaとは異なるプログラミング言語ですが、構文にJavaと似た部分が多く（JVM上で動く処理系がある）、Javaユーザーの方でも比較的読み進めやすいはずです。
 
-各メソッドに対応するBNFによる規則をコメントとして付加してみましたが、BNFと比較しても簡潔に記述できています。Scalaは記号をそのままメソッドとして記述できるなど、元々DSL（ドメイン特化言語）に向いている特徴を持った言語なのですが、その特徴を活用しています。\texttt{chainl}というメソッドについてだけは見慣れない読者の方は多そうですが、これは
+各メソッドに対応するBNFによる規則をコメントとして付加してみましたが、BNFと比較しても簡潔に記述できています。Scalaは記号をそのままメソッドとして記述できるなど、元々DSL（ドメイン特化言語）に向いている特徴を持った言語なのですが、その特徴を活用しています。\texttt{chainl}というメソッドについてだけは見慣れない読者の方が多そうですが、これは
 
 \begin{lstlisting}
-// M ::= P ("+" P | "-" P)*
+  // M ::= P ("+" P | "-" P)*
 \end{lstlisting}
 
-のような二項演算を簡潔に記述するためのコンビネータ（メソッド）です。パーサーコンビネータの別のメリットとして、BNF（あるいはPEG）に無い演算子を後付けで導入できることも挙げられます。構文規則からの値（意味値）の取り出しもScalaのfor式（Javaのfor文とは異なり、値を生成する式です）を用いて簡潔に記述できています。
+\noindent のような二項演算を簡潔に記述するためのコンビネータ（メソッド）です。パーサーコンビネータの別のメリットとして、BNF（あるいはPEG）に無い演算子を後付けで導入できることも挙げられます。構文規則からの値（意味値）の取り出しもScalaのfor式（Javaのfor文とは異なり、値を生成する式です）を用いて簡潔に記述できています。
 
-筆者は自作言語Klassicの処理系作成のためにSCombを使っていましたが、かなり複雑な文法を記述できるにも関わらず、SCombのコア部分はわずか600行ほどです。それでいて高い拡張性や簡潔な記述が可能なのは、Scalaという言語の能力と、SCombがベースとして利用しているPEGという手法のシンプルさがあってのものだと言えるでしょう。
+筆者は自作言語Klassicの処理系作成のためにSCombを使っていましたが、かなり複雑な文法を記述できるにもかかわらず、SCombのコア部分はわずか600行ほどです。それでいて高い拡張性や簡潔な記述が可能なのは、Scalaという言語の能力と、SCombがベースとして利用しているPEGという手法のシンプルさがあってのものだと言えるでしょう。
 
 \section{パーサーコンビネータJCombを自作しよう！}
 \index{JComb}
@@ -1050,7 +1048,7 @@ ScalaはJavaとは異なるプログラミング言語ですが、構文にJava�
 
 しかし、現代的な言語であればパーサーコンビネータを自作するのは本当に簡単です。多くの読者の方々が拍子抜けしてしまうくらいに。この節ではJavaで書かれたパーサーコンビネータJCombを自作する過程を通じて皆さんにパーサーコンビネータとはどのようなものかを学んでいただきます。
 
-パーサーコンビネータと構文解析器生成系の関係は、次のように考えることができます：
+パーサーコンビネータと構文解析器生成系の関係は、次のように考えられます。
 
 \begin{itemize}
 \item
@@ -1097,7 +1095,7 @@ assert 7 == result.value();
 
 これからパーサーコンビネータを作っていくわけですが、パーサーコンビネータの基本となる「部品」を作る必要があります。
 
-まず最初に、文字列リテラルを受け取ってそれを解析できる次のような\texttt{string()}メソッドは是非とも欲しいところです。
+まず最初に、文字列リテラルを受け取ってそれを解析できる次のような\texttt{string()}メソッドはぜひとも欲しいところです。
 
 \begin{codescreen}{}
 assert new Result<String>("123", "").equals(string("123").parse("123"));
@@ -1222,7 +1220,8 @@ public class JComb {
     public static <A> JParser<A> alt(JParser<A> p1, JParser<A> p2) {
         return (input) -> {
             var result = p1.parse(input);//(1) p1を試す
-            if(result != null) return result;//(2) p1が成功したらその結果を返す
+            if(result != null) return result;
+                                   //(2) p1が成功したらその結果を返す
             return p2.parse(input);//(3) p1が失敗したらp2を試す
         };
     }
@@ -1263,7 +1262,7 @@ class JAltParser<A> implements JParser<A> {
   \texttt{p1}が失敗した場合、\texttt{p2}を試しその値を返す
 \end{enumerate}
 
-という挙動をします。これはBNFの選択 \texttt{\textbar{}}
+\noindent という挙動をします。これはBNFの選択 \texttt{\textbar{}}
 とは異なり、PEGの「順序付き選択 \texttt{/}」に対応します。
 
 実は今ここで作っているパーサーコンビネータである\texttt{JComb}は（\texttt{SComb}と同様に）PEGをベースとしたパーサーコンビネータだったのです。
@@ -1286,9 +1285,12 @@ public class JComb {
         JParser<A> p1, JParser<B> p2) {
         return (input) -> {
             var result1 = p1.parse(input); //(1-1) p1を試す
-            if(result1 == null) return null; //(1-2) p1が失敗したら全体も失敗
-            var result2 = p2.parse(result1.rest()); //(2-1) p1の残り入力でp2を試す
-            if(result2 == null) return null; //(2-2) p2が失敗したら全体も失敗
+            if(result1 == null) return null; 
+                                           //(1-2) p1が失敗したら全体も失敗
+            var result2 = p2.parse(result1.rest()); 
+                                           //(2-1) p1の残り入力でp2を試す
+            if(result2 == null) return null; 
+                                           //(2-2) p2が失敗したら全体も失敗
             // 両方成功したら、結果をペアにして返す
             return new Result<>(
                 new Pair<A, B>(
@@ -1318,7 +1320,7 @@ public class JComb {
     public static <A> JParser<List<A>> rep0(JParser<A> p) {
         return (input) -> {
             var result = p.parse(input); // (1)
-            if(result == null) return new Result<>(List.of(), input); // (2)
+            if(result == null) return new Result<>(List.of(), input); //(2)
             var value = result.value();
             var rest = result.rest();
             var result2 = rep0(p).parse(rest); //(3)
@@ -1332,9 +1334,9 @@ public class JComb {
 }
 \end{codescreen}
 
-(1)でまずパーサー\texttt{p}を適用しています。ここで失敗した場合、0回の繰り返しにマッチしたことになるので、空リストからなる結果を返します（(2)）。そうでなければ、1回以上の繰り返しにマッチしたことになるので、繰り返し同じ処理をする必要がありますが、これは再帰呼出しによって簡単に実装できます（(3)）。シンプルな実装ですね。
+\texttt{(1)}でまずパーサー\texttt{p}を適用しています。ここで失敗した場合、0回の繰り返しにマッチしたことになるので、空リストからなる結果を返します（\texttt{(2)}）。そうでなければ、1回以上の繰り返しにマッチしたことになるので、繰り返し同じ処理をする必要がありますが、これは再帰呼出しによって簡単に実装できます（\texttt{(3)}）。シンプルな実装ですね。
 
-\texttt{rep1(p)}は意味的には\texttt{seq(p,\ rep0(p))}なので、次のようにして実装を簡略化することができます。
+\texttt{rep1(p)}は意味的には\texttt{seq(p,\ rep0(p))}なので、次のようにして実装を簡略化できます。
 
 \begin{codescreen}{}
 public class JComb {
@@ -1353,7 +1355,7 @@ public class JComb {
 }
 \end{codescreen}
 
-実質的な本体は(1)だけで、あとは結果の値が\texttt{Pair}なのを\texttt{List}に加工しているだけですね。
+実質的な本体は\texttt{(1)}だけで、あとは結果の値が\texttt{Pair}なのを\texttt{List}に加工しているだけですね。
 
 \subsection{map()メソッド}
 \index{map@\texttt{map()}}
@@ -1376,7 +1378,7 @@ interface JParser<R> {
 }
 \end{codescreen}
 
-(1)で\texttt{f.apply(result.value())}として値を加工しているのがポイントです。
+\texttt{(1)}で\texttt{f.apply(result.value())}として値を加工しているのがポイントです。
 
 \subsection{lazy()メソッド}
 \index{lazy@\texttt{lazy()}}
@@ -1401,7 +1403,7 @@ public class JComb {
 \texttt{expression} を呼び出すような相互再帰構造を考えてみましょう。
 
 \begin{codescreen}{}
-// JComb を使った算術式のパーサ定義（簡略版・lazyなしのイメージ）
+// JComb を使った算術式のパーサー定義（簡略版・lazyなしのイメージ）
 // 仮に直接代入しようとすると...
 public static JParser<Integer> expression() {
     return additive(); 
@@ -1426,9 +1428,9 @@ public static JParser<Integer> primary() {
 \texttt{lazy} は
 \texttt{Supplier\textless{}JParser\textless{}A\textgreater{}\textgreater{}}
 を引数に取ることで、実際の \texttt{JParser\textless{}A\textgreater{}}
-オブジェクトの取得（\texttt{supplier.get()}）を、そのパーサが実際に
+オブジェクトの取得（\texttt{supplier.get()}）を、そのパーサーが実際に
 \texttt{parse()}
-メソッドで使われるときまで遅延させます。\texttt{Supplier}はJavaの関数型インタフェースで、「引数なしで値を返す関数」を表します。これにより、相互再帰するパーサ定義でも、オブジェクト構築時の無限再帰を避けることができます。算術式の例では、\texttt{expression}
+メソッドで使われるときまで遅延させます。\texttt{Supplier}はJavaの関数型インタフェースで、「引数なしで値を返す関数」を表します。これにより、相互再帰するパーサー定義でも、オブジェクト構築時の無限再帰を避けられます。算術式の例では、\texttt{expression}
 の定義内で \texttt{additive} を呼び出す部分を
 \texttt{lazy(()\ -\textgreater{}\ additive())}
 のように記述することで、この問題を解決します。
@@ -1496,7 +1498,8 @@ public class Calculator {
         ).map(p -> { // 解析結果を処理するラムダ式
             var left = p.a(); // 初期値 (最初の項)
             var rights = p.b(); // 残りの演算子と項のペアのリスト
-            for (var rightPair : rights) { // 各 Pair<String, Integer> について
+            for (var rightPair : rights) { 
+                                // 各 Pair<String, Integer> について
                 var op = rightPair.a(); // 演算子 ( "+" または "-" )
                 var rightValue = rightPair.b(); // 項の値
                 if (op.equals("+")) {
@@ -1541,7 +1544,7 @@ public class Calculator {
     // primary <- number / "(" expression ")"
     public static JParser<Integer> primary() {
         return alt( // number または "(" expression ")" の選択
-            number, // 数値パーサ
+            number, // 数値パーサー
             seq(
                 string("("), // 開き括弧
                 // 括弧内の式 (expressionを再帰呼び出し)
@@ -1549,9 +1552,11 @@ public class Calculator {
             ).flatMap(p1 -> 
                 // p1 は Pair<String, Integer>型 ("(" と expressionの結果)
                 seq(
-                    p1.b(), // expressionの結果 (Integer) を次のseqの左側にする
+                    p1.b(), 
+                    // expressionの結果 (Integer) を次のseqの左側にする
                     string(")")  // 閉じ括弧
-                // p2は Pair<Integer, String>型、その最初の要素(Integer)を返す
+                // p2は Pair<Integer, String>型、その最初の要素(Integer)を
+                // 返す
                 ).map(p2 -> p2.a())
             );
         );
@@ -1578,11 +1583,11 @@ assertEquals(
 
 \subsection{自作パーサーコンビネータのススメ}
 
-DSL（ドメイン特化言語）に向いたScalaに比べれば冗長になったものの、手書きで再帰下降パーサーを組み立てるのに比べると大幅に簡潔な記述を実現することができました。しかも、JComb全体を通しても500行にすら満たないのは特筆すべきところです。Javaがユーザ定義の中置演算子（\texttt{+}や\texttt{*}のような演算子を自分で定義できる機能）をサポートしていればもっと簡潔にできたのですが、そこは向き不向きといったところでしょうか。
+DSL（ドメイン特化言語）に向いたScalaに比べれば冗長になったものの、手書きで再帰下降パーサーを組み立てるのに比べると大幅に簡潔な記述を実現できました。しかも、JComb全体を通しても500行にすら満たないのは特筆すべきところです。Javaがユーザ定義の中置演算子（\texttt{+}や\texttt{*}のような演算子を自分で定義できる機能）をサポートしていればもっと簡潔にできたのですが、そこは向き不向きといったところでしょうか。
 
 手書きでパーサーを書く必要に迫られた場合でも、パーサーコンビネータを自作すれば、気軽にパーサーを組み立てるためのDSL（Domain Specific Language）を定義できるのです。それだけでなく、Javaのような静的型付き言語を使った場合、IDEによる支援も受けられますし、BNFやPEGにはない便利な演算子を自分で導入することもできます。
 
-パーサーコンビネータはお手軽なだけあって各種プログラミング言語に実装されています。たとえば、Java用なら\href{https://github.com/jparsec/jparsec}{jparsec}があります。しかし、筆者としては、パーサーコンビネータが動作する仕組みを理解するために、是非とも\textbf{自分だけの}パーサーコンビネータを実装してみてほしいと思います。
+パーサーコンビネータはお手軽なだけあって各種プログラミング言語に実装されています。たとえば、Java用なら\href{https://github.com/jparsec/jparsec}{jparsec}があります。しかし、筆者としては、パーサーコンビネータが動作する仕組みを理解するために、ぜひとも\textgt{自分だけの}パーサーコンビネータを実装してみてほしいと思います。
 
 \section{まとめ}
 
@@ -1590,17 +1595,17 @@ DSL（ドメイン特化言語）に向いたScalaに比べれば冗長になっ
 
 まず、PEGから構文解析器を生成する基本的な仕組みを、Dyck言語を例に具体的に見ていきました。文法規則を機械的にJavaコードに変換することで、手書きの煩雑さから解放され、文法定義に集中できることを確認しました。
 
-次に、代表的な構文解析器生成系として以下を紹介しました：
+次に、代表的な構文解析器生成系として以下を紹介しました。
 
 \begin{itemize}
 \item
-  \textbf{JavaCC}：LL(k)法を採用し、Javaに特化した構文がJavaユーザーに親しみやすい
+  \textbf{\sffamily JavaCC}：\texttt{LL(k)}法を採用し、Javaに特化した構文がJavaユーザーに親しみやすい
 \item
-  \textbf{Yacc}：LALR(1)法を採用する歴史ある構文解析器生成系で、C言語との親和性が高い
+  \textbf{\sffamily Yacc}：\texttt{LALR(1)}法を採用する歴史ある構文解析器生成系で、C言語との親和性が高い
 \item
-  \textbf{ANTLR}：\texttt{ALL(*)}アルゴリズムにより強力な解析能力を持ち、左再帰も扱える多言語対応ツール
+  \textbf{\sffamily ANTLR}：\texttt{ALL(*)}アルゴリズムにより強力な解析能力を持ち、左再帰も扱える多言語対応ツール
 \end{itemize}
 
-最後に、パーサーコンビネータという、プログラミング言語の機能を活用して直接パーサーを組み立てる手法を学び、実際にJavaでパーサーコンビネータ「JComb」を実装しました。わずか500行に満たないコードで、PEGに対応した実用的なパーサーコンビネータを作ることができることを示しました。
+最後に、パーサーコンビネータという、プログラミング言語の機能を活用して直接パーサーを組み立てる手法を学び、実際にJavaでパーサーコンビネータ「JComb」を実装しました。わずか500行に満たないコードで、PEGに対応した実用的なパーサーコンビネータを作れることを示しました。
 
 構文解析器生成系とパーサーコンビネータは、それぞれ異なる強みを持ちます。構文解析器生成系は宣言的で可読性が高く、パーサーコンビネータはプログラミング言語の型システムやIDEの支援を受けられ、柔軟な拡張が可能です。どちらを選ぶかは、プロジェクトの要件や開発チームの好みによって決めることになるでしょう。

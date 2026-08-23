@@ -3,7 +3,7 @@
 \index{Dyck言語}
 \index{ぶんみゃくじゆうぶんぽう@文脈自由文法}
 
-第4章で学んだ文脈自由文法は、構文解析の理論的な基礎です。特にDyck言語（ディック言語）を例に、括弧の対応という根本的な問題を通して、再帰的な構造を文法でどう表現するかを学びました。この章では、いよいよその文法を実際に解析するための「アルゴリズム」について深く掘り下げていきます。
+第3章で学んだ文脈自由文法は、構文解析の理論的な基礎です。特にDyck言語を例に、括弧の対応という根本的な問題を通して、再帰的な構造を文法でどう表現するかを学びました。この章では、いよいよその文法を実際に解析するための「アルゴリズム」について深く掘り下げていきます。
 
 \section{本章で学ぶこと}
 \index{よそくがたしたむきこうぶんかいせき@予測型下向き構文解析}
@@ -16,15 +16,15 @@
 
 「構文解析アルゴリズム」と聞くと難しそうに感じるかもしれません。しかし、実は皆さんはすでに2つの構文解析アルゴリズムを実装しているのです。
 
-第3章を思い出してください。最初に実装した\texttt{PegJsonParser}は、\textbf{PEG（Parsing
+第2章を思い出してください。最初に実装した\texttt{PegJsonParser}は、\textbf{\sffamily PEG（Parsing
 Expression
-Grammar）}という手法の素朴な実装でした。次に実装した\texttt{SimpleJsonParser}は、実は\textbf{LL(1)}（「エルエルワン」と読みます）と呼ばれる手法に近い\textbf{再帰下降構文解析器}だったのです。
+Grammar）}という手法の素朴な実装でした。次に実装した\texttt{SimpleJsonParser}は、実は\textbf{\sffamily LL(1)}（「エルエルワン」と読みます）と呼ばれる手法に近い\textgt{再帰下降構文解析器}だったのです。
 
-この章では、これらのアルゴリズムがどのような仕組みで動いているのか、他にどのようなアルゴリズムが存在するのかを体系的に学びます。具体的には：
+この章では、これらのアルゴリズムがどのような仕組みで動いているのか、他にどのようなアルゴリズムが存在するのかを体系的に学びます。具体的には
 
 \begin{enumerate}
 \item
-  \textbf{予測型下向き構文解析（Predictive Top-down
+  \textgt{予測型下向き構文解析}\textbf{\sffamily （Predictive Top-down
   Parsing）}：文法の開始記号から始めて、入力文字列に向かって解析を進める方法
 
   \begin{itemize}
@@ -34,7 +34,7 @@ Grammar）}という手法の素朴な実装でした。次に実装した\textt
     LL(1)
   \end{itemize}
 \item
-  \textbf{上向き構文解析（Bottom-up / Shift-reduce
+  \textgt{上向き構文解析}\textbf{\sffamily （Bottom-up / Shift-reduce
   Parsing）}：入力文字列から始めて、文法の開始記号に向かって解析を進める方法
 
   \begin{itemize}
@@ -44,7 +44,7 @@ Grammar）}という手法の素朴な実装でした。次に実装した\textt
     LR(0)、SLR(1)、LR(1)、LALR(1)
   \end{itemize}
 \item
-  \textbf{下向き構文解析+バックトラック}：先読みの代わりにバックトラックを使う方法
+  \textgt{下向き構文解析+バックトラック}：先読みの代わりにバックトラックを使う方法
 
   \begin{itemize}
     \item
@@ -58,7 +58,7 @@ Grammar）}という手法の素朴な実装でした。次に実装した\textt
 
 本章は構文解析の主要アルゴリズムを網羅的に扱うため、内容がやや重くなっています。特にLR系（LR(0)、SLR(1)、LR(1)、LALR(1)）は、概念の積み重ねが多く、初読でつまずく読者が一定数います。そこで、本章をどのように読むかについて、二つのおすすめルートを示します。
 
-まず構文解析の全体像を掴みたい方には、「下向きと上向きの2つの世界観」「LL(1)」「シフト還元構文解析の基本」「PEG」「Packrat Parsing」を必読として読み、LR(0)〜LALR(1)の詳細は後回しにすることをおすすめします。各節の冒頭に置いた「要点」と章末の比較表を眺めるだけでも、本章の主旨はおおむね掴めるはずです。LRの実装は構文解析器生成系（第6章で詳述）に任せるのが普通なので、ひとまずは「LRという上向き手法の系譜があり、Yacc/BisonはLALR(1)を使う」程度に押さえておけば次に進めます。
+まず構文解析の全体像をつかみたい方には、「下向きと上向きの2つの世界観」「LL(1)」「シフト還元構文解析の基本」「PEG」「Packrat Parsing」を必読として読み、LR(0)〜LALR(1)の詳細は後回しにすることをおすすめします。各節の冒頭に置いた「要点」と章末の比較表を眺めるだけでも、本章の主旨はおおむねつかめるはずです。LRの実装は構文解析器生成系（第5章で詳述）に任せるのが普通なので、ひとまずは「LRという上向き手法の系譜があり、Yacc/BisonはLALR(1)を使う」程度に押さえておけば次に進めます。
 
 仕組みまで踏み込みたい方は、上から順番に読むのが自然です。LR(0)→SLR(1)→LR(1)→LALR(1)は、それぞれが前の手法の限界を克服する形で発展しているので、なぜ次の手法が必要だったのかを意識すると理解が深まります。
 
@@ -66,7 +66,7 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 
 \begin{itemize}
 \item Yaccでshift/reduce conflictのメッセージに遭遇した
-\item 自分でパーサジェネレータの中身を読みたい
+\item 自分でパーサージェネレータの中身を読みたい
 \end{itemize}
 
 そんなときに、該当する節だけ読み返して理解できるように、各節を可能な限り独立した「リファレンス」として書いています。初読で全てを理解できなくても、まったく問題ありません。
@@ -81,25 +81,25 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 \index{ALL(*)}
 \index{LL(*)}
 
-各アルゴリズムには、対応する\textbf{構文解析器生成系}（パーサージェネレータ）が存在することが多いです。以下、よく知られているものを列挙しますが、それ以外にも多数の構文解析器生成系が存在します：
+各アルゴリズムには、対応する\textgt{構文解析器生成系}（パーサージェネレータ）が存在することが多いです。以下、よく知られているものを列挙しますが、それ以外にも多数の構文解析器生成系が存在します。
 
 \begin{itemize}
 \item
-  \textbf{Yacc/Bison}（以降、Yaccと表記します）：
+  \textbf{\sffamily Yacc/Bison}（以降、Yaccと表記します）：
 
   \begin{itemize}
   \item
     LALR(1)を採用、C言語向け
   \end{itemize}
 \item
-  \textbf{JavaCC}：
+  \textbf{\sffamily JavaCC}：
 
   \begin{itemize}
   \item
     LL(k)を採用（デフォルトはk=1）、 Java向け
   \end{itemize}
 \item
-  \textbf{ANTLR}：
+  \textbf{\sffamily ANTLR}：
 
   \begin{itemize}
   \item
@@ -112,12 +112,12 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
       Foundation of the ANTLR Parser Generator'', PLDI '11, 2011。}を採用（拡張されたLL系を採用）、 多言語対応
   \end{itemize}
 \item
-  \textbf{各種PEGパーサージェネレータ}：PEG\footnote{Bryan Ford, ``Parsing
+  \textgt{各種PEGパーサージェネレータ}：PEG\footnote{Bryan Ford, ``Parsing
     expression grammars: a recognition-based syntactic foundation'',
     POPL '04, 2004. PEGの形式的な定義と意味論を与えた原典です。}を採用
 \end{itemize}
 
-これらのツールについては第6章で詳しく説明しますが、本章でアルゴリズムを理解することで、各ツールがなぜそのアルゴリズムを選んだのかが見えてくるはずです。
+これらのツールについては第5章で詳しく説明しますが、本章でアルゴリズムを理解することで、各ツールがなぜそのアルゴリズムを選んだのかが見えてくるはずです。
 
 \section{下向き構文解析と上向き構文解析 --- 2つの世界観}
 \index{したむきこうぶんかいせき@下向き構文解析}
@@ -125,25 +125,25 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 \index{Top-down parsing}
 \index{Bottom-up parsing}
 
-構文解析アルゴリズムの世界には、大きく分けて2つの「世界観」があります。\textbf{下向き（Top-down）}と\textbf{上向き（Bottom-up）}です。この2つは、同じ構文解析という仕事を、まったく逆のアプローチで実現します。
+構文解析アルゴリズムの世界には、大きく分けて2つの「世界観」があります。\textgt{下向き}\textbf{\sffamily （Top-down）}と\textgt{上向き}\textbf{\sffamily （Bottom-up）}です。この2つは、同じ構文解析という仕事を、まったく逆のアプローチで実現します。
 
 \subsection{なぜ2つのアプローチが必要なのか？}
 
-第4章で学んだDyck言語を例に考えてみましょう。文法は以下でした：
+第3章で学んだDyck言語を例に考えてみましょう。文法は以下でした。
 
 \begin{lstlisting}
-D → P
-P → ( P ) P
-P → ε
+  D → P
+  P → ( P ) P
+  P → ε
 \end{lstlisting}
 
-入力文字列 \texttt{(())} を解析する際、2つの考え方ができます：
+入力文字列 \texttt{(())} を解析する際、2つの考え方があります。
 
 \begin{enumerate}
 \item
-  \textbf{下向き（予測的）}：「Dから始まって、どうすれば\texttt{(())}が導出できるか？」
+  \textgt{下向き（予測的）}：「Dから始まって、どうすれば\texttt{(())}が導出できるか？」
 \item
-  \textbf{上向き（還元的）}：「\texttt{(())}から始めて、どうすればDにたどり着けるか？」
+  \textgt{上向き（還元的）}：「\texttt{(())}から始めて、どうすればDにたどり着けるか？」
 \end{enumerate}
 
 これは、迷路を解くときに「入口から出口を探す」か「出口から入口を探す」かの違いに似ています。どちらも正解にたどり着きますが、効率や適用できる問題が異なるのです。
@@ -154,21 +154,21 @@ P → ε
 
 \subsection{Dyck言語で学ぶ予測型下向き構文解析}
 
-第4章で学んだDyck言語（括弧の対応が取れた文字列を表す言語）を例に、具体的に動作を追ってみましょう。説明のために、文法に入力の開始・終了を表す\texttt{\$}（ドル記号）を追加します：
+第3章で学んだDyck言語（括弧の対応が取れた文字列を表す言語）を例に、具体的に動作を追ってみましょう。説明のために、文法に入力の開始・終了を表す\texttt{\$}（ドル記号）を追加します。
 
 \begin{lstlisting}
-D -> $ P $
-P -> ( P ) P
-P -> ε
+  D -> $ P $
+  P -> ( P ) P
+  P -> ε
 \end{lstlisting}
 
 この文法が、入力文字列 \texttt{(())} を受理するかどうかを判定してみましょう。
 
 \subsection{スタックを使った解析の追跡}
 
-ナイーヴな予測型下向き構文解析では、\textbf{スタック}を使って解析の進行状況を管理します。スタックには、「今どの規則のどの位置を解析しているか」という情報を記録します。
+ナイーヴな予測型下向き構文解析では、\textgt{スタック}を使って解析の進行状況を管理します。スタックには、「今どの規則のどの位置を解析しているか」という情報を記録します。
 
-ドット記号「・」（中黒）を使って、規則内の現在位置を表すことにします。たとえば、以下のようになります：
+ドット記号「・」（中黒）を使って、規則内の現在位置を表すことにします。たとえば、以下のようになります。
 
 \begin{itemize}
 \item
@@ -182,31 +182,31 @@ P -> ε
 
 このドット記号は、Javaでいえばデバッガーでステップ実行する時の「現在の実行位置」のようなものだと考えてください。
 
-では、実際に解析を開始しましょう。スタックは右が一番上で左に行くほど下になる、つまり最右がスタックトップであることに注意してください：
+では、実際に解析を開始しましょう。スタックは右が一番上で左に行くほど下になる、つまり最右がスタックトップであることに注意してください。
 
 \begin{lstlisting}
-入力: $ ( ( ) ) $
-スタック: [ D -> ・$ P $ ]
+  入力: $ ( ( ) ) $
+  スタック: [ D -> ・$ P $ ]
 \end{lstlisting}
 
 \begin{enumerate}
 \item
   最初の記号 \texttt{\$}
-  を入力から読み込みます。スタックトップの規則が期待する記号と一致するので、ドットを進めます：
+  を入力から読み込みます。スタックトップの規則が期待する記号と一致するので、ドットを進めます。
 
 \begin{lstlisting}
-入力: ( ( ) ) $
-スタック: [ D -> $・P $ ]
+  入力: ( ( ) ) $
+  スタック: [ D -> $・P $ ]
 \end{lstlisting}
 
 \item
   非終端記号 \texttt{P}
   を解析する必要があります。ここで「予測」（あるいは先読み）、が必要になります。
 
-非終端記号とは、第2章で学んだように「まだ展開の余地がある記号」のことでした。Javaでいえばメソッド呼び出しのようなものです。
+非終端記号とは、第1章で学んだように「まだ展開の余地がある記号」のことでした。Javaでいえばメソッド呼び出しのようなものです。
 
 次の入力文字（先読み文字）は \texttt{(}
-です。\texttt{P}の規則は2つあります：
+です。\texttt{P}の規則は2つあります。
 
 \begin{itemize}
 \item
@@ -217,20 +217,20 @@ P -> ε
 
 ここで、どちらを選ぶかを事前に決める必要があります。ここでは、先読み文字が\texttt{(}の時は前者、それ以外のときは後者を選ぶこととします。
 
-というわけで、先読み文字が\texttt{(}なので、\texttt{P\ -\textgreater{}\ (\ P\ )\ P}を選択します。この規則をスタックに追加します：
+というわけで、先読み文字が\texttt{(}なので、\texttt{P\ -\textgreater{}\ (\ P\ )\ P}を選択します。この規則をスタックに追加します。
 
 \begin{lstlisting}
-入力: ( ( ) ) $
-スタック: [D -> $・P $, P -> ・( P ) P]
+  入力: ( ( ) ) $
+  スタック: [D -> $・P $, P -> ・( P ) P]
 \end{lstlisting}
 
 \item
   入力の先頭の \texttt{(}
-  を読み込み、スタックトップの規則のドットを進めます：
+  を読み込み、スタックトップの規則のドットを進めます。
 
 \begin{lstlisting}
-入力: ( ) ) $
-スタック: [D -> $・P $, P -> (・ P ) P]
+  入力: ( ) ) $
+  スタック: [D -> $・P $, P -> (・ P ) P]
 \end{lstlisting}
 
 \item
@@ -238,68 +238,68 @@ P -> ε
 
 次の先読み文字は \texttt{(} です。先ほどと同様に
 \texttt{P\ -\textgreater{}\ (\ P\ )\ P}
-を選択して、この規則をスタックに追加します：
+を選択して、この規則をスタックに追加します。
 
 \begin{lstlisting}
-入力: ( ) ) $
-スタック: [D -> $・P $, P -> ( ・ P ) P, P -> ・ ( P ) P]
+  入力: ( ) ) $
+  スタック: [D -> $・P $, P -> ( ・ P ) P, P -> ・ ( P ) P]
 \end{lstlisting}
 
 \item
   入力の先頭の \texttt{(}
-  を読み込み、スタックトップの規則のドットを進めます：
+  を読み込み、スタックトップの規則のドットを進めます。
 
 \begin{lstlisting}
-入力: ) ) $
-スタック: [D -> $・P $, P -> ( ・P ) P, P -> ( ・ P ) P]
+  入力: ) ) $
+  スタック: [D -> $・P $, P -> ( ・P ) P, P -> ( ・ P ) P]
 \end{lstlisting}
 
 \item
   非終端記号 \texttt{P} を解析するため、先読み文字を見ます。
 
 次の先読み文字は \texttt{)} です。今度は、\texttt{P\ -\textgreater{}\ ε}
-を選択します。空文字列にマッチするので、ドットを進めるだけで、入力からは何も消費しません：
+を選択します。空文字列にマッチするので、ドットを進めるだけで、入力からは何も消費しません。
 
 \begin{lstlisting}
-入力: ) ) $
-スタック: [D -> $・P $, P -> ( ・P ) P, P -> ( P ・ ) P]
+  入力: ) ) $
+  スタック: [D -> $・P $, P -> ( ・P ) P, P -> ( P ・ ) P]
 \end{lstlisting}
 
 \item
   入力の先頭の \texttt{)}
-  を読み込み、スタックトップの規則のドットを進めます：
+  を読み込み、スタックトップの規則のドットを進めます。
 
 \begin{lstlisting}
-入力: ) $
-スタック: [D -> $・P $, P -> ( ・P ) P, P -> ( P ) ・ P]
+  入力: ) $
+  スタック: [D -> $・P $, P -> ( ・P ) P, P -> ( P ) ・ P]
 \end{lstlisting}
 
 \item
   非終端記号 \texttt{P} を解析するため、先読み文字を見ます。
 
 次の先読み文字は \texttt{)} です。ここで、\texttt{P\ -\textgreater{}\ ε}
-を選択します。空文字列にマッチするので、ドットを進めるだけで、入力からは何も消費しません：
+を選択します。空文字列にマッチするので、ドットを進めるだけで、入力からは何も消費しません。
 
 \begin{lstlisting}
-入力: ) $
-スタック: [D -> $・P $, P -> ( ・P ) P, P -> ( P ) P ・]
+  入力: ) $
+  スタック: [D -> $・P $, P -> ( ・P ) P, P -> ( P ) P ・]
 \end{lstlisting}
 
 \item
-  スタックトップの規則のドットが最後まで進んだので、スタックからその規則を除去すると同時に、新たなスタックトップのドットを進めます。ちょうどメソッド呼び出しが終わったのでそこから返って続きから再開するようなものです：
+  スタックトップの規則のドットが最後まで進んだので、スタックからその規則を除去すると同時に、新たなスタックトップのドットを進めます。ちょうどメソッド呼び出しが終わったのでそこから返って続きから再開するようなものです。
 
 \begin{lstlisting}
-入力: ) $
-スタック: [D -> $・P $, P -> ( P ・) P]
+  入力: ) $
+  スタック: [D -> $・P $, P -> ( P ・) P]
 \end{lstlisting}
 
 \item
   入力の先頭の \texttt{)}
-  を読み込み、スタックトップの規則のドットを進めます：
+  を読み込み、スタックトップの規則のドットを進めます。
 
 \begin{lstlisting}
-入力: $
-スタック: [D -> $・P $, P -> ( P ) ・ P]
+  入力: $
+  スタック: [D -> $・P $, P -> ( P ) ・ P]
 \end{lstlisting}
 
 \item
@@ -307,36 +307,36 @@ P -> ε
 
 次の先読み文字は \texttt{\$}
 です。ここで、\texttt{P\ -\textgreater{}\ ε}
-を選択します。空文字列にマッチするので、ドットを進めるだけで、入力からは何も消費しません：
+を選択します。空文字列にマッチするので、ドットを進めるだけで、入力からは何も消費しません。
 
 \begin{lstlisting}
-入力: $
-スタック: [D -> $ ・ P $, P -> ( P ) P ・]
+  入力: $
+  スタック: [D -> $ ・ P $, P -> ( P ) P ・]
 \end{lstlisting}
 
 \item
-  スタックトップの規則のドットが最後まで進んだので、スタックからその規則を除去すると同時に、新たなスタックトップのドットを進めます：
+  スタックトップの規則のドットが最後まで進んだので、スタックからその規則を除去すると同時に、新たなスタックトップのドットを進めます。
 
 \begin{lstlisting}
-入力: $
-スタック: [D -> $ P ・ $]
+  入力: $
+  スタック: [D -> $ P ・ $]
 \end{lstlisting}
 
 \item
   入力の先頭の \texttt{\$}
-  を読み込み、スタックトップの規則のドットを進めます：
+  を読み込み、スタックトップの規則のドットを進めます。
 
 \begin{lstlisting}
-入力:
-スタック: [D -> $ P $ ・]
+  入力:
+  スタック: [D -> $ P $ ・]
 \end{lstlisting}
 
 \item
   ここでスタックトップの規則のドットが最後まで進んだので、スタックからその規則を除去します。スタックが空になり、入力もすべて消費されたので、受理されます。
 
 \begin{lstlisting}
-入力:
-スタック: []
+  入力:
+  スタック: []
 \end{lstlisting}
 \end{enumerate}
 
@@ -344,7 +344,7 @@ P -> ε
 
 \subsection{予測型下向き構文解析のアルゴリズム}
 
-予測型下向き構文解析の動作パターンをまとめると以下のようにになります：
+予測型下向き構文解析の動作パターンをまとめると以下のようになります。
 
 \begin{enumerate}
 \item
@@ -401,7 +401,7 @@ P -> ε
 \index{さいきかこうぶんかいせき@再帰下降構文解析}
 \index{さいき@再帰}
 
-スタックを使った下向き構文解析の動作を理解したところで、これをJavaで実装してみましょう。多くの場合、スタックを明示的に使わずに\textbf{再帰呼び出し}を使って実装できます。第3章で実装した\texttt{SimpleJsonParser}は、予測型再帰下降構文解析の一種で、実装もほぼ同じです。
+スタックを使った下向き構文解析の動作を理解したところで、これをJavaで実装してみましょう。多くの場合、スタックを明示的に使わずに\textgt{再帰呼び出し}を使って実装できます。第2章で実装した\texttt{SimpleJsonParser}は、予測型再帰下降構文解析の一種で、実装もほぼ同じです。
 
 \begin{codescreen}{}
 // 文法規則：
@@ -452,7 +452,7 @@ public class Dyck {
 
 \subsection{コードの解説}
 
-この実装では、各非終端記号に対応するメソッドを作成しています：
+この実装では、各非終端記号に対応するメソッドを作成しています。
 
 \begin{itemize}
 \item
@@ -482,20 +482,20 @@ public class Dyck {
 
 \subsection{文法規則とコードの対応関係}
 
-BNF規則とJavaコードの対応を見てみましょう：
+BNF規則とJavaコードの対応を見てみましょう。
 
 \begin{lstlisting}
-文法規則： D -> P
-Javaコード： private boolean D() { return P(); }
+  文法規則： D -> P
+  Javaコード： private boolean D() { return P(); }
 
-文法規則： P -> ( P ) P | ε
-Javaコード： private boolean P() {
-    if (先読み文字 == '(') {
-        // P -> ( P ) P を適用
-    } else {
-        // P -> ε を適用
-    }
-}
+  文法規則： P -> ( P ) P | ε
+  Javaコード： private boolean P() {
+      if (先読み文字 == '(') {
+          // P -> ( P ) P を適用
+      } else {
+          // P -> ε を適用
+      }
+  }
 \end{lstlisting}
 
 \begin{itemize}
@@ -509,11 +509,11 @@ Javaコード： private boolean P() {
   連接は順次実行で実現
 \end{itemize}
 
-と対応しています。
+\noindent と対応しています。
 
 \subsection{「再帰」「下降」という名前の由来}
 
-この実装方法が「再帰下降」と呼ばれるのは以下の理由によるものです：
+この実装方法が「再帰下降」と呼ばれるのは以下の理由によるものです。
 
 \begin{enumerate}
 \item
@@ -522,10 +522,10 @@ Javaコード： private boolean P() {
   下降：文法の開始記号から「下」の規則へと解析が進む
 \end{enumerate}
 
-実際に\texttt{parse("(())")}を実行すると、以下のような呼び出しの連鎖が発生します：
+実際に\texttt{parse("(())")}を実行すると、以下のような呼び出しの連鎖が発生します。
 
 \begin{lstlisting}
-parse() -> D() -> P() -> P() -> P() -> ...
+  parse() -> D() -> P() -> P() -> P() -> ...
 \end{lstlisting}
 
 この呼び出しスタックが、先ほどスタックで説明した状態と対応しているのです。
@@ -537,11 +537,11 @@ parse() -> D() -> P() -> P() -> P() -> ...
 \index{かんげん@還元}
 \index{すたっく@スタック}
 
-下向き構文解析を理解したところで、次は\textbf{上向き構文解析}を見ていきましょう。こちらは下向きとは全く逆のアプローチを取ります。
+下向き構文解析を理解したところで、次は\textgt{上向き構文解析}を見ていきましょう。こちらは下向きとは全く逆のアプローチを取ります。
 
 \subsection{シフト還元構文解析の基本アイデア}
 
-ナイーヴな上向き構文解析は\textbf{シフト還元構文解析}とも呼ばれます。この名前は、2つの基本操作から来ています：
+ナイーヴな上向き構文解析は\textgt{シフト還元構文解析}とも呼ばれます。この名前は、2つの基本操作からきています。
 
 \begin{itemize}
 \item
@@ -554,35 +554,35 @@ parse() -> D() -> P() -> P() -> P() -> ...
 
 \subsection{シフト還元の基本的な動作}
 
-シフト還元構文解析の基本的な流れは以下のとおりです：
+シフト還元構文解析の基本的な流れは以下のとおりです。
 
 \begin{enumerate}
 \item
   入力をスタックに積んでいく（シフト操作）
 \item
-  \textbf{スタックの中身を見て、文法規則にマッチするパターンがあれば還元操作を行う}
+  \textgt{スタックの中身を見て、文法規則にマッチするパターンがあれば還元操作を行う}
 \item
-  \textbf{還元とシフトを繰り返し、最終的に開始記号だけが残れば成功}
+  \textgt{還元とシフトを繰り返し、最終的に開始記号だけが残れば成功}
 \end{enumerate}
 
-この単純な操作の繰り返しで、複雑な構文も解析できます。比喩としては、テトリスのブロックを積み上げていくようなイメージです。入力文字列を1文字ずつ積み上げ、規則にマッチしたらその部分を消すことで、最終的に開始記号だけが残るようにします。
+この単純な操作の繰り返しで、複雑な構文も解析できます。テトリスのブロックを積み上げていくようなイメージです。入力文字列を1文字ずつ積み上げ、規則にマッチしたらその部分を消すことで、最終的に開始記号だけが残るようにします。
 
 重要なのは、「いつシフトして、いつ還元するか」の判断です。素朴な手法では、まず還元できるかを確認し、できなければシフトするという戦略をとります。
 
 \subsection{例で学ぶシフト還元構文解析}
 
-同じDyck言語を例にしますが、ナイーヴな上向き構文解析では空文字列規則（ε規則）が扱いづらいので、等価な別の文法を使います：
+同じDyck言語を例にしますが、ナイーヴな上向き構文解析では空文字列規則（ε規則）が扱いづらいので、等価な別の文法を使います。
 
 \begin{lstlisting}
-D -> $ P $
-D -> $ ε$
-P -> P X
-P -> X
-X -> ( P )
-X -> ()
+  D -> $ P $
+  D -> $ ε$
+  P -> P X
+  P -> X
+  X -> ( P )
+  X -> ()
 \end{lstlisting}
 
-この文法の特徴は以下のとおりです：
+この文法の特徴は以下のとおりです。
 
 \begin{itemize}
 \item
@@ -601,88 +601,88 @@ X -> ()
   開始記号\texttt{\$}をシフト
 
 \begin{lstlisting}
-スタック: [ $ ]
-入力: ( ( ) ) $
+  入力: ( ( ) ) $
+  スタック: [ $ ]
 \end{lstlisting}
 
 \item
   最初の\texttt{(}をシフト
 
 \begin{lstlisting}
-入力: ( ) ) $
-スタック: [ $, ( ]
+  入力: ( ) ) $
+  スタック: [ $, ( ]
 \end{lstlisting}
 
 \item
   さらに\texttt{(}をシフト
 
 \begin{lstlisting}
-入力: ) ) $
-スタック: [ $, (, ( ]
+  入力: ) ) $
+  スタック: [ $, (, ( ]
 \end{lstlisting}
 
 \item
   さらに\texttt{)}をシフト
 
 \begin{lstlisting}
-入力: ) $
-スタック: [ $, (, (, ) ]
+  入力: ) $
+  スタック: [ $, (, (, ) ]
 \end{lstlisting}
 
 \item
-  スタックの末尾\texttt{(,\ )}が規則\texttt{X\ -\textgreater{}\ ()}の右辺と一致。2つの記号を\texttt{X}に\textbf{還元}：
+  スタックの末尾\texttt{(,\ )}が規則\texttt{X\ -\textgreater{}\ ()}の右辺と一致。2つの記号を\texttt{X}に\textgt{還元}
 
 \begin{lstlisting}
-入力: ) $
-スタック: [ $, (, X ]
+  入力: ) $
+  スタック: [ $, (, X ]
 \end{lstlisting}
 
 \item
-  スタックの末尾\texttt{X}が規則\texttt{P\ -\textgreater{}\ X}の右辺と一致。1つの記号を\texttt{P}に\textbf{還元}（この実装はシフトする前に、可能な還元をすべて試みます）：
+  スタックの末尾\texttt{X}が規則\texttt{P\ -\textgreater{}\ X}の右辺と一致。1つの記号を\texttt{P}に\textgt{還元}（この実装はシフトする前に、可能な還元をすべて試みます）
 
 \begin{lstlisting}
-入力: ) $
-スタック: [ $, (, P ]
+  入力: ) $
+  スタック: [ $, (, P ]
 \end{lstlisting}
 
 \item
   次の\texttt{)}をシフト
 
 \begin{lstlisting}
-入力: $
-スタック: [ $, (, P, ) ]
+  入力: $
+  スタック: [ $, (, P, ) ]
 \end{lstlisting}
 
 \item
-  スタックの末尾\texttt{(,\ P,\ )}が規則\texttt{X\ -\textgreater{}\ (\ P\ )}の右辺と一致。3つの記号を\texttt{X}に\textbf{還元}：
+  スタックの末尾\texttt{(,\ P,\ )}が規則\texttt{X\ -\textgreater{}\ (\ P\ )}の右辺と一致。3つの記号を\texttt{X}に\textgt{還元}
 
 \begin{lstlisting}
-入力: $
-スタック: [ $, X ]
+  入力: $
+  スタック: [ $, X ]
 \end{lstlisting}
 
 \item
-  スタックの末尾\texttt{X}が規則\texttt{P\ -\textgreater{}\ X}の右辺と一致。1つの記号を\texttt{P}に\textbf{還元}：
+  スタックの末尾\texttt{X}が規則\texttt{P\ -\textgreater{}\ X}の右辺と一致。1つの記号を\texttt{P}に\textgt{還元}
 
 \begin{lstlisting}
-入力: $
-スタック: [ $, P ]
+  入力: $
+  スタック: [ $, P ]
 \end{lstlisting}
 
 \item
   \texttt{\$}をシフト
 
 \begin{lstlisting}
-入力:
-スタック: [ $, P, $ ]
+  入力:
+  スタック: [ $, P, $ ]
 \end{lstlisting}
 
 \item
-  スタックの末尾\texttt{\$,\ P,\ \$}が規則\texttt{D\ -\textgreater{}\ \$\ P\ \$}の右辺と一致。3つの記号を\texttt{D}に\textbf{還元}：
+  スタックの末尾\texttt{\$,\ P,\ \$}が規則\texttt{D\ -\textgreater{}\ \$\ P\ \$}の右辺と一致。3つの記号を\texttt{D}に\textgt{還元}
 
 \begin{lstlisting}
-入力:
-スタック: [ D ]
+  入力:
+  スタック: [ D ]
 \end{lstlisting}
 \end{enumerate}
 
@@ -690,7 +690,7 @@ X -> ()
 
 \subsection{シフト還元構文解析のアルゴリズム}
 
-シフト還元構文解析の動作パターンをまとめると：
+シフト還元構文解析の動作パターンをまとめると
 
 \begin{enumerate}
 \item
@@ -736,16 +736,16 @@ X -> ()
 
 \subsection{下向きと上向きの違い}
 
-ここまでの例からわかるように：
+ここまでの例からわかるように
 
 \begin{itemize}
 \item
-  \textbf{下向き}：\texttt{D}から始めて\texttt{(())}を「生成」しようとする
+  \textgt{下向き}：\texttt{D}から始めて\texttt{(())}を「生成」しようとする
 \item
-  \textbf{上向き}：\texttt{(())}から始めて\texttt{D}に「還元」しようとする
+  \textgt{上向き}：\texttt{(())}から始めて\texttt{D}に「還元」しようとする
 \end{itemize}
 
-上向き構文解析の還元操作は、第4章で学んだ「最右導出」の逆操作に相当します。つまり、導出の過程を逆再生しているのです。
+上向き構文解析の還元操作は、第3章で学んだ「最右導出」の逆操作に相当します。つまり、導出の過程を逆再生しているのです。
 
 \section{シフト還元構文解析のJava実装}
 
@@ -753,7 +753,7 @@ X -> ()
 
 \subsection{必要なデータ構造}
 
-まず、記号（終端記号・非終端記号）を表すクラスと、文法規則を表すクラスが必要です：
+まず、記号（終端記号・非終端記号）を表すクラスと、文法規則を表すクラスが必要です。
 
 \begin{codescreen}{}
 // 記号を表すインターフェース
@@ -768,7 +768,7 @@ record Terminal(char value) implements Element {}
 record NonTerminal(char value) implements Element {}
 \end{codescreen}
 
-次に、文法規則を表す\texttt{Rule}クラスを定義します：
+次に、文法規則を表す\texttt{Rule}クラスを定義します。
 
 \begin{codescreen}{}
 import java.util.List;
@@ -801,7 +801,7 @@ public record Rule(char lhs, List<Element> rhs) {
 
 \subsection{シフト還元構文解析器の実装}
 
-上記のデータ構造を使って、実際のシフト還元構文解析器を実装します：
+上記のデータ構造を使って、実際のシフト還元構文解析器を実装します。
 
 \begin{codescreen}{}
 import java.util.List;
@@ -905,7 +905,7 @@ public class DyckShiftReduce {
 
 \subsection{実装のポイント}
 
-この実装の重要な点は以下のとおりです：
+この実装の重要な点は以下のとおりです。
 
 \begin{enumerate}
 \item
@@ -919,7 +919,7 @@ public class DyckShiftReduce {
   \texttt{List\textless{}Element\textgreater{}}をスタックとして使い、要素の追加・削除を明示的に行う
 \end{enumerate}
 
-この実装は最も単純なシフト還元構文解析で、実用的なパーサでは洗練されたアルゴリズム（LR(0)、SLR(1)、LR(1)、LALR(1)）が使われます。
+この実装は最も単純なシフト還元構文解析で、実用的なパーサーでは洗練されたアルゴリズム（LR(0)、SLR(1)、LR(1)、LALR(1)）が使われます。
 
 \section{下向き構文解析と上向き構文解析の比較}
 
@@ -927,7 +927,7 @@ public class DyckShiftReduce {
 
 \subsection{下向き構文解析の利点と欠点}
 
-\textbf{利点：}
+\textgt{利点：}
 
 \begin{enumerate}
 \item
@@ -965,7 +965,7 @@ public class DyckShiftReduce {
 \end{itemize}
 \end{enumerate}
 
-\textbf{欠点：}
+\textgt{欠点：}
 
 \begin{enumerate}
 \item
@@ -974,7 +974,7 @@ public class DyckShiftReduce {
 たとえば、以下のBNFは上向き型だと普通に解析できますが、工夫なしに下向き型で実装すると無限再帰に陥ってスタックオーバーフローします。
 
 \begin{lstlisting}
-A -> A "a" | ε // 左再帰を含む文法の例 (εは空文字列)
+  A -> A "a" | ε // 左再帰を含む文法の例 (εは空文字列)
 \end{lstlisting}
 
 この文法は「\texttt{A}は、\texttt{A}の後に\texttt{a}が続くか、何もないか」という意味ですが、\texttt{A}を解析するためにまず\texttt{A}を解析する必要があるので無限ループになります。
@@ -982,15 +982,15 @@ A -> A "a" | ε // 左再帰を含む文法の例 (εは空文字列)
 このような問題を下向き型で解決する方法も存在します。たとえば、以下のように等価な右再帰の文法に書き換えることで除去できます。
 
 \begin{lstlisting}
-A -> "a" A | ε
+  A -> "a" A | ε
 \end{lstlisting}
 
-この変換により、下向き構文解析で問題となる無限再帰を避けることができます。ただし、文法の書き換えは常に簡単とは限りません。
+この変換により、下向き構文解析で問題となる無限再帰を避けられます。ただし、文法の書き換えは常に簡単とは限りません。
 \end{enumerate}
 
 \subsection{上向き構文解析の利点と欠点}
 
-\textbf{利点：}
+\textgt{利点：}
 
 \begin{enumerate}
 \item
@@ -1001,7 +1001,7 @@ A -> "a" A | ε
   効率的な構文解析表による高速化が可能
 \end{enumerate}
 
-\textbf{欠点：}
+\textgt{欠点：}
 
 \begin{enumerate}
 \item
@@ -1026,17 +1026,17 @@ A -> "a" A | ε
 \index{きょうつうせっとうじ@共通前置辞}
 \index{ひだりさいき@左再帰}
 
-ここからは、具体的な構文解析アルゴリズムについて詳しく見ていきましょう。まずは下向き構文解析の代表格である\textbf{LL(1)}から始めます。
+ここからは、具体的な構文解析アルゴリズムについて詳しく見ていきましょう。まずは下向き構文解析の代表格である\textbf{\sffamily LL(1)}から始めます。
 
 \subsection{LL(1)とは？}
 
-\textbf{LL(1)}という名前は以下の意味を持ちます：
+\textbf{\sffamily LL(1)}という名前は以下の意味を持ちます：
 
 \begin{enumerate}
 \item
-  最初のL：\textbf{L}eft-to-right（左から右へ入力を読む）
+  最初のL：\textbf{\sffamily L}eft-to-right（左から右へ入力を読む）
 \item
-  2番目のL：\textbf{L}eftmost derivation（最左導出を行う）
+  2番目のL：\textbf{\sffamily L}eftmost derivation（最左導出を行う）
 \item
   (1)：1トークン先読み
 \end{enumerate}
@@ -1048,7 +1048,7 @@ Rightmost derivation」を表します。
 
 \subsection{LL(1)の直感的な理解}
 
-身近な例で考えてみましょう。Javaのif文とwhile文の解析を例にします：
+身近な例で考えてみましょう。Javaのif文とwhile文の解析を例にします。
 
 \begin{codescreen}{}
 if (age < 18) {
@@ -1060,24 +1060,24 @@ while (count > 0) {
 }
 \end{codescreen}
 
-プログラマがこのコードを見たとき、最初のトークンだけで文の種類を判断できます：
+プログラマがこのコードを見たとき、最初のトークンだけで文の種類を判断できます。
 
-\begin{lstlisting}
-- ifで始まる → if文だ！
-- whileで始まる → while文だ！
-\end{lstlisting}
+\begin{itemize}
+  \item ifで始まる → if文だ！
+  \item whileで始まる → while文だ！
+\end{itemize}
 
 LL(1)は、まさにこの「最初の1トークンで判断」というアイデアをアルゴリズム化したものです。
 
-しかし、すべての構文がこのように単純ではありません。たとえば、以下の単純な算術式を考えてみましょう。\texttt{N}は数値をあらわす終端記号とします：
+しかし、すべての構文がこのように単純ではありません。たとえば、以下の単純な算術式を考えてみましょう。\texttt{N}は数値をあらわす終端記号とします。
 
 \begin{lstlisting}
-E  → N
-E  → ( E )
-E  → - E
+  E  → N
+  E  → ( E )
+  E  → - E
 \end{lstlisting}
 
-この場合、\texttt{E}は以下のいずれかで始まる可能性があります：
+この場合、\texttt{E}は以下のいずれかで始まる可能性があります。
 
 \begin{itemize}
 \item
@@ -1088,31 +1088,31 @@ E  → - E
   マイナス記号（例：\texttt{-10}）
 \end{itemize}
 
-\texttt{E}は複数のトークンで始まり得ますが、それ自体は問題ではありません。困るのは、\textbf{同じトークンで始まる規則が複数ある場合に、最初の1トークンだけではどの規則を選ぶか決められない}ことです。
+\texttt{E}は複数のトークンで始まり得ますが、それ自体は問題ではありません。困るのは、\textgt{同じトークンで始まる規則が複数ある場合に、最初の1トークンだけではどの規則を選ぶか決められない}ことです。
 
 たとえば、
 
 \begin{lstlisting}
-E → id
-E → id + E
+  E → id
+  E → id + E
 \end{lstlisting}
 
-のように、\texttt{id}が式の先頭として再利用される文法では、先読み1トークンだけではどちらの規則を適用するのか判断できません。トークンが複数の構文で使い回されると、このような曖昧さが生じます。ここで触れた「1トークンで判断できない」状況は、後で扱う共通前置辞問題（5.9.7）の最も短い形だと考えてください。
+\noindent のように、\texttt{id}が式の先頭として再利用される文法では、先読み1トークンだけではどちらの規則を適用するのか判断できません。トークンが複数の構文で使い回されると、このような曖昧さが生じます。ここで触れた「1トークンで判断できない」状況は、後で扱う共通前置辞問題（4.9.7）の最も短い形だと考えてください。
 
 \subsection{なぜFIRST集合とFOLLOW集合が必要か}
 
-LL(1)を実現するには、以下の2つの問題を解決する必要があります：
+LL(1)を実現するには、以下の2つの問題を解決する必要があります。
 
 \begin{enumerate}
 \item
   複数のトークンで始まる構文
 
-上の算術式の例のように、一つの非終端記号が複数のトークンで始まる場合があります。これを体系的に扱うために\textbf{FIRST集合}（その非終端記号から始まる可能性のあるトークンの集合）が必要です。
+上の算術式の例のように、一つの非終端記号が複数のトークンで始まる場合があります。これを体系的に扱うために\textbf{\sffamily FIRST}\textgt{集合}（その非終端記号から始まる可能性のあるトークンの集合）が必要です。
 
 \item
   省略可能な要素
 
-Javaのif文には、else節があるものとないものがあります：
+Javaのif文には、else節があるものとないものがあります。
 
 \begin{codescreen}{}
 // else節なし
@@ -1122,21 +1122,21 @@ if (condition) { ... }
 if (condition) { ... } else { ... }
 \end{codescreen}
 
-else節は「あってもなくてもいい」要素です。このような場合、else節の後に何が来る「可能性がある」かを知る必要があります。これが\textbf{FOLLOW集合}（その非終端記号の後に来る可能性のあるトークンの集合）です。
+else節は「あってもなくてもいい」要素です。このような場合、else節の後に何が来る「可能性がある」かを知る必要があります。これが\textbf{\sffamily FOLLOW}\textgt{集合}（その非終端記号の後に来る可能性のあるトークンの集合）です。
 \end{enumerate}
 
 \subsection{FIRST集合とFOLLOW集合}
 
-LL(1)構文解析を実現するには、これらの集合を計算して利用します：
+LL(1)構文解析を実現するには、これらの集合を計算して利用します。
 
 \subsubsection{FIRST集合}
 
-ある非終端記号から導出される文字列の「最初に現れうるトークンの集合」を\textbf{FIRST集合}と呼びます。
+ある非終端記号から導出される文字列の「最初に現れうるトークンの集合」を\textbf{\sffamily FIRST}\textgt{集合}と呼びます。
 
-正式には、非終端記号\texttt{A}に対して以下のように定義されます：
+正式には、非終端記号\texttt{A}に対して以下のように定義されます。
 
 \begin{lstlisting}
-FIRST(A) = { a | A ⇒* aβ であるような終端記号 a }
+  FIRST(A) = { a | A ⇒* aβ であるような終端記号 a }
 \end{lstlisting}
 
 ここで、\texttt{A\ ⇒*\ aβ}は、非終端記号\texttt{A}が何らかの導出を経て、終端記号\texttt{a}で始まる文字列に変換できることを意味します。
@@ -1144,57 +1144,57 @@ FIRST(A) = { a | A ⇒* aβ であるような終端記号 a }
 たとえば、先ほどでてきた以下の算術式の文法を考えます。
 
 \begin{lstlisting}
-E  → N
-E  → ( E )
-E  → - E
+  E  → N
+  E  → ( E )
+  E  → - E
 \end{lstlisting}
 
-この場合、FIRST集合は次のようになります：
+この場合、FIRST集合は次のようになります。
 
 \begin{lstlisting}
-FIRST(E) = { '(', '-', N }
+  FIRST(E) = { '(', '-', N }
 \end{lstlisting}
 
 \subsubsection{nullable --- 空文字列を生成できるか}
 
-LL(1)構文解析で重要な概念として、\textbf{nullable}（ヌラブル）があります。これは、ある非終端記号が空文字列εを生成できるかどうかを示すものです。
+LL(1)構文解析で重要な概念として、\textbf{\sffamily nullable}（ヌラブル）があります。これは、ある非終端記号が空文字列εを生成できるかどうかを示すものです。
 
-\textbf{nullable}という名前はJavaの\texttt{null}とは関係ありません。「空にできる」つまり「何も生成しないことができる」という意味です。
+\textbf{\sffamily nullable}という名前はJavaの\texttt{null}とは関係ありません。「空にできる」つまり「何も生成しないことができる」という意味です。
 
-先ほどと同じ以下の文法を考えます：
+先ほどと同じ以下の文法を考えます。
 
 \begin{lstlisting}
-E  → N
-E  → ( E )
-E  → - E
+  E  → N
+  E  → ( E )
+  E  → - E
 \end{lstlisting}
 
-この算術式文法でのnullable集合は次のようになります：
+この算術式文法でのnullable集合は次のようになります。
 
 \begin{lstlisting}
-nullable(E) = false
+  nullable(E) = false
 \end{lstlisting}
 
 Eは明らかに空文字列を生成しないので\texttt{nullable(E)\ =\ false}となります。
 
-ところで、何故\texttt{nullable}が重要かというと、\textbf{FIRST集合}及び\textbf{FOLLOW集合}を計算するアルゴリズムで必要になるためです。\textbf{FIRST集合}の計算では、非終端記号が空文字列を生成できるかどうかを確認する必要があります。\textbf{FOLLOW集合}の計算でも、非終端記号が空文字列を生成できる場合、その後に来るトークンを正しく扱うために\texttt{nullable}が必要です。
+ところで、なぜ\texttt{nullable}が重要かというと、\textbf{\sffamily FIRST}\textgt{集合}及び\textbf{\sffamily FOLLOW}\textgt{集合}を計算するアルゴリズムで必要になるためです。\textbf{\sffamily FIRST}\textgt{集合}の計算では、非終端記号が空文字列を生成できるかどうかを確認する必要があります。\textbf{\sffamily FOLLOW}\textgt{集合}の計算でも、非終端記号が空文字列を生成できる場合、その後に来るトークンを正しく扱うために\texttt{nullable}が必要です。
 
 \subsubsection{FOLLOW集合}
 
-非終端記号の後に現れうるトークンの集合を\textbf{FOLLOW集合}と呼びます。これは、\textbf{nullable}な非終端記号（空文字列規則を持つ非終端記号）を扱うために特に重要です。
+非終端記号の後に現れうるトークンの集合を\textbf{\sffamily FOLLOW}\textgt{集合}と呼びます。これは、\textbf{\sffamily nullable}な非終端記号（空文字列規則を持つ非終端記号）を扱うために特に重要です。
 
-先ほどと同様に以下の文法を考えてみます：
+先ほどと同様に以下の文法を考えてみます。
 
 \begin{lstlisting}
-E  → N
-E  → ( E )
-E  → - E
+  E  → N
+  E  → ( E )
+  E  → - E
 \end{lstlisting}
 
-この場合\texttt{FOLLOW}集合は次のようになります：
+この場合\texttt{FOLLOW}集合は次のようになります。
 
 \begin{lstlisting}
-FOLLOW(E) = { '$', ')' }
+  FOLLOW(E) = { '$', ')' }
 \end{lstlisting}
 
 Eに続く可能性のあるトークンは、入力の終端記号\texttt{\$}（入力の終わり）と右括弧\texttt{)}です。
@@ -1214,8 +1214,8 @@ Eに続く可能性のあるトークンは、入力の終端記号\texttt{\$}�
   \(A \to X_1\,X_2\,\ldots\,X_k\) について、すべての \(X_i\)
   が\texttt{nullable}なら\texttt{nullable(A)\ =\ true}
 \item
-        \texttt{nullable = false} -\textgreater{}
-        \texttt{nullable = true}への変化がなくなるまで繰り返す
+        \texttt{nullable = false ->
+        nullable = true}への変化がなくなるまで繰り返す
 \end{enumerate}
 
 ここで \(X_1, X_2, \ldots\)
@@ -1224,9 +1224,9 @@ Eに続く可能性のあるトークンは、入力の終端記号\texttt{\$}�
 このような形になります。算術式文法を使って計算してみましょう。
 
 \begin{lstlisting}
-E → N
-E → ( E )
-E → - E
+  E → N
+  E → ( E )
+  E → - E
 \end{lstlisting}
 
 計算過程：
@@ -1235,12 +1235,12 @@ E → - E
 \item
   初期化：すべて\texttt{false}
 \item
-  \texttt{E\ →\ N}: Nは終端記号なので、Eはnullableではない
+  \texttt{E\ →\ N}：Nは終端記号なので、Eはnullableではない
 \item
-  \texttt{E\ →\ (\ E\ )}:
+  \texttt{E\ →\ (\ E\ )}：
   3つの記号があり、どれもnullableではないので、Eはnullableではない
 \item
-  \texttt{E\ →\ -\ E}:
+  \texttt{E\ →\ -\ E}：
   2つの記号があり、どちらもnullableではないので、Eはnullableではない
 \item
   どの規則もεを生成せず、右辺もnullableでないので\texttt{false}のまま
@@ -1257,7 +1257,7 @@ Eは常に何らかの記号を生成するため、空文字列になること�
 
 \subsubsection{FIRST集合の計算アルゴリズム}
 
-各規則 \(A \to \alpha\) について次の手順で計算します：
+各規則 \(A \to \alpha\) について次の手順で計算します。
 
 \begin{enumerate}
 \item
@@ -1265,17 +1265,17 @@ Eは常に何らかの記号を生成するため、空文字列になること�
 \item
   \(X_1\) が終端記号なら、\(\mathrm{FIRST}(A)\) に \(X_1\) を追加
 \item
-  \(X_1\) が非終端記号なら：
+  \(X_1\) が非終端記号なら
 
   \begin{itemize}
   \item
     \(\mathrm{FIRST}(X_1) \mathbin{\backslash} \{\varepsilon\}\) を
     \(\mathrm{FIRST}(A)\) に追加
   \item
-    \(X_1\) が\textbf{nullable}なら \(X_2\) も確認（以下同様）
+    \(X_1\) が\textbf{\sffamily nullable}なら \(X_2\) も確認（以下同様）
   \end{itemize}
 \item
-  すべての \(X_i\) が\textbf{nullable}なら、\(\varepsilon\) を
+  すべての \(X_i\) が\textbf{\sffamily nullable}なら、\(\varepsilon\) を
   \(\mathrm{FIRST}(A)\) に追加
 \end{enumerate}
 
@@ -1283,29 +1283,29 @@ Eは常に何らかの記号を生成するため、空文字列になること�
 は、規則の右辺に並ぶそれぞれの記号を位置付きで区別するための書き方です（同じ非終端記号でも、出現位置ごとに別の
 \(X_i\) として扱います）。
 
-同様に算術式文法で計算してみましょう：
+同様に算術式文法で計算してみましょう。
 
 \begin{lstlisting}
-E → N
-E → ( E )
-E → - E
+  E → N
+  E → ( E )
+  E → - E
 \end{lstlisting}
 
-各規則のFIRST集合を計算します：
+各規則のFIRST集合を計算します。
 
 \begin{itemize}
 \item
-  \texttt{E\ →\ N}:
+  \texttt{E\ →\ N}：
   第1記号がN（終端記号）なので、\texttt{N}をFIRST(E)に追加
 \item
-  \texttt{E\ →\ (\ E\ )}:
+  \texttt{E\ →\ (\ E\ )}：
   第1記号が\texttt{(}（終端記号）なので、\texttt{(}をFIRST(E)に追加
 \item
-  \texttt{E\ →\ -\ E}:
+  \texttt{E\ →\ -\ E}：
   第1記号が\texttt{-}（終端記号）なので、\texttt{-}をFIRST(E)に追加
 \end{itemize}
 
-\textbf{結果：}
+\textgt{結果：}
 \texttt{FIRST(E)\ =\ \{N,\ \textquotesingle{}(\textquotesingle{},\ \textquotesingle{}-\textquotesingle{}\}}
 
 \subsubsection{FOLLOW集合の計算アルゴリズム}
@@ -1316,7 +1316,7 @@ E → - E
 \item
   開始記号\texttt{S}に対して\texttt{FOLLOW(S)\ =\ \{\$\}}（入力終端）
 \item
-  規則\texttt{B\ →\ αAβ}に対して：
+  規則\texttt{B\ →\ αAβ}に対して
 
   \begin{itemize}
   \item
@@ -1325,7 +1325,7 @@ E → - E
     \texttt{β}がnullableなら\texttt{FOLLOW(B)}を\texttt{FOLLOW(A)}に追加
   \end{itemize}
 \item
-  規則\texttt{B\ →\ αA}（末尾に\texttt{A}）に対して：
+  規則\texttt{B\ →\ αA}（末尾に\texttt{A}）に対して
 
   \begin{itemize}
   \item
@@ -1335,46 +1335,38 @@ E → - E
   変化がなくなるまで繰り返す
 \end{enumerate}
 
-同様に算術式文法で計算してみましょう：
+同様に算術式文法で計算してみましょう。
 
 \begin{lstlisting}
-E → N
-E → ( E )
-E → - E
+  E → N
+  E → ( E )
+  E → - E
 \end{lstlisting}
 
 初期状態：
 
-\begin{lstlisting}
-- \verb|FOLLOW(E) = {$}|（開始記号として）
-\end{lstlisting}
+\begin{enumerate}
+  \item \verb|FOLLOW(E) = {$}|（開始記号として）
+  \item 規則 \texttt{E\ →\ (\ E\ )} から
+  \begin{itemize}
+  \item Eの後に)が来るので、)をFOLLOW(E)に追加
+  \item \verb|FOLLOW(E) = {$, ')'}|
+  \end{itemize}
+  \item 規則 \texttt{E\ →\ -\ E} から
+  \begin{itemize}
+  \item Eが末尾にあるので、\verb|FOLLOW(E)|を\verb|FOLLOW(E)|に追加（変化なし）
+  \end{itemize}
+  \item 規則 \texttt{E\ →\ (\ E\ )} から（2回目）
+  \begin{itemize}
+  \item すでに ) は追加済みなので、変化なし
+\end{itemize}
+  \item 規則 \texttt{E\ →\ -\ E} から（2回目）
+  \begin{itemize}
+  \item 変化なし。すべての規則を見て変化がなくなったので終了
+\end{itemize}
+\end{enumerate}
 
-規則 \texttt{E\ →\ (\ E\ )} から：
-
-\begin{lstlisting}
-- Eの後に)が来るので、)をFOLLOW(E)に追加
-- \verb|FOLLOW(E) = {$, ')'}|
-\end{lstlisting}
-
-規則 \texttt{E\ →\ -\ E} から：
-
-\begin{lstlisting}
-- Eが末尾にあるので、\verb|FOLLOW(E)|を\verb|FOLLOW(E)|に追加（変化なし）
-\end{lstlisting}
-
-規則 \texttt{E\ →\ (\ E\ )} から（2回目）：
-
-\begin{lstlisting}
-- すでに ) は追加済みなので、変化なし
-\end{lstlisting}
-
-規則 \texttt{E\ →\ -\ E} から（2回目）：
-
-\begin{lstlisting}
-- 変化なし。すべての規則を見て変化がなくなったので終了
-\end{lstlisting}
-
-\textbf{結果：}
+\textgt{結果：}
 \texttt{FOLLOW(E)\ =\ \{\$,\ \textquotesingle{})\textquotesingle{}\}}
 
 Eが唯一の非終端記号なのでFOLLOW集合の計算も簡単です。
@@ -1385,21 +1377,21 @@ LL(1)構文解析の核心は、FIRST集合とFOLLOW集合を使って「どの�
 
 \subsubsection{FIRST/FOLLOWを使った規則選択の基本原理}
 
-LL(1)構文解析では、現在解析中の非終端記号と次の入力トークンの組み合わせから、適用する規則を一意に決定します：
+LL(1)構文解析では、現在解析中の非終端記号と次の入力トークンの組み合わせから、適用する規則を一意に決定します。
 
-\textbf{1. FIRST集合による判断} - ある規則 \texttt{A\ →\ α}について：
+\textbf{\sffamily 1. FIRST}\textgt{集合による判断} --- ある規則 \texttt{A\ →\ α}について
 
 \begin{itemize}
 \item \texttt{α} が特定のトークン集合で始まる可能性がある場合、先読みトークン\texttt{a}が\texttt{FIRST(α)}に含まれている場合、この規則を適用する
 \end{itemize}
 
-\textbf{2. FOLLOW集合による判断} - 規則 \texttt{A\ →\ ε}（空文字列規則）について：
+\textbf{\sffamily 2. FOLLOW}\textgt{集合による判断} --- 規則 \texttt{A\ →\ ε}（空文字列規則）について
 
 \begin{itemize}
 \item 先読みトークンがFOLLOW(A) に含まれる場合、空文字列規則を適用する
 \end{itemize}
 
-\textbf{3. 決定性の保証} - 各状況で適用可能な規則が：
+\textbf{\sffamily 3. }\textgt{決定性の保証} --- 各状況で適用可能な規則が
 
 \begin{itemize}
 \item 一意に決まる場合、その文法は LL(1) である
@@ -1412,8 +1404,7 @@ LL(1)構文解析では、現在解析中の非終端記号と次の入力トー
 
 実際のLL(1)パーサーを構文解析器生成系で生成する場合は、上記の原理を使って構文解析表を事前に作成しておきます。これにより、解析時は単純な表引きだけで規則を決定できるため、高速な解析が可能になります。
 
-具体的には、「非終端記号と先読みトークンの組み合わせ →
-適用する規則」という対応表を作成し、解析器はこの表を参照するだけで動作します。
+具体的には、「非終端記号と先読みトークンの組み合わせ → 適用する規則」という対応表を作成し、解析器はこの表を参照するだけで動作します。
 
 このようにして構築された解析表により、LL(1)パーサーは効率的かつ決定的に動作します。
 
@@ -1428,17 +1419,17 @@ LL(1)はシンプルで実用的ですが、いくつかの限界があります
 LL(1)では、同じ非終端記号から始まる複数の規則がある場合、先読みトークンだけではどの規則を適用すべきか判断できません。
 
 \begin{lstlisting}
-S -> a B
-S -> a C
+  S -> a B
+  S -> a C
 \end{lstlisting}
 
-両方の規則が\texttt{a}で始まるため、1文字先読みでは判断できません。この問題は\textbf{左因子化}（Left
-Factoring）で解決できます：
+両方の規則が\texttt{a}で始まるため、1文字先読みでは判断できません。この問題は\textgt{左因子化}（Left
+Factoring）で解決できます。
 
 \begin{lstlisting}
-S  -> a S'
-S' -> B
-S' -> C
+  S  -> a S'
+  S' -> B
+  S' -> C
 \end{lstlisting}
 
 左因子化は直観的には、共通の前置きを抽出して新しい非終端記号を導入することで、先読みトークンだけで規則を一意に決定できるようにする変換操作です。
@@ -1446,36 +1437,36 @@ S' -> C
 とはいえ、左因子化は万能ではありません。たとえば偶数長の回文を生成する文法
 
 \begin{lstlisting}
-A → a A a | b A b | ε
+  A → a A a | b A b | ε
 \end{lstlisting}
 
-は、どれだけ変形しても先頭の文字だけでは分岐できず、LL(1)にはなりません。左因子化をほどこしても、LL(1)に収まらない文法が存在する、という具体例です。また、左因子化を重ねると非終端記号が増えて抽象構文木との対応が見えにくくなり、規則の直感的な形を失いやすいという副作用もあります。
+\noindent は、どれだけ変形しても先頭の文字だけでは分岐できず、LL(1)にはなりません。左因子化をほどこしても、LL(1)に収まらない文法が存在する、という具体例です。また、左因子化を重ねると非終端記号が増えて抽象構文木との対応が見えにくくなり、規則の直感的な形を失いやすいという副作用もあります。
 
 \item
   左再帰の問題
 
-LL(1)の別の欠点は、\textbf{左再帰}を扱えないことです。たとえば、以下のような左再帰文法を扱うことができません：
+LL(1)の別の欠点は、\textgt{左再帰}を扱えないことです。たとえば、以下のような左再帰文法を扱うことができません。
 
 \begin{lstlisting}
-E → E + T
-E → T
-T → F
-F → ( E ) | id
+  E → E + T
+  E → T
+  T → F
+  F → ( E ) | id
 \end{lstlisting}
 
-この問題は\textbf{左再帰の除去}で解決できます：
+この問題は\textgt{左再帰の除去}で解決できます。
 
 \begin{lstlisting}
-E → T E'
-E' → + T E' | ε
-T → F
-F → ( E ) | id
+  E → T E'
+  E' → + T E' | ε
+  T → F
+  F → ( E ) | id
 \end{lstlisting}
 
 ただし、この変換により文法（規則の形）の直感性が失われやすく、抽象構文木の構築も複雑になります。
 \end{enumerate}
 
-ここまでで下向き構文解析の基本的な考え方とLL(1)について学びました。次は、より効率的な上向き構文解析の代表格である\textbf{LR構文解析}を見ていきましょう。
+ここまでで下向き構文解析の基本的な考え方とLL(1)について学びました。次は、より効率的な上向き構文解析の代表格である\textbf{\sffamily LR}\textgt{構文解析}を見ていきましょう。
 
 \section{LR構文解析 --- 素朴なシフト還元の効率化}
 \index{LR構文解析}
@@ -1488,25 +1479,25 @@ F → ( E ) | id
 \index{ゆうげんおーとまとん@有限オートマトン}
 
 \begin{quote}
-要点:
-素朴なシフト還元では「いつシフト／いつ還元／どの規則で還元するか」を毎回スタック全体を見て決めていました。LR構文解析は、この判断を事前に構築した有限オートマトン（LR(0)オートマトン）に置き換えることで効率化したものです。本節以降ではLR(0)・SLR(1)・LR(1)・LALR(1)の順に発展していきますが、現在の実用パーサジェネレータ（Yacc/Bison）が採用しているのはLALR(1)で、初読では「LR系はLALR(1)が事実上の標準」と押さえれば次に進めます。
+要点：
+素朴なシフト還元では「いつシフト／いつ還元／どの規則で還元するか」を毎回スタック全体を見て決めていました。LR構文解析は、この判断を事前に構築した有限オートマトン（LR(0)オートマトン）に置き換えることで効率化したものです。本節以降ではLR(0)・SLR(1)・LR(1)・LALR(1)の順に発展していきますが、現在の実用パーサージェネレータ（Yacc/Bison）が採用しているのはLALR(1)で、初読では「LR系はLALR(1)が事実上の標準」と押さえれば次に進めます。
 \end{quote}
 
-最初に見た素朴なシフト還元構文解析には、大きな問題がありました：
+最初に見た素朴なシフト還元構文解析には、大きな問題がありました。
 
 \begin{enumerate}
 \item
-  \textbf{いつシフトして、いつ還元するか？} -
+  \textgt{いつシフトして、いつ還元するか？} ---
   毎回スタック全体を調べる必要がある
 \item
-  \textbf{どの規則で還元するか？} - すべての規則を順番に試す必要がある
+  \textgt{どの規則で還元するか？} --- すべての規則を順番に試す必要がある
 \end{enumerate}
 
-これらの判断を効率的に行うのが\textbf{LR構文解析}です。
+これらの判断を効率的に行うのが\textbf{\sffamily LR}\textgt{構文解析}です。
 
 \subsection{素朴な方法の問題点}
 
-先ほど（「例で学ぶシフト還元構文解析」（5.6.3節）で示した）\texttt{DyckShiftReduce}の実装を思い出してください：
+先ほど（「例で学ぶシフト還元構文解析」（4.6.3節）で示した）\texttt{DyckShiftReduce}の実装を思い出してください。
 
 \begin{codescreen}{}
 private boolean tryReduce() {
@@ -1523,18 +1514,18 @@ private boolean tryReduce() {
 
 \subsection{LR構文解析のアイデア}
 
-素朴なシフト還元構文解析の問題点は、毎回スタック全体を見て、どの規則が適用できるかを総当たりで確認する必要があることでした。しかし、ここで重要な観察があります：
+素朴なシフト還元構文解析の問題点は、毎回スタック全体を見て、どの規則が適用できるかを総当たりで確認する必要があることでした。しかし、ここで重要な観察があります。
 
-スタックの内容によって「次に何ができるか」は\textbf{決まっている}ということです。
+スタックの内容によって「次に何ができるか」は\textgt{決まっている}ということです。
 
-たとえば、Dyck言語の解析で考えてみましょう：
+たとえば、Dyck言語の解析で考えてみましょう。
 
 \begin{lstlisting}
-スタック: [ '(' ]
-次の入力: )
+  スタック: [ '(' ]
+  次の入力: )
 \end{lstlisting}
 
-この状態では、次にできることは以下です：
+この状態では、次にできることは以下です。
 
 \begin{enumerate}
 \item
@@ -1543,14 +1534,14 @@ private boolean tryReduce() {
   その後、\texttt{(\ )}をXに還元する
 \end{enumerate}
 
-別の例を考えてみましょう：
+別の例を考えてみましょう。
 
 \begin{lstlisting}
-スタック: [(, (, X  ]
-次の入力: )
+  スタック: [(, (, X  ]
+  次の入力: )
 \end{lstlisting}
 
-還元を優先する\texttt{DyckShiftReduce}では、次のように進みます：
+還元を優先する\texttt{DyckShiftReduce}では、次のように進みます。
 
 \begin{enumerate}
 \item
@@ -1561,17 +1552,17 @@ private boolean tryReduce() {
   その後、\texttt{(\ P\ )}を\texttt{X}に還元する
 \end{enumerate}
 
-\textbf{今どの状態にいるか}が分かれば、\textbf{次の行動が決まる}のです。
+\textgt{今どの状態にいるか}が分かれば、\textgt{次の行動が決まる}のです。
 
 \subsection{状態の発見}
 
 では、「状態」とは何でしょうか？実は、「今どの規則をどこまで読んでいるか」を表す情報です。
 
-たとえば、規則 \texttt{X\ →\ (\ P\ )} について考えてみます：
+たとえば、規則 \texttt{X\ →\ (\ P\ )} について考えてみます。
 
 \begin{enumerate}
 \item
-  \textbf{「(を読んだ直後の状態」}
+  \textgt{「(を読んだ直後の状態」}
 
   \begin{itemize}
   \item
@@ -1580,7 +1571,7 @@ private boolean tryReduce() {
     \texttt{P}は\texttt{ε}か\texttt{X\ P}のどちらか
   \end{itemize}
 \item
-  \textbf{「( P まで読んだ状態」}
+  \textgt{「(}\textbf{\sffamily P}\textgt{まで読んだ状態」}
 
   \begin{itemize}
   \item
@@ -1589,7 +1580,7 @@ private boolean tryReduce() {
     \texttt{)}が来たらシフト
   \end{itemize}
 \item
-  \textbf{「( P ) 全部読んだ状態」}
+  \textgt{「}\textbf{\sffamily ( P )}\textgt{全部読んだ状態」}
 
   \begin{itemize}
   \item
@@ -1601,26 +1592,26 @@ private boolean tryReduce() {
 
 \subsection{状態遷移の規則性}
 
-さらに重要なことは、この「状態」は規則的に遷移するということです：
+さらに重要なことは、この「状態」は規則的に遷移するということです。
 
 \begin{lstlisting}
-状態「(を読んだ直後」 + 記号「(」 → 状態「(を読んだ直後」
-状態「(を読んだ直後」 + 記号「)」 → 状態「( ) を読んだ」
+  状態「(を読んだ直後」 + 記号「(」 → 状態「(を読んだ直後」
+  状態「(を読んだ直後」 + 記号「)」 → 状態「( ) を読んだ」
 \end{lstlisting}
 
-この状態遷移は決定的で、事前にすべて計算できます。4章で学んだことを思い出してください。このような状態遷移はオートマトンとして表現できるのです。
+この状態遷移は決定的で、事前にすべて計算できます。3章で学んだことを思い出してください。このような状態遷移はオートマトンとして表現できるのです。
 
 \subsection{オートマトンの必然性}
 
 状態と状態遷移を定義することで、素朴なシフト還元構文解析でやっていた流れをオートマトンとして表現できます。たとえば、以下はDyck言語の文法
 
 \begin{lstlisting}
-D → P
-P → ( P ) P
-P → ε
+  D → P
+  P → ( P ) P
+  P → ε
 \end{lstlisting}
 
-対して構築された簡略化されたオートマトンです：
+\noindent に対して構築された簡略化されたオートマトンです。
 
 前節ではシフト還元構文解析のために\texttt{\$}や\texttt{X}を導入した拡張文法を使いましたが、ここでは状態の見通しを優先して元の簡潔な文法に戻しています（拡張文法でも同様にオートマトンを作れますが、状態数が増えて図が煩雑になるためです）。
 
@@ -1665,36 +1656,36 @@ P → ε
 \end{tikzpicture}
 \end{center}
 
-状態名が\(I_0\)のような番号になっているのは、後で導入するLR(0)項集合に対応づけるためです。イメージしやすいように、ここでは次のように読み替えてください：
+状態名が\(I_0\)のような番号になっているのは、後で導入するLR(0)項集合に対応づけるためです。イメージしやすいように、ここでは次のように読み替えてください。
 
 \begin{itemize}
 \item
-  \(I_0\): まだ何も読んでいない初期状態
+  \(I_0\)：まだ何も読んでいない初期状態
 \item
-  \(I_1\): \texttt{D}を読み終えて終端\texttt{\$}を待っている状態
+  \(I_1\)：\texttt{D}を読み終えて終端\texttt{\$}を待っている状態
 \item
-  \(I_2\): 入力全体を受理した状態
+  \(I_2\)：入力全体を受理した状態
 \item
-  \(I_3\): 括弧列\texttt{P}を読み進めている状態
+  \(I_3\)：括弧列\texttt{P}を読み進めている状態
 \item
-  \(I_4\):
+  \(I_4\)：
   \texttt{(}を読んだ直後で、その中身の\texttt{P}をこれから処理する状態
 \item
-  \(I_5\): \texttt{(\ P}まで読み、対応する\texttt{)}を待っている状態
+  \(I_5\)：\texttt{(\ P}まで読み、対応する\texttt{)}を待っている状態
 \end{itemize}
 
 このオートマトン（後で説明しますが、LR(0)オートマトンと呼ばれます）は、単に
 
 \begin{itemize}
 \item
-  \textbf{状態}：今どの規則をどこまで読んでいるか
+  \textgt{状態}：今どの規則をどこまで読んでいるか
 \item
-  \textbf{遷移}：記号を読んだら次の状態へ
+  \textgt{遷移}：記号を読んだら次の状態へ
 \end{itemize}
 
-を表現したものです。
+\noindent を表現したものです。
 
-このオートマトンを事前に構築しておけば、解析時には以下の単純な操作で構文解析が可能になります：
+このオートマトンを事前に構築しておけば、解析時には以下の単純な操作で構文解析が可能になります。
 
 \begin{enumerate}
 \item
@@ -1707,12 +1698,12 @@ P → ε
   指示された動作（シフト/還元）を実行（こちらは別途計算が必要です。後述）
 \end{enumerate}
 
-これがLR構文解析の本質です。ここから、算術式の文法を簡略化した以下の文法を使って、LRオートマトンの構築方法について説明していきます：
+これがLR構文解析の本質です。ここから、算術式の文法を簡略化した以下の文法を使って、LRオートマトンの構築方法について説明していきます。
 
 \begin{lstlisting}
-S → T
-S → T + S
-T → x
+  S → T
+  S → T + S
+  T → x
 \end{lstlisting}
 
 \subsection{拡張開始記号の必要性}
@@ -1720,17 +1711,17 @@ T → x
 \index{にゅうりょくしゅうたん@入力終端}
 \index{じゅり@受理}
 
-その前に、LR構文解析でよく使われる\textbf{拡張開始記号}（augmented start
+その前に、LR構文解析でよく使われる\textgt{拡張開始記号}（augmented start
 symbol）を追加するのが一般的です。たとえば、先ほどの文法に対してはまず最初に、新しい開始記号\texttt{S\textquotesingle{}}と規則
 \texttt{S\textquotesingle{}\ →\ S\ \$} を追加します。
 
-拡張開始記号を追加した文法は以下のようになります：
+拡張開始記号を追加した文法は以下のようになります。
 
 \begin{lstlisting}
-S' → S $
-S → T
-S → T + S
-T → x
+  S' → S $
+  S → T
+  S → T + S
+  T → x
 \end{lstlisting}
 
 \texttt{S\textquotesingle{}}が拡張開始記号であり、\texttt{\$}は入力の終端を示します。
@@ -1744,7 +1735,7 @@ T → x
 \index{どっと@ドット}
 \index{かんげん@還元}
 
-オートマトン構築のために必要な概念が\textbf{LR(0)項}です。LR(0)項は、構文解析の進行状況を表現するための基本的な単位です。
+オートマトン構築のために必要な概念が\textbf{\sffamily LR(0)}\textgt{項}です。LR(0)項は、構文解析の進行状況を表現するための基本的な単位です。
 
 文法規則の中にドット（・）を挿入して、「どこまで認識したか」を表し、各々をLR(0)項とします。
 
@@ -1761,24 +1752,24 @@ T → x
   \texttt{S\ →\ T\ +\ S・}：すべて認識した（還元可能）
 \end{itemize}
 
-の4つとなります。
+\noindent の4つとなります。
 
 \subsection{LR(0)項集合 --- 同じ「状況」をまとめる}
 \index{LR(0)項集合}
 \index{じょうたい@状態}
 
-ここで重要な概念が\textbf{LR(0)項集合}です。構文解析の過程で、複数のLR(0)項が同時に「有効」になることがあります。これらをまとめて1つの「状態」として扱います。
+ここで重要な概念が\textbf{\sffamily LR(0)}\textgt{項集合}です。構文解析の過程で、複数のLR(0)項が同時に「有効」になることがあります。これらをまとめて1つの「状態」として扱います。
 
-たとえば、以下のような状況を考えてみましょう：
+たとえば、以下のような状況を考えてみましょう。
 
 \begin{lstlisting}
-現在の状態 = {
-    S → T・+ S    （Tを認識済み、次は+を期待）
-    S → T・       （Tを認識済み、ここで還元も可能）
-}
+  現在の状態 = {
+      S → T・+ S    （Tを認識済み、次は+を期待）
+      S → T・       （Tを認識済み、ここで還元も可能）
+  }
 \end{lstlisting}
 
-この状態では、2つの可能性が同時に存在しています：
+この状態では、2つの可能性が同時に存在しています。
 
 \begin{enumerate}
 \item
@@ -1796,7 +1787,7 @@ LR(0)項集合は、このような「同じ状況で有効な項の集まり」
 \index{closure@Closure}
 \index{LR(0)項}
 
-LR(0)項集合を構築する上で最も重要なのが、LR(0)項の\textbf{閉包}（Closure）です。これは、あるLR(0)項から「論理的に導かれる全ての項」を表す概念です。
+LR(0)項集合を構築する上で最も重要なのが、LR(0)項の\textgt{閉包}（Closure）です。これは、あるLR(0)項から「論理的に導かれる全ての項」を表す概念です。
 
 たとえば、LR(0)項 \texttt{S\textquotesingle{}\ →\ ・S\ \$}
 があるとします。これは「これからSを認識したい」という状況を表しています。しかし、Sを認識するためには、Sから始まる規則も考慮する必要があります。このために閉包を求めます。
@@ -1805,30 +1796,30 @@ LR(0)項集合を構築する上で最も重要なのが、LR(0)項の\textbf{�
 \item
   \texttt{S\textquotesingle{}\ →\ ・S\ \$} （これからSを認識したい）
 \item
-  Sを認識するには、Sから始まる規則も必要：
+  Sを認識するには、Sから始まる規則も必要
 
 \begin{lstlisting}
-S → ・T + S
-S → ・T
+  S → ・T + S
+  S → ・T
 \end{lstlisting}
 
 \item
-  Tを認識するためには以下の規則も必要：
+  Tを認識するためには以下の規則も必要
 
 \begin{lstlisting}
-T → ・x
-\end{lstlisting}
-
-\item
-  最終的に、LR(0)項\texttt{S\textquotesingle{}\ →\ ・S\ \$}の閉包は以下のようになります：
-
-\begin{lstlisting}
-{
-  S' → ・S $,
-  S → ・T + S,
-  S → ・T,
   T → ・x
-}
+\end{lstlisting}
+
+\item
+  最終的に、LR(0)項\texttt{S\textquotesingle{}\ →\ ・S\ \$}の閉包は以下のようになります。
+
+\begin{lstlisting}
+  {
+    S' → ・S $,
+    S → ・T + S,
+    S → ・T,
+    T → ・x
+  }
 \end{lstlisting}
 \end{enumerate}
 
@@ -1836,35 +1827,35 @@ T → ・x
 
 \subsubsection{LR(0)項の閉包を求めるアルゴリズム}
 
-以下はLR(0)項の閉包を計算するアルゴリズムです：
+以下はLR(0)項の閉包を計算するアルゴリズムです。
 
-\begin{lstlisting}
-closure(I) {
-    J = I                                      // 初期項目集合をコピー
-    repeat {
-        for (各項目 A → α・Bβ in J) {          // ドットの後に非終端記号Bがある項目を探す
-            for (各規則 B → γ) {               // Bから始まるすべての規則を取得
-                J = J ∪ {B → ・γ}             // ドットを先頭に置いた項目を追加
-            }
-        }
-    } until Jに変化がなくなる                   // 新しい項目が追加されなくなるまで繰り返す
-    return J                                  // 閉包された項目集合を返す
-}
+\begin{lstlisting}[escapeinside={/*}{*/}]
+  closure(I) {
+      J = I                                   // /*{\footnotesize 初期項目集合をコピー} */
+      repeat {
+          for (各項目 A → α・Bβ in J) {    // /*{\footnotesize ドットの後に非終端記号Bがある項目を探す}*/
+              for (各規則 B → γ) {          // /*{\footnotesize Bから始まるすべての規則を取得}*/
+                  J = J ∪ {B → ・γ}        // /*{\footnotesize ドットを先頭に置いた項目を追加}*/
+              }
+          }
+      } until Jに変化がなくなる             // /*{\footnotesize 新しい項目が追加されなくなるまで繰り返す}*/
+      return J                              // /*{\footnotesize 閉包された項目集合を返す}*/
+  }
 \end{lstlisting}
 
-\textbf{アルゴリズムの動作解説：}
+\textgt{アルゴリズムの動作解説}
 
 \begin{enumerate}
 \item
-  \textbf{初期化}：結果集合Jに入力項目集合Iをコピー
+  \textgt{初期化}：結果集合Jに入力項目集合Iをコピー
 \item
-  \textbf{項目のスキャン}：現在のJの各項目を調べ、ドットの直後に非終端記号Bがあるかチェック
+  \textgt{項目のスキャン}：現在のJの各項目を調べ、ドットの直後に非終端記号Bがあるかチェック
 \item
-  \textbf{規則の展開}：Bから始まるすべての文法規則を取得し、ドットを先頭に置いた項目を作成
+  \textgt{規則の展開}：Bから始まるすべての文法規則を取得し、ドットを先頭に置いた項目を作成
 \item
-  \textbf{項目の追加}：新しい項目をJに追加（重複は自動で除去）
+  \textgt{項目の追加}：新しい項目をJに追加（重複は自動で除去）
 \item
-  \textbf{収束判定}：新しい項目が追加されなくなったら終了
+  \textgt{収束判定}：新しい項目が追加されなくなったら終了
 \end{enumerate}
 
 このアルゴリズムにより、あるLR(0)項に対する閉包を求めることができます。
@@ -1873,19 +1864,20 @@ closure(I) {
 
 閉包を理解したところで、これをどのようにオートマトン構築に活用するかを見ていきましょう。まず、完成したLR(0)オートマトンがどのような構造になるかを見てみます。
 
-先ほどと同じ、以下の文法に対するLR(0)オートマトンを考えます：
+先ほどと同じ、以下の文法に対するLR(0)オートマトンを考えます。
 
 \begin{lstlisting}
-S' → S $
-S → T
-S → T + S
-T → x
+  S' → S $
+  S → T
+  S → T + S
+  T → x
 \end{lstlisting}
 
-このオートマトンは以下のような構造になります：
+このオートマトンは以下のような構造になります。
 
 \begin{center}
 \begin{tikzpicture}[
+  scale=0.9, transform shape,
   >=stealth',
   node distance=3cm,
   state/.style={circle, draw, minimum size=12mm},
@@ -1923,21 +1915,21 @@ T → x
 \end{tikzpicture}
 \end{center}
 
-\textbf{オートマトンの構成要素：}
+\textgt{オートマトンの構成要素}
 
 \begin{enumerate}
 \item
-  \textbf{状態（円）}：各状態は LR(0)項の集合（閉包）を表す
+  \textgt{状態（円）}：各状態は LR(0)項の集合（閉包）を表す
 \item
-  \textbf{遷移（矢印）}：文法記号を読むことで状態が変化する
+  \textgt{遷移（矢印）}：文法記号を読むことで状態が変化する
 \item
-  \textbf{初期状態（\(I_0\)）}：構文解析の開始時の状態
+  \textgt{初期状態（\(I_0\)）}：構文解析の開始時の状態
 \item
-  \textbf{受理状態（\(I_4\)）}：構文解析が完了した状態
+  \textgt{受理状態（\(I_4\)）}：構文解析が完了した状態
 \end{enumerate}
 
 参考までに、図中の各状態 \(I_0\)〜\(I_6\) が表す
-LR(0)項集合を先取りで示しておきます。具体的な作り方は5.10.11以降で順を追って説明しますが、まずは「各状態がどの項集合に対応するか」のイメージを掴んでください：
+LR(0)項集合を先取りで示しておきます。具体的な作り方は4.10.11以降で順を追って説明しますが、まずは「各状態がどの項集合に対応するか」のイメージをつかんでください。
 
 \begin{itemize}
 \item
@@ -1956,7 +1948,7 @@ LR(0)項集合を先取りで示しておきます。具体的な作り方は5.1
   \(I_6\) = \{S → T + S・\}
 \end{itemize}
 
-\textbf{オートマトンの動作：}
+\textgt{オートマトンの動作}
 
 \begin{itemize}
 \item
@@ -1968,7 +1960,7 @@ LR(0)項集合を先取りで示しておきます。具体的な作り方は5.1
 \end{itemize}
 
 ここで一点補足しておきます。図をよく見ると、\(I_3\)（\texttt{T\ →\ x・}）や
-\(I_6\)（\texttt{S\ →\ T\ +\ S・}）のように、外向きの矢印が描かれていない状態があります。これらは\textbf{還元状態}で、ドットが規則の右辺の最後まで進み終わっていることを表します。一見「行き詰まり」のように見えますが、実際には還元状態に到達するとパーサーは「\textbf{還元}」を実行し、スタックから対応する記号を取り除いて代わりに左辺の非終端記号を積み、別の状態へ復帰します。
+\(I_6\)（\texttt{S\ →\ T\ +\ S・}）のように、外向きの矢印が描かれていない状態があります。これらは\textgt{還元状態}で、ドットが規則の右辺の最後まで進み終わっていることを表します。一見「行き詰まり」のように見えますが、実際には還元状態に到達するとパーサーは「\textgt{還元}」を実行し、スタックから対応する記号を取り除いて代わりに左辺の非終端記号を積み、別の状態へ復帰します。
 
 たとえば \(I_3\) に到達した場合は規則 \texttt{T\ →\ x}
 で還元され、\texttt{x} をスタックから取り除いて \texttt{T}
@@ -1982,19 +1974,19 @@ LR(0)項集合を先取りで示しておきます。具体的な作り方は5.1
 
 ここからはステップバイステップで先ほどの文法に対して、このLR(0)オートマトンを構築する過程を見ていきましょう。
 
-\subsection{ステップ1：初期状態（I\_0）の作成}
+\subsection{ステップ1：初期状態（$I_0$）の作成}
 
-初期状態は、拡張開始記号から始まる項目の閉包です：
+初期状態は、拡張開始記号から始まる項目の閉包です。
 
 \(I_0\) = closure(\{S' → ・S \$\})
 
-項目の閉包を計算すると：
+項目の閉包を計算すると
 
 \begin{enumerate}
 \item
   \texttt{S\textquotesingle{}\ →\ ・S\ \$} がある
 \item
-  ドットの後にSがあるので、Sから始まる規則を追加：
+  ドットの後にSがあるので、Sから始まる規則を追加
 
 \begin{itemize}
 \item
@@ -2004,7 +1996,7 @@ LR(0)項集合を先取りで示しておきます。具体的な作り方は5.1
 \end{itemize}
 
 \item
-  \texttt{S\ →\ ・T} のドットの後にTがあるので、Tから始まる規則を追加：
+  \texttt{S\ →\ ・T} のドットの後にTがあるので、Tから始まる規則を追加
 
 \begin{itemize}
 \item
@@ -2012,7 +2004,7 @@ LR(0)項集合を先取りで示しておきます。具体的な作り方は5.1
 \end{itemize}
 \end{enumerate}
 
-結果として、以下のような初期状態\(I_0\)が得られます：
+結果として、以下のような初期状態\(I_0\)が得られます。
 
 \(I_0\) = \{S' → ・S \$, S → ・T, S → ・T + S, T → ・x\}
 
@@ -2020,16 +2012,16 @@ LR(0)項集合を先取りで示しておきます。具体的な作り方は5.1
 \index{GOTO関数}
 \index{せんい@遷移}
 
-GOTO関数は、ある状態から記号を読んだときの次の状態を計算します：
+GOTO関数は、ある状態から記号を読んだときの次の状態を計算します。
 
 \begin{lstlisting}
-GOTO(I, X) = closure({A → αX・β | A → α・Xβ ∈ I})
+  GOTO(I, X) = closure({A → αX・β | A → α・Xβ ∈ I})
 \end{lstlisting}
 
-\(I_0\)からの各遷移を計算してみましょう：
+\(I_0\)からの各遷移を計算してみましょう。
 
 GOTO(\(I_0\), S) =
-\(I_0\)でドットの後にSがある項目に対して状態\(I_1\)を求める：
+\(I_0\)でドットの後にSがある項目に対して状態\(I_1\)を求める。
 
 \begin{enumerate}
 \item
@@ -2037,13 +2029,13 @@ GOTO(\(I_0\), S) =
   のドットの後にSがあるので、\texttt{S\textquotesingle{}\ →\ S・\$}
   を得る
 \item
-  上記の項集合の閉包をとって状態\(I_1\)を得る：
+  上記の項集合の閉包をとって状態\(I_1\)を得る
+
+  \(I_1\) = closure(\{S' → S・\$\}) = \{S' → S・\$\}
 \end{enumerate}
 
-\(I_1\) = closure(\{S' → S・\$\}) = \{S' → S・\$\}
-
 GOTO(\(I_0\), T) =
-\(I_0\)でドットの後にTがある項目に対して状態\(I_2\)を求める：
+\(I_0\)でドットの後にTがある項目に対して状態\(I_2\)を求める。
 
 \begin{enumerate}
 \item
@@ -2053,30 +2045,30 @@ GOTO(\(I_0\), T) =
   \texttt{S\ →\ ・T\ +\ S}
   のドットの後にTがあるので、\texttt{S\ →\ T・\ +\ S} を得る
 \item
-  上記の項集合の閉包をとって状態\(I_2\)を得る：
+  上記の項集合の閉包をとって状態\(I_2\)を得る
+
+  \(I_2\) = closure(\{S → T・, S → T・ + S\}) = \{S → T・, S → T・ + S\}
 \end{enumerate}
 
-\(I_2\) = closure(\{S → T・, S → T・ + S\}) = \{S → T・, S → T・ + S\}
-
 GOTO(\(I_0\), x) =
-\(I_0\)でドットの後にxがある項目に対して状態\(I_3\)を求める：
+\(I_0\)でドットの後にxがある項目に対して状態\(I_3\)を求める。
 
 \begin{enumerate}
 \item
   \texttt{T\ →\ ・x} のドットの後にxがあるので、\texttt{T\ →\ x・}
   を得る
 \item
-  上記の項目集合の閉包をとって状態\(I_3\)を得る：
-\end{enumerate}
+  上記の項目集合の閉包をとって状態\(I_3\)を得る
 
-\(I_3\) = closure(\{T → x・\}) = \{T → x・\}
+  \(I_3\) = closure(\{T → x・\}) = \{T → x・\}
+\end{enumerate}
 
 \subsection{ステップ3：全ての状態を探索}
 
 \(I_1\)からの遷移：
 
 GOTO(\(I_1\), \$) =
-\(I_1\)でドットの後に\(がある項目に対して状態\)I\_4\$を求める：
+\(I_1\)でドットの後に\$がある項目に対して状態\(I_4\)を求める。
 
 \begin{enumerate}
 \item
@@ -2085,14 +2077,14 @@ GOTO(\(I_1\), \$) =
   を得る
 \item
   これは受理状態なので、\(I_4\)は受理状態として定義
-\end{enumerate}
 
-\(I_4\) = \{S' → S \$・\}（受理状態）
+  \(I_4\) = \{S' → S \$・\}（受理状態）
+\end{enumerate}
 
 \(I_2\)からの遷移：
 
 GOTO(\(I_2\), +) =
-\(I_2\)でドットの後に+がある項目に対して状態\(I_5\)を求める：
+\(I_2\)でドットの後に\(+\)がある項目に対して状態\(I_5\)を求める。
 
 \begin{enumerate}
 \item
@@ -2105,26 +2097,26 @@ GOTO(\(I_2\), +) =
   さらに\texttt{T}から始まる規則も追加するため、\texttt{T\ →\ ・x}
   を得る
 \item
-  上記の項目集合の閉包をとって状態\(I_5\)を得る：
-\end{enumerate}
+  上記の項目集合の閉包をとって状態\(I_5\)を得る
 
-\(I_5\) = closure(\{S → T +・S, S → ・T, S → ・T + S, T → ・x\})\\
-= \{S → T +・S, S → ・T, S → ・T + S, T → ・x\}
+  \(I_5\) = closure(\{S → T +・S, S → ・T, S → ・T + S, T → ・x\})\\
+  = \{S → T +・S, S → ・T, S → ・T + S, T → ・x\}
+\end{enumerate}
 
 \(I_5\)からの遷移：
 
 GOTO(\(I_5\), S) =
-\(I_5\)でドットの後にSがある項目に対して状態\(I_6\)を求める：
+\(I_5\)でドットの後にSがある項目に対して状態\(I_6\)を求める。
 
 \begin{enumerate}
 \item
   \texttt{S\ →\ T\ +・S}
   のドットの後にSがあるので、\texttt{S\ →\ T\ +\ S・} を得る
 \item
-  上記の項目集合の閉包をとって状態\(I_6\)を得る：
-\end{enumerate}
+  上記の項目集合の閉包をとって状態\(I_6\)を得る
 
-\(I_6\) = \{S → T + S・\}
+  \(I_6\) = \{S → T + S・\}
+\end{enumerate}
 
 GOTO(\(I_5\), T) =
 \(I_5\)でドットの後にTがある項目は状態\(I_2\)と同じになります。
@@ -2174,10 +2166,11 @@ GOTO(\(I_5\), x) =
   \(I_5\) \texttt{-\/-x-\/-\textgreater{}} \(I_3\)
 \end{itemize}
 
-これを図にすると、以下のようになります（先ほど提示した図と同じです）：
+これを図にすると、以下のようになります（先ほど提示した図と同じです）。
 
 \begin{center}
 \begin{tikzpicture}[
+  scale=0.9, transform shape,
   >=stealth',
   node distance=3cm,
   state/.style={circle, draw, minimum size=12mm},
@@ -2220,7 +2213,7 @@ GOTO(\(I_5\), x) =
 \index{ACTION表}
 \index{GOTO表}
 
-LR(0)オートマトンが完成したら、次は構文解析表を作成します。LR(0)構文解析表は、オートマトンの状態と入力記号に基づいて、どのアクションを取るべきかを決定するためのものです。表には2種類の情報を記録します：
+LR(0)オートマトンが完成したら、次は構文解析表を作成します。LR(0)構文解析表は、オートマトンの状態と入力記号に基づいて、どのアクションを取るべきかを決定するためのものです。表には2種類の情報を記録します。
 
 \begin{enumerate}
 \item
@@ -2243,7 +2236,7 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
 
 \begin{enumerate}
 \item
-  項目 \texttt{A\ →\ α・aβ} が状態iにあり、GOTO(i, a) = j なら：
+  項目 \texttt{A\ →\ α・aβ} が状態iにあり、GOTO(i, a) = j なら
 
 \begin{itemize}
 \item
@@ -2251,7 +2244,7 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
 \end{itemize}
 
 \item
-  項目 \texttt{A\ →\ α・} が状態iにある（還元可能）なら：
+  項目 \texttt{A\ →\ α・} が状態iにある（還元可能）なら
 
 \begin{itemize}
 \item
@@ -2259,7 +2252,7 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
 \end{itemize}
 
 \item
-  項目 \texttt{S\textquotesingle{}\ →\ S\ \$・} が状態iにあるなら：
+  項目 \texttt{S\textquotesingle{}\ →\ S\ \$・} が状態iにあるなら
 
 \begin{itemize}
 \item
@@ -2267,7 +2260,7 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
 \end{itemize}
 
 \item
-  GOTO(i, A) = j なら：
+  GOTO(i, A) = j なら
 
 \begin{itemize}
 \item
@@ -2278,7 +2271,7 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
 \subsubsection{完成した解析表}
 
 \begin{table}[htb]
-  \begin{center}
+  \begin{flushleft}
   \begin{tabular}{cccccc}\hline
 状態 & x & + & \$ & S & T\\ \hline
 \(I_0\) & \(s_3\) & - & - & 1 & 2\\ \hline
@@ -2289,7 +2282,7 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
 \(I_5\) & \(s_3\) & - & - & 6 & 2\\ \hline
 \(I_6\) & - & - & \(r_2\) & - & -\\ \hline
   \end{tabular}
-  \end{center}
+  \end{flushleft}
 \end{table}
 
 凡例：
@@ -2307,9 +2300,9 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
 
 なお、上記の表は説明の見通しを優先して整理したものです。厳密に「還元可能な項目があれば任意の終端に対して還元する」というLR(0)の規則をそのまま適用すると、状態\(I_2\)では
 \texttt{S\ →\ T・} による還元と \texttt{S\ →\ T・+\ S} の \texttt{+}
-シフトが競合するため\textbf{シフト/還元コンフリクト}が生じます。この競合を「\texttt{+}
+シフトが競合するため\textgt{シフト/還元コンフリクト}が生じます。この競合を「\texttt{+}
 ならシフト、\texttt{\$}
-なら還元」と区別するには、Sの後ろに来うる記号（FOLLOW(S) =
+なら還元」と区別するには、Sの後ろにきうる記号（FOLLOW(S) =
 \{\$\}）を見て判断する必要があり、それが次節で扱うSLR(1)の発想です。本節の表は「LR(0)の状態構築までは厳密に行い、アクションの埋め方では先取りしてSLR(1)的な絞り込みを行ったもの」と理解してください。
 
 また、状態\(I_4\)の\texttt{acc}は、入力終端\texttt{\$}をシフトして
@@ -2319,9 +2312,9 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
 \subsection{LR(0)オートマトン由来の表による解析の実行}
 
 構築した構文解析表を使って、入力 \texttt{x\ +\ x\ \$}
-を解析してみましょう。各ステップでは現在の状態と入力記号からアクションを決定します：
+を解析してみましょう。各ステップでは現在の状態と入力記号からアクションを決定します。
 
-ステップ1：最初の x を処理：
+ステップ1：最初のxを処理
 
 \begin{itemize}
 \item
@@ -2331,22 +2324,22 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
 \item
   アクション: \texttt{ACTION{[}0,\ x{]}} = \(s_3\)
 \item
-  実行: x をシフトして状態3へ
+  実行: xをシフトして状態3へ
 \item
-  結果: スタック \texttt{{[}0,\ 3{]}}、入力 `+ x \$`
+  結果: スタック \texttt{{[}0,\ 3{]}}、入力\texttt{+ x \$}
 \end{itemize}
 
-ステップ2：T→x で還元：
+ステップ2：T→xで還元
 
 \begin{itemize}
 \item
   スタック: \texttt{{[}0,\ 3{]}}
 \item
-  入力: `+ x \$`
+  入力: \texttt{+ x \$}
 \item
   アクション: \texttt{ACTION{[}3,\ +{]}} = \(r_3\) (\texttt{T\ →\ x})
 \item
-  実行: \texttt{T\ →\ x} で還元
+  実行: \texttt{T\ →\ x}で還元
 
   \begin{itemize}
   \item
@@ -2358,22 +2351,22 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
   \end{itemize}
 \end{itemize}
 
-ステップ3：+ をシフト：
+ステップ3：+をシフト
 
 \begin{itemize}
 \item
   スタック: \texttt{{[}0,\ 2{]}}
 \item
-  入力: `+ x \$`
+  入力: \texttt{+ x \$}
 \item
   アクション: \texttt{ACTION{[}2,\ +{]}} = \(s_5\)
 \item
-  実行: + をシフトして状態5へ
+  実行: +をシフトして状態5へ
 \item
   結果: スタック \texttt{{[}0,\ 2,\ 5{]}}、入力 \texttt{x\ \$}
 \end{itemize}
 
-ステップ4：2番目の x をシフト：
+ステップ4：2番目のxをシフト
 
 \begin{itemize}
 \item
@@ -2383,12 +2376,12 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
 \item
   アクション: \texttt{ACTION{[}5,\ x{]}} = \(s_3\)
 \item
-  実行: x をシフトして状態3へ
+  実行: xをシフトして状態3へ
 \item
   結果: スタック \texttt{{[}0,\ 2,\ 5,\ 3{]}}、入力 \texttt{\$}
 \end{itemize}
 
-ステップ5：T→x で還元：
+ステップ5：T→xで還元
 
 \begin{itemize}
 \item
@@ -2398,7 +2391,7 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
 \item
   アクション: \texttt{ACTION{[}3,\ \${]}} = \(r_3\) (\texttt{T\ →\ x})
 \item
-  実行: \texttt{T\ →\ x} で還元
+  実行: \texttt{T\ →\ x}で還元
 
   \begin{itemize}
   \item
@@ -2410,7 +2403,7 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
   \end{itemize}
 \end{itemize}
 
-ステップ6：S→T で還元：
+ステップ6：S→Tで還元
 
 \begin{itemize}
 \item
@@ -2420,7 +2413,7 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
 \item
   アクション: \texttt{ACTION{[}2,\ \${]}} = \(r_1\) (\texttt{S\ →\ T})
 \item
-  実行: \texttt{S\ →\ T} で還元
+  実行: \texttt{S\ →\ T}で還元
 
   \begin{itemize}
   \item
@@ -2432,7 +2425,7 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
   \end{itemize}
 \end{itemize}
 
-ステップ7：S→T+S で還元：
+ステップ7：S→T+Sで還元
 
 \begin{itemize}
 \item
@@ -2443,7 +2436,7 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
   アクション: \texttt{ACTION{[}6,\ \${]}} = \(r_2\)
   (\texttt{S\ →\ T\ +\ S})
 \item
-  実行: \texttt{S\ →\ T\ +\ S} で還元
+  実行: \texttt{S\ →\ T\ +\ S}で還元
 
   \begin{itemize}
   \item
@@ -2455,7 +2448,7 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
   \end{itemize}
 \end{itemize}
 
-ステップ8：入力終端 \texttt{\$} をシフト：
+ステップ8：入力終端\texttt{\$}をシフト
 
 \begin{itemize}
 \item
@@ -2463,14 +2456,14 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
 \item
   入力: \texttt{\$}
 \item
-  アクション: \texttt{ACTION{[}1,\ \${]}\ =\ s\_4}
+  アクション: \texttt{ACTION{[}1,\ \${]}\ =\ \(s_4\)}
 \item
   実行: \texttt{\$} をシフトして状態4へ
 \item
   結果: スタック \texttt{{[}0,\ 1,\ 4{]}}、入力は空
 \end{itemize}
 
-ステップ9：受理：
+ステップ9：受理
 
 \begin{itemize}
 \item
@@ -2483,7 +2476,7 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
   実行: 解析成功！
 \end{itemize}
 
-このように、LR(0)構文解析は：
+このように、LR(0)構文解析は
 
 \begin{enumerate}
 \item
@@ -2494,30 +2487,30 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
   還元の場合は、どの規則を使うかも一意に決まる
 \end{enumerate}
 
-という単純な操作の繰り返しで、効率的に構文解析を実現します。
+\noindent という単純な操作の繰り返しで、効率的に構文解析を実現します。
 
 \subsection{LR(0)の限界：コンフリクト}
 \index{こんふりくと@コンフリクト}
 \index{しふとかんげんこんふりくと@シフト/還元コンフリクト}
 
-LR(0)は効率的ですが、重要な限界があります。ここでも先ほどと同じ文法を考えてみましょう：
+LR(0)は効率的ですが、重要な限界があります。ここでも先ほどと同じ文法を考えてみましょう。
 
 \begin{lstlisting}
-S → T
-S → T + S
-T → x
+  S → T
+  S → T + S
+  T → x
 \end{lstlisting}
 
-この文法でLR(0)オートマトンを構築すると、ある状態\texttt{X}で以下の項を含むことになります：
+この文法でLR(0)オートマトンを構築すると、ある状態\texttt{X}で以下の項を含むことになります。
 
 \begin{lstlisting}
-X = {
-    S → T・       （還元準備完了）
-    S → T・+ S    （+を期待）
-}
+  X = {
+      S → T・       （還元準備完了）
+      S → T・+ S    （+を期待）
+  }
 \end{lstlisting}
 
-この状態で問題が発生します。何故なら：
+この状態で問題が発生します。なぜなら
 
 \begin{itemize}
 \item
@@ -2526,13 +2519,13 @@ X = {
   入力が\texttt{\$}（終端）なら → \texttt{S\ →\ T}で還元すべき
 \end{itemize}
 
-しかし、LR(0)は\textbf{次の入力を見ない}ので、どちらを選ぶか決められません。これを\textbf{シフト/還元コンフリクト}と呼びます。
+しかし、LR(0)は\textgt{次の入力を見ない}ので、どちらを選ぶか決められません。これを\textgt{シフト/還元コンフリクト}と呼びます。
 
 \subsection{なぜコンフリクトが起きるのか}
 
 素朴なシフト還元では、規則の優先順位や「最長一致」のような暗黙のルールでなんとか動いていた選択を、LR(0)では「状態だけ」を見て判断しようとします。そのため、状態の中に「還元可能な項目」と「シフト可能な項目」が併存していると、どちらを選ぶべきか機械的には決められず、コンフリクトとして表面化するのです。
 
-このコンフリクトの多さから、LR(0)は単独では実用パーサジェネレータにほとんど採用されていません。ただし、LR(0)で構築した状態機械は、続くSLR(1)・LALR(1)でもそのまま土台として再利用されます。LR(0)を学ぶ価値は、ここから先のすべてのLR系手法の出発点だという点にあります。
+このコンフリクトの多さから、LR(0)は単独では実用パーサージェネレータにほとんど採用されていません。ただし、LR(0)で構築した状態機械は、続くSLR(1)・LALR(1)でもそのまま土台として再利用されます。LR(0)を学ぶ価値は、ここから先のすべてのLR系手法の出発点だという点にあります。
 
 \section{SLR(1)、LR(1)、LALR(1) --- 先読みによる改良}
 \index{SLR(1)}
@@ -2541,34 +2534,34 @@ X = {
 \index{さきよみ@先読み}
 \index{FOLLOW集合}
 
-LR(0)のコンフリクトを解決するため、\textbf{先読み}（次の入力を見る）を導入した手法が開発されました。
+LR(0)のコンフリクトを解決するため、\textgt{先読み}（次の入力を見る）を導入した手法が開発されました。
 
 \begin{tcolorbox}[title=LR系構文解析の歴史]
-本書ではLR(0) → SLR(1) → LR(1) → LALR(1)の順に解説していますが、これは「先読み機構が単純な順」に並べた教育上の順序であり、\textbf{歴史的な発見順とは逆向き}です。実際の年表は次のようになっています。
+本書ではLR(0) → SLR(1) → LR(1) → LALR(1)の順に解説していますが、これは「先読み機構が単純な順」に並べた教育上の順序であり、\textgt{歴史的な発見順とは逆向き}です。実際の年表は次のようになっています。
 
 \begin{itemize}
 \item
-  \textbf{1965年}：Donald E. Knuth, ``On the Translation of Languages from Left to Right'' でLR(k)を導入。LR(1)を含む一般的なLR(k)が決定的文脈自由言語をきれいに扱えることを示しました。ただしLR(1)は状態数が膨大で、当時の計算機資源では実装が困難でした。
+  \textbf{\sffamily 1965}\textgt{年}：Donald E. Knuth, ``On the Translation of Languages from Left to Right'' でLR(k)を導入。LR(1)を含む一般的なLR(k)が決定的文脈自由言語をきれいに扱えることを示しました。ただしLR(1)は状態数が膨大で、当時の計算機資源では実装が困難でした。
 \item
-  \textbf{1969年}：Frank DeRemerが博士論文 ``Practical Translators for LR(k) Languages''（MIT）で、LR(1)を実装可能なサイズに圧縮する手法としてLALR(1)を提案。
+  \textbf{\sffamily 1969}\textgt{年}：Frank DeRemerが博士論文 ``Practical Translators for LR(k) Languages''（MIT）で、LR(1)を実装可能なサイズに圧縮する手法としてLALR(1)を提案。
 \item
-  \textbf{1971年}：Frank DeRemer, ``Simple LR(k) grammars''（CACM）で、LR(0)オートマトンをそのまま使いFOLLOW集合で先読みを賄う、さらに簡素なSLR(k)を提案。SLRの``S''は``Simple''、つまり「LRをいかに単純化するか」という当時の問題意識を表しています。
+  \textbf{\sffamily 1971}\textgt{年}：Frank DeRemer, ``Simple LR(k) grammars''（CACM）で、LR(0)オートマトンをそのまま使いFOLLOW集合で先読みを賄う、さらに簡素なSLR(k)を提案。SLRの``S''は``Simple''、つまり「LRをいかに単純化するか」という当時の問題意識を表しています。
 \item
-  \textbf{1982年}：DeRemer \& Pennello, ``Efficient Computation of LALR(1) Look-Ahead Sets''（TOPLAS）でLALR(1)の効率的構築アルゴリズムが確立され、Yacc/Bisonなど実用システムに広く採用されました。
+  \textbf{\sffamily 1982}\textgt{年}：DeRemer \& Pennello, ``Efficient Computation of LALR(1) Look-Ahead Sets''（TOPLAS）でLALR(1)の効率的構築アルゴリズムが確立され、Yacc/Bisonなど実用システムに広く採用されました。
 \end{itemize}
 
-つまり \textbf{LR(1)が先にあり、それを実用化するためにLALR・SLRという「刈り込み」が後から作られた}というのが実情です。本書が逆順を採る理由は、LR(0)の素朴な状態構築から先読み機構を段階的に積み上げる方が、各手法の存在意義（何の問題を解いたのか）を把握しやすいからです。実装上の発見の順序と概念理解の順序は別物として整理しておくと、第6章で構文解析器生成系を選ぶ際にも感覚が掴みやすくなります。
+つまり \textbf{\sffamily LR(1)}\textgt{が先にあり、それを実用化するために}\textbf{\sffamily LALR・SLR}\textgt{という「刈り込み」が後から作られた}というのが実情です。本書が逆順を採る理由は、LR(0)の素朴な状態構築から先読み機構を段階的に積み上げる方が、各手法の存在意義（何の問題を解いたのか）を把握しやすいからです。実装上の発見の順序と概念理解の順序は別物として整理しておくと、第5章で構文解析器生成系を選ぶ際にも感覚がつかみやすくなります。
 \end{tcolorbox}
 
 \subsection{SLR(1) --- FOLLOW集合による改良}
 
 \begin{quote}
 要点:
-LR(0)で起こる「還元すべきか判断できない」問題を、還元する非終端記号Aの後ろに来うる記号（FOLLOW(A)）に先読み記号が含まれているときだけ還元する、というルールで解決した手法。多くのコンフリクトが消えるが、FOLLOW集合は文法全体から大雑把に計算されるため、より精密な文脈判断が必要なケースには対応しきれない（→
+LR(0)で起こる「還元すべきか判断できない」問題を、還元する非終端記号Aの後ろにきうる記号（FOLLOW(A)）に先読み記号が含まれているときだけ還元する、というルールで解決した手法。多くのコンフリクトが消えるが、FOLLOW集合は文法全体から大雑把に計算されるため、より精密な文脈判断が必要なケースには対応しきれない（→
 LR(1) へ）。
 \end{quote}
 
-\textbf{SLR(1)}（Simple
+\textbf{\sffamily SLR(1)}（Simple
 LR(1)）\footnote{Frank DeRemer, ``Simple LR(k) grammars'',
   Communications of the ACM, 14(7), 1971.
   SLR法を提案した論文です。なお、LALR法そのものはDeRemerの博士論文
@@ -2577,26 +2570,27 @@ LR(1)）\footnote{Frank DeRemer, ``Simple LR(k) grammars'',
   ``Efficient Computation of LALR(1) Look-Ahead Sets'', ACM TOPLAS,
   4(4), 1982 で確立されました。}は、LL(1)で学んだFOLLOW集合の考え方を使います。
 
-\textbf{基本アイデア：}
+\noindent\textgt{基本アイデア：}
+\begin{quotation}
+  「ある非終端記号Aの後にきうる記号」が分かれば、還元すべきタイミングが分かる。
+\end{quotation}
 
-「ある非終端記号Aの後に来うる記号」が分かれば、還元すべきタイミングが分かる
-
-先ほどのコンフリクトの例を考えてみましょう：
+先ほどのコンフリクトの例を考えてみましょう。
 
 \begin{lstlisting}
-X = {
-    S → T・       （還元準備完了）
-    S → T・+ S    （+を期待）
-}
+  X = {
+      S → T・       （還元準備完了）
+      S → T・+ S    （+を期待）
+  }
 \end{lstlisting}
 
-この状態で、次の入力が\texttt{+}か\texttt{\$}かによって、どのアクションを取るべきかが変わります。SLR(1)では、以下のように判断します：
+この状態で、次の入力が\texttt{+}か\texttt{\$}かによって、どのアクションを取るべきかが変わります。SLR(1)では、以下のように判断します。
 
 \begin{itemize}
 \item
-  \texttt{FOLLOW(S)\ =\ \{\$\}}（この文法では、Sの後ろには入力終端だけが来る）
+  \texttt{FOLLOW(S)\ =\ \{\$\}}（この文法では、Sの後ろには入力終端だけがくる）
 \item
-  次の入力が\texttt{+}なら：
+  次の入力が\texttt{+}なら
   \begin{itemize}
   \item
     シフト（\texttt{S\ →\ T・+\ S}のため）
@@ -2604,7 +2598,7 @@ X = {
     \texttt{+}は\texttt{FOLLOW(S)}に含まれないので、\texttt{S\ →\ T}では還元しない
   \end{itemize}
 \item
-  次の入力が\texttt{\$}なら：
+  次の入力が\texttt{\$}なら
   \begin{itemize}
   \item
     還元のみ（\texttt{\$} ∈ FOLLOW(S)）
@@ -2613,11 +2607,11 @@ X = {
 
 これで多くのコンフリクトが解消されます。
 
-\textbf{SLR(1)の改善点：}
+\noindent\textbf{\sffamily SLR(1)}\textgt{の改善点：}
 
-LR(0)では「還元可能な状態では全ての入力に対して還元」していましたが、SLR(1)では「その非終端記号の後に実際に来る可能性がある記号（FOLLOW集合）の時だけ還元」します。これにより、多くのコンフリクトが解決されます。
+LR(0)では「還元可能な状態では全ての入力に対して還元」していましたが、SLR(1)では「その非終端記号の後に実際にくる可能性がある記号（FOLLOW集合）の時だけ還元」します。これにより、多くのコンフリクトが解決されます。
 
-\textbf{SLR(1)の限界：}
+\noindent\textbf{\sffamily SLR(1)}\textgt{の限界：}
 
 ただし、FOLLOW集合は文法全体から計算される「大まかな」情報なので、より複雑な文法では依然としてコンフリクトが残る場合があります。
 
@@ -2625,21 +2619,21 @@ LR(0)では「還元可能な状態では全ての入力に対して還元」し
 
 \begin{quote}
 要点:
-SLR(1)が「文法全体から計算した大雑把なFOLLOW」を使うのに対し、LR(1)は項目自体に「この文脈で還元した直後に来うる記号」を埋め込んで持ち回ることで、文脈ごとに精密な判断を行う手法。理論上、あらゆる決定的文脈自由言語を解析できる最強クラスだが、状態数が爆発しやすい（→
+SLR(1)が「文法全体から計算した大雑把なFOLLOW」を使うのに対し、LR(1)は項目自体に「この文脈で還元した直後にきうる記号」を埋め込んで持ち回ることで、文脈ごとに精密な判断を行う手法。理論上、あらゆる決定的文脈自由言語を解析できる最強クラスだが、状態数が爆発しやすい（→
 実用化のためにLALR(1)へ）。
 \end{quote}
 
-\textbf{LR(1)の基本アイデア：}
+\noindent\textbf{\sffamily LR(1)}\textgt{の基本アイデア：}
 
 SLR(1)では文法全体から計算したFOLLOW集合を使っていましたが、LR(1)では「その具体的な解析文脈での先読み記号」を使います。
 
 \begin{lstlisting}
-LR(1)項の形式： [A → α・β, a]
+  LR(1)項の形式： [A → α・β, a]
 \end{lstlisting}
 
 ここで\texttt{a}は「この項目で還元した後に期待される記号」を表します。同じ規則でも、到達した文脈によって異なる先読み記号を持つため、SLR(1)では区別できなかった状況も正確に判断できます。
 
-LR(1)の特徴：
+\noindent\textbf{\sffamily LR(1)}\textgt{の特徴：}
 
 \begin{itemize}
 \item
@@ -2654,7 +2648,7 @@ LR(1)の特徴：
 
 \begin{quote}
 要点:
-LR(1)の状態を「コア部分（ドットの位置と規則）が同じで先読み記号だけが異なる」もの同士で統合し、状態数をLR(0)と同程度に抑えた手法。LR(1)の解析能力をほぼ保ったまま実用的なメモリ量に収まるため、Yacc/Bisonなど主要なパーサジェネレータが採用しています。LR(1)で解けるが
+LR(1)の状態を「コア部分（ドットの位置と規則）が同じで先読み記号だけが異なる」もの同士で統合し、状態数をLR(0)と同程度に抑えた手法。LR(1)の解析能力をほぼ保ったまま実用的なメモリ量に収まるため、Yacc/Bisonなど主要なパーサージェネレータが採用しています。LR(1)で解けるが
 LALR(1)
 では解けない（マージで再発するコンフリクトがある）特殊な文法は存在しますが、現実のプログラミング言語ではほとんど問題になりません。
 \end{quote}
@@ -2664,52 +2658,52 @@ LR(1)は強力ですが、状態数の爆発という問題があります。LR(
 LALR(1)（Look-Ahead
 LR(1)）は、この問題を解決する「実用的な妥協点」です。
 
-LALR(1)の基本アイデアは、LR(1)で生成される多くの状態が「コア部分（ドットの位置と規則）は同じで、先読み記号だけが異なる」という特徴に着目することです。LALR(1)では、これらの状態を統合します：
+LALR(1)の基本アイデアは、LR(1)で生成される多くの状態が「コア部分（ドットの位置と規則）は同じで、先読み記号だけが異なる」という特徴に着目することです。LALR(1)では、これらの状態を統合します。
 
-LR(1)の2つの状態：
-
-\begin{itemize}
-\item
-  状態A: {[}E → T・, +{]}
-\item
-  状態B: {[}E → T・, \${]}
-\end{itemize}
-
-LALR(1)では統合：
+LR(1)の2つの状態
 
 \begin{itemize}
 \item
-  新状態: {[}E → T・, \{+, \$\}{]}
+  状態A: \texttt{{[}E → T・, +{]}}
+\item
+  状態B: \texttt{{[}E → T・, \${]}}
 \end{itemize}
 
-LALR(1)の特徴は、状態数がLR(0)と同程度に抑えられること、SLR(1)より強力でほとんどの実用言語を扱えること、そしてYacc/Bisonなど主要なパーサジェネレータが標準採用していることです。LR(1)の解析能力をほぼ保ちながら、状態数をSLR(1)と同程度に抑えられる「実用的な妥協点」として広く使われています。
+LALR(1)では統合
+
+\begin{itemize}
+\item
+  新状態: \texttt{{[}E → T・, \{+, \$\}{]}}
+\end{itemize}
+
+LALR(1)の特徴は、状態数がLR(0)と同程度に抑えられること、SLR(1)より強力でほとんどの実用言語を扱えること、そしてYacc/Bisonなど主要なパーサージェネレータが標準採用していることです。LR(1)の解析能力をほぼ保ちながら、状態数をSLR(1)と同程度に抑えられる「実用的な妥協点」として広く使われています。
 
 \begin{lstlisting}
-LR(1) 状態A = {
-    [A → α・β, a]
-    [B → γ・δ, b]
-}
+  LR(1) 状態A = {
+      [A → α・β, a]
+      [B → γ・δ, b]
+  }
 
-LR(1) 状態B = {
-    [A → α・β, c]
-    [B → γ・δ, d]
-}
+  LR(1) 状態B = {
+      [A → α・β, c]
+      [B → γ・δ, d]
+  }
 \end{lstlisting}
 
-これをマージすると、以下のようになります：
+これをマージすると、以下のようになります。
 
 \begin{lstlisting}
-LALR(1) 状態 = {
-    [A → α・β, {a, c}]
-    [B → γ・δ, {b, d}]
-}
+  LALR(1) 状態 = {
+      [A → α・β, {a, c}]
+      [B → γ・δ, {b, d}]
+  }
 \end{lstlisting}
 
 先読み記号が和集合になることに注目してください。
 
 \subsection{LALR(1)の構築方法}
 
-LALR(1)オートマトンの構築には主に2つの方法があります：
+LALR(1)オートマトンの構築には主に2つの方法があります。
 
 \subsubsection{方法1：LR(1)からの変換}
 
@@ -2744,48 +2738,48 @@ LALR(1)オートマトンの構築には主に2つの方法があります：
 \index{こんふりくと@コンフリクト}
 \index{かんげんかんげんこんふりくと@還元/還元コンフリクト}
 
-状態のマージにより、LR(1)では解決できていたコンフリクトが再発することがあります。以下の文法を考えてみましょう：
+状態のマージにより、LR(1)では解決できていたコンフリクトが再発することがあります。以下の文法を考えてみましょう。
 
 \begin{lstlisting}
-S' → S $
-S → a A d | b B d | a B e | b A e
-A → c
-B → c
+  S' → S $
+  S → a A d | b B d | a B e | b A e
+  A → c
+  B → c
 \end{lstlisting}
 
 この文法は、前半の記号（aかb）と後半の記号（dかe）の組み合わせで、中間のAかBを決定する必要があります。
 
-LR(1)では、以下のような、同じLR(0)コアを持つ状態が別々に存在します：
+LR(1)では、以下のような、同じLR(0)コアを持つ状態が別々に存在します。
 
 \begin{lstlisting}
-状態X: {
-    [A → c・, d]
-    [B → c・, e]
-}
+  状態X: {
+      [A → c・, d]
+      [B → c・, e]
+  }
 
-状態Y: {
-    [A → c・, e]
-    [B → c・, d]
-}
+  状態Y: {
+      [A → c・, e]
+      [B → c・, d]
+  }
 \end{lstlisting}
 
-LR(1)では文脈ごとに先読み記号が分かれているため、それぞれの状態では還元先を一意に決められます。しかしLALR(1)では、同じLR(0)コアを持つこれらの状態がマージされます：
+LR(1)では文脈ごとに先読み記号が分かれているため、それぞれの状態では還元先を一意に決められます。しかしLALR(1)では、同じLR(0)コアを持つこれらの状態がマージされます。
 
 \begin{lstlisting}
-マージ後の状態: {
-    [A → c・, d/e]
-    [B → c・, d/e]
-}
+  マージ後の状態: {
+      [A → c・, d/e]
+      [B → c・, d/e]
+  }
 \end{lstlisting}
 
 この状態で、先読みがdまたはeの時、AとBのどちらで還元すべきか決定できません（reduce/reduceコンフリクト）。
 
 \subsection{LALR(1)とLR(1)の実用的な比較}
 
-実際のプログラミング言語の文法での比較：
+\noindent 実際のプログラミング言語の文法での比較：
 
 \begin{table}[htb]
-  \begin{center}
+  \begin{flushleft}
     \begin{tabular}{lll}\hline
 特性 & LR(1) & LALR(1)\\ \hline
 状態数 & 数千～数万 & 数百（LR(0)と同程度）\\ \hline
@@ -2794,13 +2788,13 @@ LR(1)では文脈ごとに先読み記号が分かれているため、それぞ
 解析能力 & 最も強力 & わずかに劣る\\ \hline
 実用性 & メモリ制約で困難 & 十分実用的\\ \hline
     \end{tabular}
-  \end{center}
+  \end{flushleft}
 \end{table}
 
 \subsection{なぜYaccはLALR(1)を選んだのか}
 
 1975年にStephen C.
-JohnsonがYaccを開発した際、LALR(1)を採用した理由は以下のようなものです：
+JohnsonがYaccを開発した際、LALR(1)を採用した理由は以下のようなものです。
 
 \begin{enumerate}
 \item
@@ -2813,7 +2807,7 @@ JohnsonがYaccを開発した際、LALR(1)を採用した理由は以下のよ�
 
 \subsection{LALR(1)の実用例}
 
-実際のプログラミング言語の構文解析ではLALR(1)が使われていることが多いです：
+実際のプログラミング言語の構文解析ではLALR(1)が使われていることが多いです。
 
 \begin{itemize}
 \item
@@ -2826,7 +2820,7 @@ JohnsonがYaccを開発した際、LALR(1)を採用した理由は以下のよ�
 
 \subsection{LALR(1)の限界を超えて}
 
-LALR(1)でもコンフリクトが解決できない場合には以下のような対処法があります：
+LALR(1)でもコンフリクトが解決できない場合には以下のような対処法があります。
 
 \begin{enumerate}
 \item
@@ -2864,13 +2858,13 @@ GLR\footnote{GLR (Generalized LR) は Masaru Tomita, \emph{Efficient
 \subsection{LR系の早見表}
 
 LR系の各手法の特徴を、後で参照しやすいように一覧にまとめておきます。
-
+\clearpage
 \begin{table}[htb]
   \small
   \begin{center}
-    \begin{tabular}{lp{2cm}p{2cm}p{3cm}p{3cm}}\hline
+    \begin{tabular}{lp{2cm}p{2cm}p{3.5cm}p{3cm}}\hline
       手法 & 解析能力 & 状態数の傾向 & 主な用途・採用例 & 補足\\ \hline
-LR(0) & 弱い（コンフリクト多発） & 少ない & 教育目的が中心。実用パーサジェネレータでは単独採用は稀 & 還元時に先読みを見ない\\ \hline
+LR(0) & 弱い（コンフリクト多発） & 少ない & 教育目的が中心。実用パーサージェネレータでは単独採用はまれ & 還元時に先読みを見ない\\ \hline
 SLR(1) & 中程度 & LR(0)と同じ & 比較的単純な文法 & FOLLOW集合で還元タイミングを絞る\\ \hline
 LR(1) & 最強（あらゆる決定的文脈自由言語） & 数百〜数千以上に膨らむ & 主に理論研究や、状態数を許容できる小規模文法 & 項目自体に先読み記号を持たせる\\ \hline
 LALR(1) & LR(1)にほぼ匹敵 & LR(0)と同程度 & Yacc/Bison、PostgreSQL、Rubyの構文解析など実用 & LR(1)の状態をコアごとに統合した妥協点\\ \hline
@@ -2889,14 +2883,14 @@ conflictに出くわした場合、本書のSLR(1)〜LALR(1)節で扱った「�
 \index{ばっくとらっく@バックトラック}
 \index{ぶんみゃくいぞんげんご@文脈依存言語}
 
-2004年にBryan Fordが提案した\textbf{Parsing Expression
+2004年にBryan Fordが提案した\textbf{\sffamily Parsing Expression
 Grammar（PEG）}は、全く違うアプローチを取ります。これまでの構文解析手法は大前提として、文脈自由文法を元にしていましたが、PEGは文脈自由文法に一見よく似た、それでいて異なる新たな形式文法です。異なる形式文法であるため、CFGと表現能力はことなります。
 
 正確にいうと、PEG自体を構文解析アルゴリズムというのは多少不適切なのですが、PEG自体に標準的な操作的意味論（実行の方法くらいの意味）が定義されているため、ここではPEGを構文解析アルゴリズムとして扱います。
 
 \subsection{PEGの基本アイデア}
 
-PEGの最大の特徴は以下のとおりです：
+PEGの最大の特徴は以下のとおりです。
 
 \begin{enumerate}
 \item
@@ -2905,16 +2899,16 @@ PEGの最大の特徴は以下のとおりです：
   字句解析が不要：文字列レベルで直接解析
 \item
   いくつかの文脈依存言語を扱える：
-  たとえば、\texttt{a\^{}n\ b\^{}n\ c\^{}n}も扱える
+  たとえば、\(a^n\ b^n\ c^n\)も扱える
 \item
   全ての決定的文脈自由言語を表現可能
 \item
   非常に単純：アルゴリズムが非常に単純で、実装が容易
 \end{enumerate}
 
-\subsection{第3章で実装したPEG}
+\subsection{第2章で実装したPEG}
 
-第3章で実装した\texttt{PegJsonParser}がまさにPEGの実装でした：
+第2章で実装した\texttt{PegJsonParser}がまさにPEGの実装でした。
 
 \begin{codescreen}{}
 public Ast.JsonArray parseArray() {
@@ -2942,7 +2936,7 @@ public Ast.JsonArray parseArray() {
 \index{れんせつ@連接}
 \index{くりかえし@繰り返し}
 
-PEGは以下の8つの構成要素から成り立ちます：
+PEGは以下の8つの構成要素から成り立ちます。
 
 \begin{enumerate}
 \item
@@ -2964,7 +2958,7 @@ PEGは以下の8つの構成要素から成り立ちます：
 \end{enumerate}
 
 特に7番と8番は文脈自由文法にはない、PEG特有の機能です。
-
+\clearpage
 \subsection{PEGとCFGの違い}
 \index{PEG!CFGとの違い}
 \index{CFG}
@@ -2972,7 +2966,7 @@ PEGは以下の8つの構成要素から成り立ちます：
 \index{ひだりさいき@左再帰}
 \index{かいぶん@回文}
 
-\begin{table}[htb]
+\begin{table}[h]
   \begin{center}
     \begin{tabular}{lll}\hline
       特徴 & CFG & PEG\\ \hline
@@ -2985,15 +2979,14 @@ PEGは以下の8つの構成要素から成り立ちます：
   \end{center}
 \end{table}
 
-言語クラスとしてみたとき、PEGが認識する言語のクラスはCFGに含まれません。CFGでは表現できない\(a^n b^n c^n\)のような言語をPEGは表現できるからです。逆向き、つまり「CFGの認識する言語クラスがPEGに含まれるか」は未解決問題（open
+言語クラスとしてみたとき、PEGが認識する言語のクラスはCFGに含まれません。CFGでは表現できない\(a^n\ b^n\ c^n\)のような言語をPEGは表現できるからです。逆向き、つまり「CFGの認識する言語クラスがPEGに含まれるか」は未解決問題（open
 problem）ですが、以下のような状況証拠から成り立たないだろうと予想されています。
 
 \begin{itemize}
 \item
   回文を表現できない可能性が高い：
   \texttt{A\ →\ aAa\ \textbar{}\ bAb\ \textbar{}\ ε}
-  のような回文を生成する文法と等価な文法は、PEGではまだ知られていません。PEGで回文に近いものを書こうとすると、2の累乗
-  - 2の長さの回文という非常に不自然な表現になることが知られています。
+  のような回文を生成する文法と等価な文法は、PEGではまだ知られていません。PEGで回文に近いものを書こうとすると、2の累乗 − 2の長さの回文という非常に不自然な表現になることが知られています。
 \item
   線形時間で解析が可能： PEGは後述するPackrat
   Parsingにより、線形時間で解析が可能です。CFG全体に対する線形時間の解析アルゴリズムは知られていません。
@@ -3006,11 +2999,11 @@ problem）ですが、以下のような状況証拠から成り立たないだ�
 \index{めもか@メモ化}
 \index{PEG}
 
-PEGの最大の弱点は、バックトラックにより最悪の場合に指数関数時間がかかることです。\textbf{Packrat
+PEGの最大の弱点は、バックトラックにより最悪の場合に指数関数時間がかかることです。\textbf{\sffamily Packrat
 Parsing}\footnote{Bryan Ford, ``Packrat parsing: simple, powerful, lazy,
   linear time'', ICFP '02, 2002. PEGのオリジナル論文 (POPL '04)
   より前に発表されており、線形時間化のアイデアが先に提示されました。なお、PEGとPackrat
-  Parsingで素朴には扱えなかった\textbf{左再帰}を扱うためのアルゴリズムは、Warth,
+  Parsingで素朴には扱えなかった\textgt{左再帰}を扱うためのアルゴリズムは、Warth,
   Douglass, Millstein, ``Packrat Parsers Can Support Left Recursion'',
   PEPM '08, 2008 で提案されています。}は、メモ化（memoization）を使ってこの問題を解決します。
 
@@ -3021,11 +3014,11 @@ Parsing}\footnote{Bryan Ford, ``Packrat parsing: simple, powerful, lazy,
 
 メモ化（memoization）は、「同じ引数で関数を呼んだら、同じ結果が返る」ことを利用して、一度計算した結果をキャッシュする技法です。
 
-「メモ化」という名前は「memoize」（記憶する）から来ています。「メモリ化」ではなく「メモ化」であることに注意してください。
+「メモ化」という名前は「memoize」（記憶する）からきています。「メモリ化」ではなく「メモ化」であることに注意してください。
 
 \subsection{フィボナッチ数で学ぶメモ化}
 
-フィボナッチ数の素朴な実装を考えてみます：
+フィボナッチ数の素朴な実装を考えてみます。
 
 \begin{codescreen}{}
 public static long fib(long n) {
@@ -3035,7 +3028,7 @@ public static long fib(long n) {
 }
 \end{codescreen}
 
-この実装の問題点は、同じ値を何度も計算してしまうことです。メモ化を適用すると次のようになります：
+この実装の問題点は、同じ値を何度も計算してしまうことです。メモ化を適用すると次のようになります。
 
 \begin{codescreen}{}
 private static Map<Long, Long> cache = new HashMap<>();
@@ -3057,7 +3050,7 @@ public static long fib(long n) {
 }
 \end{codescreen}
 
-メモ化の効果はこのようなケースで絶大です。具体的には：
+メモ化の効果はこのようなケースで絶大です。具体的には
 
 \begin{itemize}
 \item
@@ -3068,13 +3061,13 @@ public static long fib(long n) {
 
 メモ化によって結果をキャッシュすることで大幅に計算量を削減できます。
 
-\subsection{PEGパーサのメモ化}
+\subsection{PEGパーサーのメモ化}
 
-PEGパーサにもメモ化を適用できます。単に全ての規則に対してメモ化を行ったものを\textbf{Packrat
+PEGパーサーにもメモ化を適用できます。単に全ての規則に対してメモ化を行ったものを\textbf{\sffamily Packrat
 Parsing}と呼びます。Packrat
 Parsingでは、各規則のパース結果をキャッシュし、同じ位置で同じ規則を再度パースする際にキャッシュを利用します。このようにすることで、PEGのバックトラックによる指数関数的な計算量を線形時間に抑えることができます。
 
-Packrat Parsingの基本的な実装は以下のようになります：
+Packrat Parsingの基本的な実装は以下のようになります。
 
 \begin{codescreen}{}
 public class PackratParser {
@@ -3122,7 +3115,7 @@ public class PackratParser {
 
 \begin{itemize}
 \item
-  線形時間：\(O(n)（\)n\$は入力長）
+  線形時間：\(O(n)\)（\(n\)は入力長）
 \item
   左再帰対応：工夫により可能
 \item
@@ -3179,7 +3172,7 @@ Parsingを使えばPEGも線形時間になります。
 
 \subsection{学んだアルゴリズムの整理}
 
-\textbf{下向き構文解析（トップダウン）}
+\textgt{下向き構文解析（トップダウン）}
 
 \begin{itemize}
 \item
@@ -3188,7 +3181,7 @@ Parsingを使えばPEGも線形時間になります。
   LL(1)構文解析：FIRST集合とFOLLOW集合による効率化
 \end{itemize}
 
-\textbf{上向き構文解析（ボトムアップ）}
+\textgt{上向き構文解析（ボトムアップ）}
 
 \begin{itemize}
 \item
@@ -3197,7 +3190,7 @@ Parsingを使えばPEGも線形時間になります。
   LR(0)、SLR(1)、LR(1)、LALR(1)：段階的に強力になる手法
 \end{itemize}
 
-\textbf{その他の手法}
+\textgt{その他の手法}
 
 \begin{itemize}
 \item
@@ -3206,7 +3199,7 @@ Parsingを使えばPEGも線形時間になります。
   Packrat Parsing：メモ化によるPEGの線形時間化
 \end{itemize}
 
-これらについて知っていれば、次のような判断ができるようになります：
+これらについて知っていれば、次のような判断ができるようになります。
 
 \begin{enumerate}
 \item
@@ -3252,4 +3245,4 @@ Parsingを使えばPEGも線形時間になります。
 
 構文解析は難しく感じるかもしれませんが、基本的なアイデアは「文字列を解析して木構造を抽出する」というシンプルなものです。この章で学んだ各手法の特徴を理解しておけば、実際の開発で構文解析が必要になった時に、適切な選択ができるはずです。
 
-次章では、ここで学んだアルゴリズムを実装したパーサジェネレータ（構文解析器生成系）について具体的に見ていきます。
+次章では、ここで学んだアルゴリズムを実装したパーサージェネレータ（構文解析器生成系）について具体的に見ていきます。

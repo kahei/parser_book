@@ -1094,7 +1094,7 @@ parseRBracket();
 return new JsonAst.JsonArray(values);
 \end{codescreen}
 
-\noindent とします。もし、テキストが正しいJSONでない場合、\texttt{parseRBracket()}から例外が投げられるはずですが、その例外は\textgt{より上位の層が適切にリカバーしてくれると期待して}放置します。JSONのような再帰的な構造を解析する時、このような、「自分の呼び出し元が適切にやってくれるはず」（何故なら、自分はその呼び出し元で適切にcatchしているのだから）という考え方が重要になります。
+\noindent とします。もし、テキストが正しいJSONでない場合、\texttt{parseRBracket()}から例外が投げられるはずですが、その例外は\textgt{より上位の層が適切にリカバーしてくれると期待して}放置します。JSONのような再帰的な構造を解析する時、このような、「自分の呼び出し元が適切にやってくれるはず」（なぜなら、自分はその呼び出し元で適切にcatchしているのだから）という考え方が重要になります。
 
 多少複雑になりましたが、\texttt{parseArray()}の定義が、EBNFにおける表記
 
@@ -1210,7 +1210,7 @@ pair = string COLON value;
 \end{enumerate}
 
 このような構文解析の手法を\textbf{\sffamily PEG（Parsing Expression
-Grammar}\textgt{、解析表現文法）}と呼びます。PEGは2004年に提案された比較的新しい手法で、プログラミング言語のような「曖昧さがない」言語の解析に適しています。最近ではPython（バージョン3.9以降）もPEGベースの構文解析器を使っています\footnote{PythonにおけるPEGパーサ採用の経緯と理由は
+Grammar}\textgt{、解析表現文法）}と呼びます。PEGは2004年に提案された比較的新しい手法で、プログラミング言語のような「曖昧さがない」言語の解析に適しています。最近ではPython（バージョン3.9以降）もPEGベースの構文解析器を使っています\footnote{PythonにおけるPEGパーサー採用の経緯と理由は
   \href{https://peps.python.org/pep-0617/}{PEP 617 -- New PEG parser for
   CPython} で詳しく説明されています。}。
 
