@@ -2483,7 +2483,7 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
   実行: 解析成功！
 \end{itemize}
 
-このように、LR(0)構文解析は：
+このように、この構文解析表を使った構文解析は：
 
 \begin{enumerate}
 \item
@@ -2554,7 +2554,7 @@ LR(0)のコンフリクトを解決するため、\textbf{先読み}（次の入
 \item
   \textbf{1971年}：Frank DeRemer, ``Simple LR(k) grammars''（CACM）で、LR(0)オートマトンをそのまま使いFOLLOW集合で先読みを賄う、さらに簡素なSLR(k)を提案。SLRの``S''は``Simple''、つまり「LRをいかに単純化するか」という当時の問題意識を表しています。
 \item
-  \textbf{1982年}：DeRemer \& Pennello, ``Efficient Computation of LALR(1) Look-Ahead Sets''（TOPLAS）でLALR(1)の効率的構築アルゴリズムが確立され、Yacc/Bisonなど実用システムに広く採用されました。
+  \textbf{1982年}：DeRemer \& Pennello, ``Efficient Computation of LALR(1) Look-Ahead Sets''（TOPLAS）でLALR(1)の効率的構築アルゴリズムが確立され、Bisonなど後発の実用システムに広く採用されました。
 \end{itemize}
 
 つまり \textbf{LR(1)が先にあり、それを実用化するためにLALR・SLRという「刈り込み」が後から作られた}というのが実情です。本書が逆順を採る理由は、LR(0)の素朴な状態構築から先読み機構を段階的に積み上げる方が、各手法の存在意義（何の問題を解いたのか）を把握しやすいからです。実装上の発見の順序と概念理解の順序は別物として整理しておくと、第5章で構文解析器生成系を選ぶ際にも感覚が掴みやすくなります。
@@ -3122,7 +3122,7 @@ public class PackratParser {
 
 \begin{itemize}
 \item
-  線形時間：\(O(n)（\)n\$は入力長）
+  線形時間：\(O(n)\)（\(n\)は入力長）
 \item
   左再帰対応：工夫により可能
 \item
@@ -3194,7 +3194,7 @@ Parsingを使えばPEGも線形時間になります。
 \item
   シフト還元構文解析：葉から根に向かって構文木を構築
 \item
-  LR(0)、SLR(1)、LR(1)、LALR(1)：段階的に強力になる手法
+  LR(0)、SLR(1)、LALR(1)、LR(1)：段階的に強力になる手法
 \end{itemize}
 
 \textbf{その他の手法}

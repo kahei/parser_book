@@ -189,7 +189,7 @@ term { ('+' | '-') term }
 \texttt{term\ \{\ (\textquotesingle{}+\textquotesingle{}\ \textbar{}\ \textquotesingle{}-\textquotesingle{})\ term\ \}}
 によって定義される」と読めます。
 
-なお、本来の（ISO/IEC）BNFでは
+なお、ISO/IEC 14977のEBNFでは
 
 \begin{lstlisting}
 expr = term, { ('+' | '-'), term };
@@ -721,7 +721,7 @@ int eval(Exp e) {
 このように抽象構文木を再帰的にたどることで、式の評価が実現されます。
 
 \texttt{Div}
-の場合のゼロ除算エラー処理は、プログラムの実行時エラーを防ぐために不可欠です。他の演算（\texttt{Add},
+の場合のゼロ除算エラー処理は、ゼロ除算を明示的に検出するために不可欠です。他の演算（\texttt{Add},
 \texttt{Sub},
 \texttt{Mul}）では、Javaの整数演算がオーバーフローする可能性はありますが、\texttt{ArithmeticException}
 のような実行時例外を直接引き起こす「不正な演算」は（ゼロ除算ほど明確には）定義されていないため、ここでは特にエラー処理を加えていません（もちろん、より堅牢な電卓を作る場合はオーバーフロー検知なども考慮に入れるべきです）。

@@ -590,14 +590,14 @@ int x = (i)'a';
 
 C言語ではこのようなややこしい構文を解析するために、構文解析器がtypedefした識別子のテーブルを持っておいて、それを使って構文解析を行うという手法を採用しています。
 
-\section{Scalaでの「文頭に演算子が来る場合の処理」}
+\section{Scala 3での「文頭に演算子が来る場合の処理」}
 \index{Scala}
 \index{えんざんし@演算子}
 \index{かいぎょう@改行}
 \index{せみころん@セミコロン}
 
 6.4
-で改行で文を終端する文法について説明しましたが、Scalaはさらにややこしい入力を処理できなければいけません。たとえば、以下のような文を解釈できる必要があります。
+で改行で文を終端する文法について説明しましたが、Scala 3はさらにややこしい入力を処理できなければいけません。たとえば、以下のような文を解釈できる必要があります。
 
 \begin{codescreen}{}
 val x = 1
@@ -607,7 +607,7 @@ println(x) // 3
 
 ここで、xを3とちゃんと解釈するには\texttt{val\ x\ =\ 1}が改行で終わったから「文が終わった」と解釈せず、次のトークンである\texttt{+}まで見てから文が終わるか判定する必要があります。これまで試した限り、同じことができるのはJavaScriptくらいで、Ruby、Python、Kotlin、Go、Swiftなどの言語ではエラーになるか、\texttt{x\ =\ 1}で文が終わったと解釈され、\texttt{+\ 2}は別の文として解釈されるケースばかりでした。
 
-この処理について、Scala言語仕様内の\href{https://scala-lang.org/files/archive/spec/2.13/01-lexical-syntax.html}{1.2
+この処理について、Scala 3言語仕様内の\href{https://www.scala-lang.org/files/archive/spec/3.4/01-lexical-syntax.html}{1.2
 Newline Characters}に関連する記述があります。
 
 \begin{quote}
@@ -616,7 +616,7 @@ semi-colons or newlines. A newline in a Scala source text is treated as
 the special token ``nl'' if the three following criteria are satisfied:
 1. The token immediately preceding the newline can terminate a
 statement. 2. The token immediately following the newline can begin a
-statement. 3. The token appears in a region where newlines are enabled.
+statement and is not a leading infix operator. 3. The token appears in a region where newlines are enabled.
 The tokens that can terminate a statement are: literals, identifiers and
 the following delimiters and reserved words:
 \end{quote}
@@ -627,12 +627,12 @@ the following delimiters and reserved words:
 \item
   改行の直前のトークンが「文を終わらせられる」ものである場合
 \item
-  改行の直後のトークンが「文を始められる」ものである場合
+  改行の直後のトークンが「文を始められる」ものであり、行頭の中置演算子ではない場合
 \item
   改行が「利用可能」になっている箇所にあらわれたものである場合
 \end{enumerate}
 
-たとえば、以下のScalaプログラムについていうと、最初の改行は\texttt{nl}トークンになりませんが、何故かというと条件1が満たされても条件2が満たされないからです。
+たとえば、以下のScalaプログラムについていうと、最初の改行は\texttt{nl}トークンになりません。\texttt{+}が行頭の中置演算子なので、条件2が満たされないからです。
 
 \begin{codescreen}{}
 val x = 1
@@ -871,7 +871,7 @@ class MyClass {
 
 \section{まとめ}
 
-7章では現実の構文解析で遭遇する問題について、いくつかの例を挙げて説明しました。
+本章では現実の構文解析で遭遇する問題について、いくつかの例を挙げて説明しました。
 
 筆者が大学院博士後期課程に進学した頃「構文解析は終わった問題」と言われたのを覚えています。特にその頃だと主流はLALRなどのボトムアップ構文解析だという認識のある人が研究者にも多かったのを覚えています。実際にはその後もANTLRの\texttt{LL(*)}、それに続く\texttt{ALL(*)}アルゴリズムのような革新が起きており、ANTLRはいろいろな言語のパーサーに採用されています。Python 3.9におけるPEGパーサーの採用のような例もあります。
 
