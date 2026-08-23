@@ -1136,10 +1136,10 @@ LL(1)構文解析を実現するには、これらの集合を計算して利用
 正式には、非終端記号\texttt{A}に対して以下のように定義されます。
 
 \begin{lstlisting}
-  FIRST(A) = { a | A ⇒* aβ であるような終端記号 a }
+FIRST(A) = { a | A ⇒* aβ であるような終端記号 a } ∪ { ε | A ⇒* ε }
 \end{lstlisting}
 
-ここで、\texttt{A\ ⇒*\ aβ}は、非終端記号\texttt{A}が何らかの導出を経て、終端記号\texttt{a}で始まる文字列に変換できることを意味します。
+\texttt{A\ ⇒*\ aβ}は、非終端記号\texttt{A}が何らかの導出を経て、終端記号\texttt{a}で始まる文字列に変換できることを意味します。
 
 たとえば、先ほどでてきた以下の算術式の文法を考えます。
 
@@ -1181,7 +1181,7 @@ Eは明らかに空文字列を生成しないので\texttt{nullable(E)\ =\ fals
 
 \subsubsection{FOLLOW集合}
 
-非終端記号の後に現れうるトークンの集合を\textbf{\sffamily FOLLOW}\textgt{集合}と呼びます。これは、\textbf{\sffamily nullable}な非終端記号（空文字列規則を持つ非終端記号）を扱うために特に重要です。
+非終端記号の後に現れうるトークンの集合を\textbf{\sffamily FOLLOW}\textgt{集合}と呼びます。これは、\textbf{\sffamily nullable}な非終端記号（空文字列を生成できる非終端記号）を扱うために特に重要です。
 
 先ほどと同様に以下の文法を考えてみます。
 
@@ -1257,11 +1257,13 @@ Eは常に何らかの記号を生成するため、空文字列になること�
 
 \subsubsection{FIRST集合の計算アルゴリズム}
 
-各規則 \(A \to \alpha\) について次の手順で計算します。
+FIRST集合全体を次の手順で計算します。
 
 \begin{enumerate}
 \item
-  \(\alpha = X_1\,X_2\,\ldots\,X_n\) とする
+  すべての非終端記号の\(\mathrm{FIRST}\)を空集合に初期化
+\item
+  各規則 \(A \to \alpha\) について、\(\alpha = X_1\,X_2\,\ldots\,X_n\) とする
 \item
   \(X_1\) が終端記号なら、\(\mathrm{FIRST}(A)\) に \(X_1\) を追加
 \item
@@ -1277,6 +1279,8 @@ Eは常に何らかの記号を生成するため、空文字列になること�
 \item
   すべての \(X_i\) が\textbf{\sffamily nullable}なら、\(\varepsilon\) を
   \(\mathrm{FIRST}(A)\) に追加
+\item
+  すべての規則を処理しても集合に変化がなくなるまで繰り返す
 \end{enumerate}
 
 ここで \(X_1, X_2, \ldots, X_n\)
@@ -1345,28 +1349,36 @@ Eは常に何らかの記号を生成するため、空文字列になること�
 
 初期状態：
 
-\begin{enumerate}
-  \item \verb|FOLLOW(E) = {$}|（開始記号として）
-  \item 規則 \texttt{E\ →\ (\ E\ )} から
-  \begin{itemize}
-  \item Eの後に)が来るので、)をFOLLOW(E)に追加
-  \item \verb|FOLLOW(E) = {$, ')'}|
-  \end{itemize}
-  \item 規則 \texttt{E\ →\ -\ E} から
-  \begin{itemize}
-  \item Eが末尾にあるので、\verb|FOLLOW(E)|を\verb|FOLLOW(E)|に追加（変化なし）
-  \end{itemize}
-  \item 規則 \texttt{E\ →\ (\ E\ )} から（2回目）
-  \begin{itemize}
-  \item すでに ) は追加済みなので、変化なし
-\end{itemize}
-  \item 規則 \texttt{E\ →\ -\ E} から（2回目）
-  \begin{itemize}
-  \item 変化なし。すべての規則を見て変化がなくなったので終了
-\end{itemize}
-\end{enumerate}
+\begin{lstlisting}
+- FOLLOW(E) = {$}（開始記号として）
+\end{lstlisting}
 
-\textgt{結果：}
+規則 \texttt{E\ →\ (\ E\ )} から：
+
+\begin{lstlisting}
+- Eの後に)が来るので、)をFOLLOW(E)に追加
+- FOLLOW(E) = {$, ')'}
+\end{lstlisting}
+
+規則 \texttt{E\ →\ -\ E} から：
+
+\begin{lstlisting}
+- Eが末尾にあるので、FOLLOW(E)をFOLLOW(E)に追加（変化なし）
+\end{lstlisting}
+
+規則 \texttt{E\ →\ (\ E\ )} から（2回目）：
+
+\begin{lstlisting}
+- すでに ) は追加済みなので、変化なし
+\end{lstlisting}
+
+規則 \texttt{E\ →\ -\ E} から（2回目）：
+
+\begin{lstlisting}
+- 変化なし。すべての規則を見て変化がなくなったので終了
+\end{lstlisting}
+
+\textbf{結果：}
 \texttt{FOLLOW(E)\ =\ \{\$,\ \textquotesingle{})\textquotesingle{}\}}
 
 Eが唯一の非終端記号なのでFOLLOW集合の計算も簡単です。
@@ -1385,10 +1397,10 @@ LL(1)構文解析では、現在解析中の非終端記号と次の入力トー
 \item \texttt{α} が特定のトークン集合で始まる可能性がある場合、先読みトークン\texttt{a}が\texttt{FIRST(α)}に含まれている場合、この規則を適用する
 \end{itemize}
 
-\textbf{\sffamily 2. FOLLOW}\textgt{集合による判断} --- 規則 \texttt{A\ →\ ε}（空文字列規則）について
+\textbf{\sffamily 2. FOLLOW}\textgt{集合による判断} --- 規則 \texttt{A\ →\ α}の右辺がnullableな場合
 
 \begin{itemize}
-\item 先読みトークンがFOLLOW(A) に含まれる場合、空文字列規則を適用する
+\item 先読みトークンがFOLLOW(A) に含まれる場合、この規則を適用する
 \end{itemize}
 
 \textbf{\sffamily 3. }\textgt{決定性の保証} --- 各状況で適用可能な規則が
@@ -2244,7 +2256,7 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
 \end{itemize}
 
 \item
-  項目 \texttt{A\ →\ α・} が状態iにある（還元可能）なら
+  項目 \texttt{A\ →\ α・} が状態iにあり、\texttt{A}が拡張開始記号でない（還元可能）なら
 
 \begin{itemize}
 \item
@@ -2476,7 +2488,7 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
   実行: 解析成功！
 \end{itemize}
 
-このように、LR(0)構文解析は
+このように、この構文解析表を使った構文解析は
 
 \begin{enumerate}
 \item
@@ -2547,7 +2559,7 @@ LR(0)のコンフリクトを解決するため、\textgt{先読み}（次の入
 \item
   \textbf{\sffamily 1971}\textgt{年}：Frank DeRemer, ``Simple LR(k) grammars''（CACM）で、LR(0)オートマトンをそのまま使いFOLLOW集合で先読みを賄う、さらに簡素なSLR(k)を提案。SLRの``S''は``Simple''、つまり「LRをいかに単純化するか」という当時の問題意識を表しています。
 \item
-  \textbf{\sffamily 1982}\textgt{年}：DeRemer \& Pennello, ``Efficient Computation of LALR(1) Look-Ahead Sets''（TOPLAS）でLALR(1)の効率的構築アルゴリズムが確立され、Yacc/Bisonなど実用システムに広く採用されました。
+  \textbf{\sffamily 1982}\textgt{年}：DeRemer \& Pennello, ``Efficient Computation of LALR(1) Look-Ahead Sets''（TOPLAS）でLALR(1)の効率的構築アルゴリズムが確立され、Bisonなど後発の実用システムに広く採用されました。
 \end{itemize}
 
 つまり \textbf{\sffamily LR(1)}\textgt{が先にあり、それを実用化するために}\textbf{\sffamily LALR・SLR}\textgt{という「刈り込み」が後から作られた}というのが実情です。本書が逆順を採る理由は、LR(0)の素朴な状態構築から先読み機構を段階的に積み上げる方が、各手法の存在意義（何の問題を解いたのか）を把握しやすいからです。実装上の発見の順序と概念理解の順序は別物として整理しておくと、第5章で構文解析器生成系を選ぶ際にも感覚がつかみやすくなります。
@@ -3187,7 +3199,7 @@ Parsingを使えばPEGも線形時間になります。
 \item
   シフト還元構文解析：葉から根に向かって構文木を構築
 \item
-  LR(0)、SLR(1)、LR(1)、LALR(1)：段階的に強力になる手法
+  LR(0)、SLR(1)、LALR(1)、LR(1)：段階的に強力になる手法
 \end{itemize}
 
 \textgt{その他の手法}

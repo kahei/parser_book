@@ -188,6 +188,7 @@ public class DyckParser {
 
 \begin{codescreen}{}
 import java.util.*;
+import java.util.stream.Collectors;
 // 簡単な構文解析器生成系の例
 public class PEG2Java {
     // 文法規則を表すレコード
@@ -257,8 +258,8 @@ public class PEG2Java {
                 }
              """.formatted(
                 alt1.generate(indentLevel + 4).stripTrailing(), 
-                alt2.generate(indentLevel + 4))
-             code.indent(indentLevel);
+                alt2.generate(indentLevel + 4));
+            return code.indent(indentLevel);
         }
     }
     
@@ -290,7 +291,7 @@ public class PEG2Java {
         // 各規則に対してメソッドを生成
         for (Rule rule : rules) {
             code.append("    public void parse" + rule.name + "() {\n");
-            code.append(rule.body.generate("        "));
+            code.append(rule.body.generate(8));
             code.append("\n");
             code.append("        return;\n");
             code.append("    }\n\n");
@@ -305,7 +306,7 @@ public class PEG2Java {
 
 \begin{codescreen}{}
 // D <- P;
-// P <- "(" P ")" P / "()";
+// P <- "(" P ")" P / "";
 List<Rule> rules = Arrays.asList(
     new Rule("D", new NT("P")),
     new Rule("P", 
@@ -316,7 +317,8 @@ List<Rule> rules = Arrays.asList(
                 new Lit(")"),
                 new NT("P")
             ),
-            new Lit("()")
+            // 空文字列 ε（イプシロン）
+            new Lit("")
          )
     )
 );
@@ -334,9 +336,9 @@ public class Parser {
             super(message);
         }
     }
-    public Parser(String input, int pos) {
+    public Parser(String input) {
         this.input = input;
-        this.pos = pos;
+        this.pos = 0;
     }
 
     private String input;
@@ -364,7 +366,7 @@ public class Parser {
             parseP();
         } catch (Failure e) {
             pos = saved;
-            match("()");
+            match("");
         }
 
         return;
@@ -450,7 +452,7 @@ LR：一般化LR）構文解析器も生成できるので、GLR構文解析器�
       特徴項目 & JavaCC & Yacc & ANTLR\\ \hline
       採用アルゴリズム & LL(k)(デフォルトはLL(1)) & LALR(1) & ALL(*)\\ \hline
       生成コードの言語 & Java & C, C++ & Java, C++, Python, JavaScript, Go, C\#, Swift, Dart, PHP (多言語対応)\\ \hline
-      左再帰の扱い & 不可(文法書き換えが必要) & 直接左再帰を扱える & 直接・間接左再帰を扱える(v4以降)\\ \hline
+      左再帰の扱い & 不可(文法書き換えが必要) & 直接左再帰を扱える & 直接左再帰を扱える(v4以降。間接左再帰は不可)\\ \hline
       曖昧性解決 & 先読みトークン数(k)の調整、意味アクション & 演算子の優先順位・結合規則指定、\%precなどで対応	 & 意味アクション、構文述語、ALL(*)による自動解決\\ \hline
       エラー報告/リカバリ機能 & 基本的 & errorトークンによる限定的なリカバリ & 高度なエラー報告、柔軟なエラーリカバリ戦略\\ \hline
       学習コスト & Javaユーザーには比較的容易 & やや高め(C言語と連携の知識も必要) & 機能が豊富で強力な分、やや高め\\ \hline
@@ -488,7 +490,7 @@ package com.github.kmizu.calculator;
 public class Calculator {
   public static void main(String[] args) throws ParseException {
     Calculator parser = new Calculator(System.in);
-    parser.start();
+    System.out.println(parser.start());
   }
 }
 PARSER_END(Calculator)
@@ -502,6 +504,12 @@ TOKEN : {
 | <LPAREN: "(">
 | <RPAREN: ")">
 | <INTEGER: (["0"-"9"])+>
+}
+
+public int start() :
+{int r = 0;}
+{
+  r=add() { return r; }
 }
 
 public int expression() :
@@ -531,7 +539,7 @@ public int primary() :
 {int r = 0; Token t = null;}
 {
 (
-  <LPAREN> r=expression() <RPAREN>
+  <LPAREN> r=add() <RPAREN>
 | t=<INTEGER> { r = Integer.parseInt(t.image); }
 ) { return r; }
 }
@@ -565,7 +573,7 @@ public int primary() :
 \begin{codescreen}{}
 package com.github.kmizu.calculator;
 
-import jdk.jfr.Description;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import com.github.kmizu.calculator.Calculator;
 import java.io.*;
@@ -574,7 +582,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CalculatorTest {
     @Test
-    @Description("1 + 2 * 3 = 7")
+    @DisplayName("1 + 2 * 3 = 7")
     public void test1() throws Exception {
         Calculator calculator = new Calculator(
             new StringReader("1 + 2 * 3"))
@@ -583,7 +591,7 @@ public class CalculatorTest {
     }
 
     @Test
-    @Description("(1 + 2) * 4 = 12")
+    @DisplayName("(1 + 2) * 4 = 12")
     public void test2() throws Exception {
         Calculator calculator = new Calculator(
             new StringReader("(1 + 2) * 4")
@@ -592,7 +600,7 @@ public class CalculatorTest {
     }
 
     @Test
-    @Description("(5 * 6) - (3 + 4) = 23")
+    @DisplayName("(5 * 6) - (3 + 4) = 23")
     public void test3() throws Exception {
         Calculator calculator = new Calculator(
             new StringReader("(5 * 6) - (3 + 4)")
@@ -610,7 +618,7 @@ public class CalculatorTest {
 options {
   STATIC = false;
   JDK_VERSION = "21";
-  LOOKAHEAD = 2
+  LOOKAHEAD = 2;
 }
 \end{codescreen}
 
@@ -1372,7 +1380,7 @@ interface JParser<R> {
         return (input) -> {
             var result = this.parse(input);
             if (result == null) return null;
-            return new Result<>(f.apply(result.value()), result.rest()); (1)
+            return new Result<>(f.apply(result.value()), result.rest()); // (1)
         };
     }
 }
@@ -1545,20 +1553,14 @@ public class Calculator {
     public static JParser<Integer> primary() {
         return alt( // number または "(" expression ")" の選択
             number, // 数値パーサー
-            seq(
+            seq( // "(" expression の連接
                 string("("), // 開き括弧
                 // 括弧内の式 (expressionを再帰呼び出し)
-                lazy(() -> expression()) 
-            ).flatMap(p1 -> 
-                // p1 は Pair<String, Integer>型 ("(" と expressionの結果)
                 seq(
-                    p1.b(), 
-                    // expressionの結果 (Integer) を次のseqの左側にする
-                    string(")")  // 閉じ括弧
-                // p2は Pair<Integer, String>型、その最初の要素(Integer)を
-                // 返す
-                ).map(p2 -> p2.a())
-            );
+                    lazy(() -> expression()),
+                    string(")") // 閉じ括弧
+                )
+            ).map(p -> p.b().a()) // ((, (expression, ))) の中央の値を取り出す
         );
     }
     
