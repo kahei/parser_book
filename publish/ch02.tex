@@ -49,7 +49,7 @@ JSONは元々はJavaScriptのオブジェクトリテラル構文を参考にし
     {"x":0,   "y":0  },
     {"x":0,   "y":100},
     {"x":100, "y":100},
-    {"x":100, "y":0  },
+    {"x":100, "y":0  }
   ]
 }
 \end{codescreen}
@@ -93,7 +93,7 @@ JSONは元々はJavaScriptのオブジェクトリテラル構文を参考にし
 1.5
 \end{codescreen}
 
-のような形になっており、整数または小数です。JSONでの数値の解釈は特に規定されていない点に注意してください。たとえば、\texttt{0.1}は2進法での小数だと解釈しても良いですし、10進法での小数と解釈しても構いません。特に、IEEEの浮動小数点数であるといった規定はありません。
+のような形になっており、整数または小数です。JSONの数値は10進表記ですが、構文解析後にそれを2進浮動小数点数として扱うか、10進小数として扱うかは規定されていません。
 
 \subsection{文字列}
 
@@ -941,7 +941,6 @@ private JsonAst.JsonNull parseNull() {
                     throw new ParseException(
                         "escape sequences are not supported in this parser"
                     );
-                    break;
                 case '"':
                     cursor++;
                     break OUTER;
@@ -996,7 +995,6 @@ private JsonAst.JsonNull parseNull() {
             skipWhitespace();
             return new JsonAst.JsonString(builder.toString());
         }
-        throw new RuntimeException("never reach here");
 \end{codescreen}
 
 \noindent というチェックを入れることによって、ダブルクォートで文字列が終端していることを確認した後、空白を読み飛ばしています。
@@ -1443,7 +1441,7 @@ PEG版と異なり、途中で失敗したら後戻り（バックトラック�
 \texttt{parseValue()}メソッドは、JSONの値を解析するためのメソッドです。これは、BNFで定義された\texttt{value\ =\ true\ \textbar{}\ false\ \textbar{}\ null\ \textbar{}\ number\ \textbar{}\ string\ \textbar{}\ object\ \textbar{}\ array}に対応しています。実装は以下のようになります。
 
 \begin{codescreen}{}
-    private Ast.JsonValue parseValue() {
+    private JsonAst.JsonValue parseValue() {
         var token = current();
         switch(token.type) {
             case TRUE:
