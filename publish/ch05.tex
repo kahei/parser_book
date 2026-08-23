@@ -5,7 +5,7 @@
 \index{CFG}
 \index{PEG}
 
-第5章では現在知られている構文解析手法について、アイデアと概要を説明しました。しかし、構文解析の世界ではよく知られていることなのですが、第5章で説明した手法は毎回プログラマが手で実装する必要はありません。
+第4章では現在知られている構文解析手法について、アイデアと概要を説明しました。しかし、構文解析の世界ではよく知られていることなのですが、第4章で説明した手法は毎回プログラマが手で実装する必要はありません。
 
 というのは、CFG（文脈自由文法）やPEG（その類似表記も含む）によって記述された文法定義から特定の構文解析アルゴリズムを用いた構文解析器を生成する\textbf{構文解析器生成系}（Parser
 Generator、パーサージェネレータ）というソフトウェアがあるからです。
@@ -39,7 +39,7 @@ Compiler」（また別のコンパイラコンパイラ）の略で、「コン
 
 このように「文法と構文解析手法が決まれば、後のコードは自動的に決定可能なはずだから、機械に任せてしまおう」という考え方が構文解析器生成系というソフトウェアの背後にあるアイデアです。
 
-早速ですが、以下のようにDyck言語を表す文法（第4章で示した
+早速ですが、以下のようにDyck言語を表す文法（第3章で示した
 \texttt{P\ -\textgreater{}\ (\ P\ )\ P\ \textbar{}\ ε}
 に近いもの）がPEGで与えられたとして、構文解析器を生成する方法を考えてみましょう。
 
@@ -188,6 +188,7 @@ public class DyckParser {
 
 \begin{codescreen}{}
 import java.util.*;
+import java.util.stream.Collectors;
 // 簡単な構文解析器生成系の例
 public class PEG2Java {
     // 文法規則を表すレコード
@@ -257,8 +258,8 @@ public class PEG2Java {
                 }
              """.formatted(
                 alt1.generate(indentLevel + 4).stripTrailing(), 
-                alt2.generate(indentLevel + 4))
-             code.indent(indentLevel);
+                alt2.generate(indentLevel + 4));
+            return code.indent(indentLevel);
         }
     }
     
@@ -290,7 +291,7 @@ public class PEG2Java {
         // 各規則に対してメソッドを生成
         for (Rule rule : rules) {
             code.append("    public void parse" + rule.name + "() {\n");
-            code.append(rule.body.generate("        "));
+            code.append(rule.body.generate(8));
             code.append("\n");
             code.append("        return;\n");
             code.append("    }\n\n");
@@ -305,7 +306,7 @@ public class PEG2Java {
 
 \begin{codescreen}{}
 // D <- P;
-// P <- "(" P ")" P / "()";
+// P <- "(" P ")" P / "";
 List<Rule> rules = Arrays.asList(
     new Rule("D", new NT("P")),
     new Rule("P", 
@@ -316,7 +317,8 @@ List<Rule> rules = Arrays.asList(
                 new Lit(")"),
                 new NT("P")
             ),
-            new Lit("()")
+            // 空文字列 ε（イプシロン）
+            new Lit("")
          )
     )
 );
@@ -334,9 +336,9 @@ public class Parser {
             super(message);
         }
     }
-    public Parser(String input, int pos) {
+    public Parser(String input) {
         this.input = input;
-        this.pos = pos;
+        this.pos = 0;
     }
 
     private String input;
@@ -364,7 +366,7 @@ public class Parser {
             parseP();
         } catch (Failure e) {
             pos = saved;
-            match("()");
+            match("");
         }
 
         return;
@@ -372,7 +374,7 @@ public class Parser {
 }
 \end{codescreen}
 
-空文字列への分岐（\texttt{match("")}）を残しているので、\texttt{()}のように\texttt{P}が空になるケースも、\texttt{(())}のようにネストするケースも成功します。\texttt{try}ブロックで失敗したときに位置を巻き戻してから空文字列を選択する、という6.1.2節と同じ挙動を保っています。
+空文字列への分岐（\texttt{match("")}）を残しているので、\texttt{()}のように\texttt{P}が空になるケースも、\texttt{(())}のようにネストするケースも成功します。\texttt{try}ブロックで失敗したときに位置を巻き戻してから空文字列を選択する、という5.1.2節と同じ挙動を保っています。
 
 このコードは実際にDyck言語の変形版を解析することができます。\texttt{parseD()}メソッドを呼び出すことで、Dyck言語の文字列が正しいかどうかをチェックできます。
 
@@ -488,7 +490,7 @@ package com.github.kmizu.calculator;
 public class Calculator {
   public static void main(String[] args) throws ParseException {
     Calculator parser = new Calculator(System.in);
-    parser.start();
+    System.out.println(parser.start());
   }
 }
 PARSER_END(Calculator)
@@ -502,6 +504,12 @@ TOKEN : {
 | <LPAREN: "(">
 | <RPAREN: ")">
 | <INTEGER: (["0"-"9"])+>
+}
+
+public int start() :
+{int r = 0;}
+{
+  r=add() { return r; }
 }
 
 public int expression() :
@@ -531,13 +539,13 @@ public int primary() :
 {int r = 0; Token t = null;}
 {
 (
-  <LPAREN> r=expression() <RPAREN>
+  <LPAREN> r=add() <RPAREN>
 | t=<INTEGER> { r = Integer.parseInt(t.image); }
 ) { return r; }
 }
 \end{codescreen}
 
-この\texttt{SKIP}から\texttt{TOKEN}までの部分はトークン定義になります。トークンとは、構文解析の基本単位となる要素で、「+」「123」「(」などのことです。第3章のJSONパーサーでも「文字列」「数値」「中括弧」などをトークンとして扱いましたね。ここでは、7つのトークンを定義しています。トークン定義の後が構文規則の定義になります。ここでは、
+この\texttt{SKIP}から\texttt{TOKEN}までの部分はトークン定義になります。トークンとは、構文解析の基本単位となる要素で、「+」「123」「(」などのことです。第2章のJSONパーサーでも「文字列」「数値」「中括弧」などをトークンとして扱いましたね。ここでは、7つのトークンを定義しています。トークン定義の後が構文規則の定義になります。ここでは、
 
 \begin{itemize}
 \item
@@ -556,7 +564,7 @@ public int primary() :
 
 \texttt{start()}と\texttt{expression()}は両方とも\texttt{add()}を呼び出すエントリポイントですが、違いは入力末尾の扱い方です。\texttt{expression()}は最後に\texttt{\textless{}EOF\textgreater{}}（入力終端トークン）を要求するため、入力全体が一つの式であることを厳密に検証したい場面（テストやファイル全体の構文チェックなど）に向きます。一方、\texttt{start()}は\texttt{\textless{}EOF\textgreater{}}を要求しないので、標準入力のような対話的な入力で「式を1つ読み終えたら抜ける」という使い方ができます。\texttt{main}メソッドでは標準入力を読むので\texttt{start()}を呼んでいます。
 
-\texttt{add()}が\texttt{mult()}を呼び出して、\texttt{mult()}が\texttt{primary()}を呼び出すという構図は第2章ですでにみた形ですが、第2章と違って単純に宣言的に各構文規則の関係を書けばそれでOKなのが構文解析器生成系の強みです。
+\texttt{add()}が\texttt{mult()}を呼び出して、\texttt{mult()}が\texttt{primary()}を呼び出すという構図は第1章ですでにみた形ですが、第1章と違って単純に宣言的に各構文規則の関係を書けばそれでOKなのが構文解析器生成系の強みです。
 
 ちなみに、\texttt{\{int\ r\ =\ 0;\}}のような部分はJavaコードの埋め込みで、構文解析中に実行される処理を記述しています。これを「セマンティックアクション」（意味的動作）と呼びます。セマンティックアクションを使うことで、単に文法が正しいかチェックするだけでなく、解析しながら計算や抽象構文木の構築などの処理を行うことができます。
 
@@ -565,7 +573,7 @@ public int primary() :
 \begin{codescreen}{}
 package com.github.kmizu.calculator;
 
-import jdk.jfr.Description;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import com.github.kmizu.calculator.Calculator;
 import java.io.*;
@@ -574,7 +582,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CalculatorTest {
     @Test
-    @Description("1 + 2 * 3 = 7")
+    @DisplayName("1 + 2 * 3 = 7")
     public void test1() throws Exception {
         Calculator calculator = new Calculator(
             new StringReader("1 + 2 * 3"))
@@ -583,7 +591,7 @@ public class CalculatorTest {
     }
 
     @Test
-    @Description("(1 + 2) * 4 = 12")
+    @DisplayName("(1 + 2) * 4 = 12")
     public void test2() throws Exception {
         Calculator calculator = new Calculator(
             new StringReader("(1 + 2) * 4")
@@ -592,7 +600,7 @@ public class CalculatorTest {
     }
 
     @Test
-    @Description("(5 * 6) - (3 + 4) = 23")
+    @DisplayName("(5 * 6) - (3 + 4) = 23")
     public void test3() throws Exception {
         Calculator calculator = new Calculator(
             new StringReader("(5 * 6) - (3 + 4)")
@@ -610,7 +618,7 @@ public class CalculatorTest {
 options {
   STATIC = false;
   JDK_VERSION = "21";
-  LOOKAHEAD = 2
+  LOOKAHEAD = 2;
 }
 \end{codescreen}
 
@@ -634,7 +642,7 @@ JavaCCは構文定義ファイルの文法がかなりJavaに似ているため�
 \index{error token@\texttt{error}トークン}
 
 Yaccは1970年代にAT\&Tのベル研究所にいたStephen C.
-Johnson（スティーブン・ジョンソン）によって作られたソフトウェアで、非常に歴史がある構文解析器生成系です。第5章で学んだLALR(1)法の構文解析器生成系を実用化した最初のツールでもあります。
+Johnson（スティーブン・ジョンソン）によって作られたソフトウェアで、非常に歴史がある構文解析器生成系です。第4章で学んだLALR(1)法の構文解析器生成系を実用化した最初のツールでもあります。
 
 現在広く使われているGNU
 BisonはYaccのGNUによる再実装で、GNUプロジェクトの一部として開発されています。GNU
@@ -1370,7 +1378,7 @@ interface JParser<R> {
         return (input) -> {
             var result = this.parse(input);
             if (result == null) return null;
-            return new Result<>(f.apply(result.value()), result.rest()); (1)
+            return new Result<>(f.apply(result.value()), result.rest()); // (1)
         };
     }
 }
@@ -1542,18 +1550,14 @@ public class Calculator {
     public static JParser<Integer> primary() {
         return alt( // number または "(" expression ")" の選択
             number, // 数値パーサ
-            seq(
+            seq( // "(" expression の連接
                 string("("), // 開き括弧
                 // 括弧内の式 (expressionを再帰呼び出し)
-                lazy(() -> expression()) 
-            ).flatMap(p1 -> 
-                // p1 は Pair<String, Integer>型 ("(" と expressionの結果)
                 seq(
-                    p1.b(), // expressionの結果 (Integer) を次のseqの左側にする
-                    string(")")  // 閉じ括弧
-                // p2は Pair<Integer, String>型、その最初の要素(Integer)を返す
-                ).map(p2 -> p2.a())
-            );
+                    lazy(() -> expression()),
+                    string(")") // 閉じ括弧
+                )
+            ).map(p -> p.b().a()) // ((, (expression, ))) の中央の値を取り出す
         );
     }
     

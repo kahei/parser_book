@@ -941,7 +941,6 @@ private JsonAst.JsonNull parseNull() {
                     throw new ParseException(
                         "escape sequences are not supported in this parser"
                     );
-                    break;
                 case '"':
                     cursor++;
                     break OUTER;
@@ -996,7 +995,6 @@ private JsonAst.JsonNull parseNull() {
             skipWhitespace();
             return new JsonAst.JsonString(builder.toString());
         }
-        throw new RuntimeException("never reach here");
 \end{codescreen}
 
 \noindent というチェックを入れることによって、ダブルクォートで文字列が終端していることを確認した後、空白を読み飛ばしています。
