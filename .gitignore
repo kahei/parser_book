@@ -11,6 +11,8 @@ build/*.out
 
 # Java/Gradle build files
 *.class
+__pycache__/
+*.py[cod]
 target/
 classes/
 .gradle/

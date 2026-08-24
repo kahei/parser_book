@@ -86,6 +86,19 @@ brew install --cask font-noto-sans-cjk-jp
 # Docker内のLuaLaTeXで build/parser_book.pdf が生成されます
 ```
 
+### 出版用TeXのローカルプレビュー
+
+`publish/*.tex` のsemantic / structural QA用PDFは、次のコマンドで生成できます。
+
+```bash
+./build_publish_preview.sh docker
+# build/publish-preview/parser_book-preview.pdf が生成されます
+```
+
+このPDFはNoto CJKと最小互換classを使うpreviewであり、本番組版の完全再現では
+ありません。使い方、source保護の仕組み、本番との差異は
+[`tools/publish_preview/README.md`](tools/publish_preview/README.md)を参照してください。
+
 ## 執筆ワークフロー
 
 ```bash
