@@ -561,7 +561,7 @@ public int primary() :
 
 \noindent の5つの構文規則が定義されています。各構文規則はJavaのメソッドに酷似した形で記述されますが、実際、ここから生成される.javaファイルには同じ名前のメソッドが定義されます。
 
-\texttt{start()}と\texttt{expression()}は両方とも\texttt{add()}を呼び出すエントリポイントですが、違いは入力末尾の扱い方です。\texttt{expression()}は最後に\texttt{\textless{}EOF\textgreater{}}（入力終端トークン）を要求するため、入力全体が一つの式であることを厳密に検証したい場面（テストやファイル全体の構文チェックなど）に向きます。一方、\texttt{start()}は\texttt{\textless{}EOF\textgreater{}}を要求しないので、標準入力のような対話的な入力で「式を1つ読み終えたら抜ける」という使い方ができます。\texttt{main}メソッドでは標準入力を読むので\texttt{start()}を呼んでいます。
+\texttt{start()}と\texttt{expression()}は両方とも\texttt{add()}を呼び出すエントリポイントですが、違いは入力末尾の扱い方です。\texttt{expression()}は最後に\texttt{\textless{}EOF\textgreater{}}（入力終端トークン）を要求するため、入力全体が1つの式であることを厳密に検証したい場面（テストやファイル全体の構文チェックなど）に向きます。一方、\texttt{start()}は\texttt{\textless{}EOF\textgreater{}}を要求しないので、標準入力のような対話的な入力で「式を1つ読み終えたら抜ける」という使い方ができます。\texttt{main}メソッドでは標準入力を読むので\texttt{start()}を呼んでいます。
 
 \texttt{add()}が\texttt{mult()}を呼び出して、\texttt{mult()}が\texttt{primary()}を呼び出すという構図は第1章ですでにみた形ですが、第1章と違って単純に宣言的に各構文規則の関係を書けばそれでOKなのが構文解析器生成系の強みです。
 
@@ -811,7 +811,7 @@ flexとyaccが出力したファイルを結合して実行ファイルを作る
   Parse error: Cannot divide by zero.
 \end{lstlisting}
 
-Yaccはとても古いソフトウェアの一つですが、Rubyの文法定義ファイルparse.yはYacc用ですし、未だに各種言語処理系では現役で使われてもいます。
+Yaccはとても古いソフトウェアの1つですが、Rubyの文法定義ファイルparse.yはYacc用ですし、未だに各種言語処理系では現役で使われてもいます。
 
 \section{ANTLR：多言語対応の強力な下向き構文解析器生成系}
 \index{ANTLR}
@@ -826,7 +826,7 @@ Yaccはとても古いソフトウェアの一つですが、Rubyの文法定義
 
 1989年にPurdue Compiler Construction Tool
 Set（PCCTS）というものがありました。ANTLRはその後継というべきもので、これまでに、\texttt{LL(k) -> LL(*) -> ALL(*)}と構文解析アルゴリズムを拡張し、取り扱える文法の幅を広げつつアクティブに開発が続けられています。作者はTerence
-Parrという方ですが、構文解析器一筋と言っていいくらいに、ANTLRにこれまでの時間を費やしてきている人です。
+Parrという方ですが、構文解析器一筋と言っていいくらいに、ANTLRにキャリアの多くを費やしてきている人です。
 
 それだけに、ANTLRの完成度は非常に高いものになっています。また、一時期はLR法に比べてLL法の評価は低いものでしたが、Terence
 ParrがLL(k)を改良していく過程で、LL(\texttt{*})やALL(\texttt{*})のようなLR法に比べてもなんら劣らない、実用的にも使いやすい構文解析法が発明されました。
@@ -1076,7 +1076,7 @@ interface JParser<R> {
 
 ここで構文解析器を表現するインタフェース\texttt{JParser\textless{}R\textgreater{}}は型パラメータ\texttt{R}を受け取ることに注意してください。型パラメータ\texttt{R}は、「このインタフェースは何かの型\texttt{R}に対して動作しますが、具体的な型は使用時に決まります」という意味です。
 
-構文解析の結果は抽象構文木になりますが、インタフェースを定義する時点では抽象構文木がどのような形になるかはわかりようがないので、型パラメータにしておくのです。\texttt{JParser\textless{}R\textgreater{}}はたった一つのメソッド\texttt{parse()}を持ちます。\texttt{parse()}は入力文字列\texttt{input}を受け取り、解析結果を\texttt{Result\textless{}R\textgreater{}}として返します。
+構文解析の結果は抽象構文木になりますが、インタフェースを定義する時点では抽象構文木がどのような形になるかはわかりようがないので、型パラメータにしておくのです。\texttt{JParser\textless{}R\textgreater{}}はたった1つのメソッド\texttt{parse()}を持ちます。\texttt{parse()}は入力文字列\texttt{input}を受け取り、解析結果を\texttt{Result\textless{}R\textgreater{}}として返します。
 
 \texttt{JParser\textless{}R\textgreater{}}の実装はいったいぜんたいどのようなものになるの？という疑問を脇に置いておけば理解は難しくないでしょう。次に解析結果\texttt{Result\textless{}V\textgreater{}}をレコードとして定義します。
 
@@ -1164,7 +1164,7 @@ assert (new Result<List<String>>(List.of("a", "a", "a"), "")).equals(
 \index{JComb}
 \index{もじれつりてらる@文字列リテラル}
 
-最初に\texttt{string(String\ literal)}メソッドで返す\texttt{JLiteralParser\textless{}String\textgreater{}}の中身を作ってみましょう。\texttt{JLiteralParser}クラスはただ一つのメソッド\texttt{parse()}を持ち、次のような実装になります。
+最初に\texttt{string(String\ literal)}メソッドで返す\texttt{JLiteralParser\textless{}String\textgreater{}}の中身を作ってみましょう。\texttt{JLiteralParser}クラスはただ1つのメソッド\texttt{parse()}を持ち、次のような実装になります。
 
 \begin{codescreen}{}
 class JLiteralParser implements JParser<String> {
@@ -1205,7 +1205,7 @@ public class JComb {
 }
 \end{codescreen}
 
-使う時は次のようになります。
+使うときは次のようになります。
 
 \begin{codescreen}{}
 JParser<String> foo = string("foo");
@@ -1218,7 +1218,7 @@ assert null == foo.parse("baz");
 \index{せんたく@選択}
 \index{じゅんじょつきせんたく@順序付き選択}
 
-二つのパーサーを取って「選択」パーサーを返すメソッド\texttt{alt()}を実装します。先ほどのようにクラスを実装してもいいですが、メソッドは一つだけなのでラムダ式（Java
+2つのパーサーを取って「選択」パーサーを返すメソッド\texttt{alt()}を実装します。先ほどのようにクラスを実装してもいいですが、メソッドは1つだけなのでラムダ式（Java
 8から導入された無名関数）にします。
 
 \begin{codescreen}{}
@@ -1281,7 +1281,7 @@ PEGベースでないパーサーコンビネータを作ることもできる�
 \index{れんせつ@連接}
 \index{Pair@\texttt{Pair}}
 
-次に二つのパーサーを取って「連接」パーサーを返すメソッド\texttt{seq()}を実装します。これはPEGの連接
+次に2つのパーサーを取って「連接」パーサーを返すメソッド\texttt{seq()}を実装します。これはPEGの連接
 \texttt{e1\ e2} に対応します。先ほどと同じくラムダ式にしてみます。
 
 \begin{codescreen}{}
@@ -1309,7 +1309,7 @@ public class JComb {
 }
 \end{codescreen}
 
-先ほどの\texttt{alt()}メソッドと似通った実装ですが、\texttt{p1}が失敗したら全体が失敗するのがポイントです。\texttt{p1}と\texttt{p2}の両方が成功した場合は、二つの値のペアを返しています。
+先ほどの\texttt{alt()}メソッドと似通った実装ですが、\texttt{p1}が失敗したら全体が失敗するのがポイントです。\texttt{p1}と\texttt{p2}の両方が成功した場合は、2つの値のペアを返しています。
 
 \subsubsection{rep0(), rep1()メソッド}
 \index{rep0@\texttt{rep0()}}

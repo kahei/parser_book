@@ -56,7 +56,7 @@ Grammar）}という手法の素朴な実装でした。次に実装した\textt
 
 \subsection{本章の読み方ガイド}
 
-本章は構文解析の主要アルゴリズムを網羅的に扱うため、内容がやや重くなっています。特にLR系（LR(0)、SLR(1)、LR(1)、LALR(1)）は、概念の積み重ねが多く、初読でつまずく読者が一定数います。そこで、本章をどのように読むかについて、二つのおすすめルートを示します。
+本章は構文解析の主要アルゴリズムを網羅的に扱うため、内容がやや重くなっています。特にLR系（LR(0)、SLR(1)、LR(1)、LALR(1)）は、概念の積み重ねが多く、初読でつまずく読者が一定数います。そこで、本章をどのように読むかについて、2つのおすすめルートを示します。
 
 まず構文解析の全体像をつかみたい方には、「下向きと上向きの2つの世界観」「LL(1)」「シフト還元構文解析の基本」「PEG」「Packrat Parsing」を必読として読み、LR(0)〜LALR(1)の詳細は後回しにすることをおすすめします。各節の冒頭に置いた「要点」と章末の比較表を眺めるだけでも、本章の主旨はおおむねつかめるはずです。LRの実装は構文解析器生成系（第5章で詳述）に任せるのが普通なので、ひとまずは「LRという上向き手法の系譜があり、Yacc/BisonはLALR(1)を使う」程度に押さえておけば次に進めます。
 
@@ -157,9 +157,9 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 第3章で学んだDyck言語（括弧の対応が取れた文字列を表す言語）を例に、具体的に動作を追ってみましょう。説明のために、文法に入力の開始・終了を表す\texttt{\$}（ドル記号）を追加します。
 
 \begin{lstlisting}
-  D -> $ P $
-  P -> ( P ) P
-  P -> ε
+  D → $ P $
+  P → ( P ) P
+  P → ε
 \end{lstlisting}
 
 この文法が、入力文字列 \texttt{(())} を受理するかどうかを判定してみましょう。
@@ -172,12 +172,12 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 
 \begin{itemize}
 \item
-  \texttt{D\ -\textgreater{}\ ・\$\ P\ \$} ：まだ何も解析していない状態
+  \texttt{D\ →\ ・\$\ P\ \$} ：まだ何も解析していない状態
 \item
-  \texttt{D\ -\textgreater{}\ \$・P\ \$}
+  \texttt{D\ →\ \$・P\ \$}
   ：\texttt{\$}を解析済み、次は\texttt{P}を解析する
 \item
-  \texttt{D\ -\textgreater{}\ \$\ P\ \$・} ：すべて解析完了
+  \texttt{D\ →\ \$\ P\ \$・} ：すべて解析完了
 \end{itemize}
 
 このドット記号は、Javaでいえばデバッガーでステップ実行する時の「現在の実行位置」のようなものだと考えてください。
@@ -186,7 +186,7 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 
 \begin{lstlisting}
   入力: $ ( ( ) ) $
-  スタック: [ D -> ・$ P $ ]
+  スタック: [ D → ・$ P $ ]
 \end{lstlisting}
 
 \begin{enumerate}
@@ -196,7 +196,7 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 
 \begin{lstlisting}
   入力: ( ( ) ) $
-  スタック: [ D -> $・P $ ]
+  スタック: [ D → $・P $ ]
 \end{lstlisting}
 
 \item
@@ -210,18 +210,18 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 
 \begin{itemize}
 \item
-  \texttt{P\ -\textgreater{}\ (\ P\ )\ P} ：\texttt{(}で始まる
+  \texttt{P\ →\ (\ P\ )\ P} ：\texttt{(}で始まる
 \item
-  \texttt{P\ -\textgreater{}\ ε} ：空文字列（何もない）
+  \texttt{P\ →\ ε} ：空文字列（何もない）
 \end{itemize}
 
-ここで、どちらを選ぶかを事前に決める必要があります。ここでは、先読み文字が\texttt{(}の時は前者、それ以外のときは後者を選ぶこととします。
+ここで、どちらを選ぶかを事前に決める必要があります。ここでは、先読み文字が\texttt{(}のときは前者、それ以外のときは後者を選ぶこととします。
 
-というわけで、先読み文字が\texttt{(}なので、\texttt{P\ -\textgreater{}\ (\ P\ )\ P}を選択します。この規則をスタックに追加します。
+というわけで、先読み文字が\texttt{(}なので、\texttt{P\ →\ (\ P\ )\ P}を選択します。この規則をスタックに追加します。
 
 \begin{lstlisting}
   入力: ( ( ) ) $
-  スタック: [D -> $・P $, P -> ・( P ) P]
+  スタック: [D → $・P $, P → ・( P ) P]
 \end{lstlisting}
 
 \item
@@ -230,19 +230,19 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 
 \begin{lstlisting}
   入力: ( ) ) $
-  スタック: [D -> $・P $, P -> (・ P ) P]
+  スタック: [D → $・P $, P → (・ P ) P]
 \end{lstlisting}
 
 \item
   非終端記号 \texttt{P} を解析するため、再び先読み文字を見ます。
 
 次の先読み文字は \texttt{(} です。先ほどと同様に
-\texttt{P\ -\textgreater{}\ (\ P\ )\ P}
+\texttt{P\ →\ (\ P\ )\ P}
 を選択して、この規則をスタックに追加します。
 
 \begin{lstlisting}
   入力: ( ) ) $
-  スタック: [D -> $・P $, P -> ( ・ P ) P, P -> ・ ( P ) P]
+  スタック: [D → $・P $, P → ( ・ P ) P, P → ・ ( P ) P]
 \end{lstlisting}
 
 \item
@@ -251,18 +251,18 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 
 \begin{lstlisting}
   入力: ) ) $
-  スタック: [D -> $・P $, P -> ( ・P ) P, P -> ( ・ P ) P]
+  スタック: [D → $・P $, P → ( ・P ) P, P → ( ・ P ) P]
 \end{lstlisting}
 
 \item
   非終端記号 \texttt{P} を解析するため、先読み文字を見ます。
 
-次の先読み文字は \texttt{)} です。今度は、\texttt{P\ -\textgreater{}\ ε}
+次の先読み文字は \texttt{)} です。今度は、\texttt{P\ →\ ε}
 を選択します。空文字列にマッチするので、ドットを進めるだけで、入力からは何も消費しません。
 
 \begin{lstlisting}
   入力: ) ) $
-  スタック: [D -> $・P $, P -> ( ・P ) P, P -> ( P ・ ) P]
+  スタック: [D → $・P $, P → ( ・P ) P, P → ( P ・ ) P]
 \end{lstlisting}
 
 \item
@@ -271,18 +271,18 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 
 \begin{lstlisting}
   入力: ) $
-  スタック: [D -> $・P $, P -> ( ・P ) P, P -> ( P ) ・ P]
+  スタック: [D → $・P $, P → ( ・P ) P, P → ( P ) ・ P]
 \end{lstlisting}
 
 \item
   非終端記号 \texttt{P} を解析するため、先読み文字を見ます。
 
-次の先読み文字は \texttt{)} です。ここで、\texttt{P\ -\textgreater{}\ ε}
+次の先読み文字は \texttt{)} です。ここで、\texttt{P\ →\ ε}
 を選択します。空文字列にマッチするので、ドットを進めるだけで、入力からは何も消費しません。
 
 \begin{lstlisting}
   入力: ) $
-  スタック: [D -> $・P $, P -> ( ・P ) P, P -> ( P ) P ・]
+  スタック: [D → $・P $, P → ( ・P ) P, P → ( P ) P ・]
 \end{lstlisting}
 
 \item
@@ -290,7 +290,7 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 
 \begin{lstlisting}
   入力: ) $
-  スタック: [D -> $・P $, P -> ( P ・) P]
+  スタック: [D → $・P $, P → ( P ・) P]
 \end{lstlisting}
 
 \item
@@ -299,19 +299,19 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 
 \begin{lstlisting}
   入力: $
-  スタック: [D -> $・P $, P -> ( P ) ・ P]
+  スタック: [D → $・P $, P → ( P ) ・ P]
 \end{lstlisting}
 
 \item
   非終端記号 \texttt{P} を解析するため、先読み文字を見ます。
 
 次の先読み文字は \texttt{\$}
-です。ここで、\texttt{P\ -\textgreater{}\ ε}
+です。ここで、\texttt{P\ →\ ε}
 を選択します。空文字列にマッチするので、ドットを進めるだけで、入力からは何も消費しません。
 
 \begin{lstlisting}
   入力: $
-  スタック: [D -> $ ・ P $, P -> ( P ) P ・]
+  スタック: [D → $ ・ P $, P → ( P ) P ・]
 \end{lstlisting}
 
 \item
@@ -319,7 +319,7 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 
 \begin{lstlisting}
   入力: $
-  スタック: [D -> $ P ・ $]
+  スタック: [D → $ P ・ $]
 \end{lstlisting}
 
 \item
@@ -328,7 +328,7 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 
 \begin{lstlisting}
   入力:
-  スタック: [D -> $ P $ ・]
+  スタック: [D → $ P $ ・]
 \end{lstlisting}
 
 \item
@@ -383,7 +383,7 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
   \item
     規則の最後まで進んだら、スタックからその規則を除去
   \item
-    一つ上の規則の解析を続行
+    1つ上の規則の解析を続行
   \end{itemize}
 \item
   受理判定：
@@ -460,7 +460,7 @@ public class Dyck {
 
   \begin{itemize}
   \item
-    規則 \texttt{D\ -\textgreater{}\ P}
+    規則 \texttt{D\ →\ P}
     をそのまま実装：\texttt{P()}を呼び出すだけ
   \end{itemize}
 \item
@@ -468,10 +468,10 @@ public class Dyck {
 
   \begin{itemize}
   \item
-    先読み文字が\texttt{(}の場合、 \texttt{P\ -\textgreater{}\ (\ P\ )\ P}
+    先読み文字が\texttt{(}の場合、 \texttt{P\ →\ (\ P\ )\ P}
     を試す
   \item
-    それ以外の場合は \texttt{P\ -\textgreater{}\ ε}
+    それ以外の場合は \texttt{P\ →\ ε}
     を適用：常に\texttt{true}を返す
   \end{itemize}
 \item
@@ -485,15 +485,15 @@ public class Dyck {
 BNF規則とJavaコードの対応を見てみましょう。
 
 \begin{lstlisting}
-  文法規則： D -> P
+  文法規則： D → P
   Javaコード： private boolean D() { return P(); }
 
-  文法規則： P -> ( P ) P | ε
+  文法規則： P → ( P ) P | ε
   Javaコード： private boolean P() {
       if (先読み文字 == '(') {
-          // P -> ( P ) P を適用
+          // P → ( P ) P を適用
       } else {
-          // P -> ε を適用
+          // P → ε を適用
       }
   }
 \end{lstlisting}
@@ -525,7 +525,7 @@ BNF規則とJavaコードの対応を見てみましょう。
 実際に\texttt{parse("(())")}を実行すると、以下のような呼び出しの連鎖が発生します。
 
 \begin{lstlisting}
-  parse() -> D() -> P() -> P() -> P() -> ...
+  parse() → D() → P() → P() → P() → ...
 \end{lstlisting}
 
 この呼び出しスタックが、先ほどスタックで説明した状態と対応しているのです。
@@ -574,12 +574,12 @@ BNF規則とJavaコードの対応を見てみましょう。
 同じDyck言語を例にしますが、ナイーヴな上向き構文解析では空文字列規則（ε規則）が扱いづらいので、等価な別の文法を使います。
 
 \begin{lstlisting}
-  D -> $ P $
-  D -> $ ε $
-  P -> P X
-  P -> X
-  X -> ( P )
-  X -> ()
+  D → $ P $
+  D → $ ε $
+  P → P X
+  P → X
+  X → ( P )
+  X → ()
 \end{lstlisting}
 
 この文法の特徴は以下のとおりです。
@@ -630,7 +630,7 @@ BNF規則とJavaコードの対応を見てみましょう。
 \end{lstlisting}
 
 \item
-  スタックの末尾\texttt{(,\ )}が規則\texttt{X\ -\textgreater{}\ ()}の右辺と一致。2つの記号を\texttt{X}に\textgt{還元}
+  スタックの末尾\texttt{(,\ )}が規則\texttt{X\ →\ ()}の右辺と一致。2つの記号を\texttt{X}に\textgt{還元}
 
 \begin{lstlisting}
   入力: ) $
@@ -638,7 +638,7 @@ BNF規則とJavaコードの対応を見てみましょう。
 \end{lstlisting}
 
 \item
-  スタックの末尾\texttt{X}が規則\texttt{P\ -\textgreater{}\ X}の右辺と一致。1つの記号を\texttt{P}に\textgt{還元}（この実装はシフトする前に、可能な還元をすべて試みます）
+  スタックの末尾\texttt{X}が規則\texttt{P\ →\ X}の右辺と一致。1つの記号を\texttt{P}に\textgt{還元}（この実装はシフトする前に、可能な還元をすべて試みます）
 
 \begin{lstlisting}
   入力: ) $
@@ -654,7 +654,7 @@ BNF規則とJavaコードの対応を見てみましょう。
 \end{lstlisting}
 
 \item
-  スタックの末尾\texttt{(,\ P,\ )}が規則\texttt{X\ -\textgreater{}\ (\ P\ )}の右辺と一致。3つの記号を\texttt{X}に\textgt{還元}
+  スタックの末尾\texttt{(,\ P,\ )}が規則\texttt{X\ →\ (\ P\ )}の右辺と一致。3つの記号を\texttt{X}に\textgt{還元}
 
 \begin{lstlisting}
   入力: $
@@ -662,7 +662,7 @@ BNF規則とJavaコードの対応を見てみましょう。
 \end{lstlisting}
 
 \item
-  スタックの末尾\texttt{X}が規則\texttt{P\ -\textgreater{}\ X}の右辺と一致。1つの記号を\texttt{P}に\textgt{還元}
+  スタックの末尾\texttt{X}が規則\texttt{P\ →\ X}の右辺と一致。1つの記号を\texttt{P}に\textgt{還元}
 
 \begin{lstlisting}
   入力: $
@@ -678,7 +678,7 @@ BNF規則とJavaコードの対応を見てみましょう。
 \end{lstlisting}
 
 \item
-  スタックの末尾\texttt{\$,\ P,\ \$}が規則\texttt{D\ -\textgreater{}\ \$\ P\ \$}の右辺と一致。3つの記号を\texttt{D}に\textgt{還元}
+  スタックの末尾\texttt{\$,\ P,\ \$}が規則\texttt{D\ →\ \$\ P\ \$}の右辺と一致。3つの記号を\texttt{D}に\textgt{還元}
 
 \begin{lstlisting}
   入力:
@@ -913,7 +913,7 @@ public class DyckShiftReduce {
   まず\texttt{tryReduce()}で還元を試み、できない場合のみシフト
 \item
   単純な還元ルール：
-  すべての規則を順番にチェックし、最初にマッチしたものを使う。なお、この実装では規則\texttt{P\ →\ P\ X}を\texttt{P\ →\ X}より先に並べていることが重要です。順序を入れ替えると、たとえば\texttt{()()}の解析でスタックが\texttt{{[}\$,\ P,\ X{]}}となった時点で\texttt{P\ →\ X}による還元が先に選ばれ、\texttt{{[}\$,\ P,\ P{]}}というどの規則にもマッチしない形に陥って失敗します。「どの還元を選ぶか」の判断が本質的に難しいというこの弱さも、後述するLR法が解決する問題の一つです
+  すべての規則を順番にチェックし、最初にマッチしたものを使う。なお、この実装では規則\texttt{P\ →\ P\ X}を\texttt{P\ →\ X}より先に並べていることが重要です。順序を入れ替えると、たとえば\texttt{()()}の解析でスタックが\texttt{{[}\$,\ P,\ X{]}}となった時点で\texttt{P\ →\ X}による還元が先に選ばれ、\texttt{{[}\$,\ P,\ P{]}}というどの規則にもマッチしない形に陥って失敗します。「どの還元を選ぶか」の判断が本質的に難しいというこの弱さも、後述するLR法が解決する問題の1つです
 \item
   明示的なスタック操作：
   \texttt{List\textless{}Element\textgreater{}}をスタックとして使い、要素の追加・削除を明示的に行う
@@ -974,7 +974,7 @@ public class DyckShiftReduce {
 たとえば、以下のBNFは上向き型だと普通に解析できますが、工夫なしに下向き型で実装すると無限再帰に陥ってスタックオーバーフローします。
 
 \begin{lstlisting}
-  A -> A "a" | ε // 左再帰を含む文法の例 (εは空文字列)
+  A → A "a" | ε // 左再帰を含む文法の例 (εは空文字列)
 \end{lstlisting}
 
 この文法は「\texttt{A}は、\texttt{A}の後に\texttt{a}が続くか、何もないか」という意味ですが、\texttt{A}を解析するためにまず\texttt{A}を解析する必要があるので無限ループになります。
@@ -982,7 +982,7 @@ public class DyckShiftReduce {
 このような問題を下向き型で解決する方法も存在します。たとえば、以下のように等価な右再帰の文法に書き換えることで除去できます。
 
 \begin{lstlisting}
-  A -> "a" A | ε
+  A → "a" A | ε
 \end{lstlisting}
 
 この変換により、下向き構文解析で問題となる無限再帰を避けられます。ただし、文法の書き換えは常に簡単とは限りません。
@@ -1030,7 +1030,7 @@ public class DyckShiftReduce {
 
 \subsection{LL(1)とは？}
 
-\textbf{\sffamily LL(1)}という名前は以下の意味を持ちます：
+\textbf{\sffamily LL(1)}という名前は以下の意味を持ちます。
 
 \begin{enumerate}
 \item
@@ -1069,7 +1069,7 @@ while (count > 0) {
 
 LL(1)は、まさにこの「最初の1トークンで判断」というアイデアをアルゴリズム化したものです。
 
-しかし、すべての構文がこのように単純ではありません。たとえば、以下の単純な算術式を考えてみましょう。\texttt{N}は数値をあらわす終端記号とします。
+しかし、すべての構文がこのように単純ではありません。たとえば、以下の単純な算術式を考えてみましょう。\texttt{N}は数値を表す終端記号とします。
 
 \begin{lstlisting}
   E  → N
@@ -1107,7 +1107,7 @@ LL(1)を実現するには、以下の2つの問題を解決する必要があ�
 \item
   複数のトークンで始まる構文
 
-上の算術式の例のように、一つの非終端記号が複数のトークンで始まる場合があります。これを体系的に扱うために\textbf{\sffamily FIRST}\textgt{集合}（その非終端記号から始まる可能性のあるトークンの集合）が必要です。
+上の算術式の例のように、1つの非終端記号が複数のトークンで始まる場合があります。これを体系的に扱うために\textbf{\sffamily FIRST}\textgt{集合}（その非終端記号から始まる可能性のあるトークンの集合）が必要です。
 
 \item
   省略可能な要素
@@ -1214,7 +1214,7 @@ Eに続く可能性のあるトークンは、入力の終端記号\texttt{\$}�
   \(A \to X_1\,X_2\,\ldots\,X_k\) について、すべての \(X_i\)
   が\texttt{nullable}なら\texttt{nullable(A)\ =\ true}
 \item
-        \texttt{nullable = false ->
+        \texttt{nullable = false →
         nullable = true}への変化がなくなるまで繰り返す
 \end{enumerate}
 
@@ -1431,17 +1431,17 @@ LL(1)はシンプルで実用的ですが、いくつかの限界があります
 LL(1)では、同じ非終端記号から始まる複数の規則がある場合、先読みトークンだけではどの規則を適用すべきか判断できません。
 
 \begin{lstlisting}
-  S -> a B
-  S -> a C
+  S → a B
+  S → a C
 \end{lstlisting}
 
 両方の規則が\texttt{a}で始まるため、1文字先読みでは判断できません。この問題は\textgt{左因子化}（Left
 Factoring）で解決できます。
 
 \begin{lstlisting}
-  S  -> a S'
-  S' -> B
-  S' -> C
+  S  → a S'
+  S' → B
+  S' → C
 \end{lstlisting}
 
 左因子化は直観的には、共通の前置きを抽出して新しい非終端記号を導入することで、先読みトークンだけで規則を一意に決定できるようにする変換操作です。
@@ -1533,12 +1533,12 @@ private boolean tryReduce() {
 たとえば、Dyck言語の解析で考えてみましょう。文法は、「例で学ぶシフト還元構文解析」（4.6.3節）で導入したε規則なしの以下の文法を引き続き使います。
 
 \begin{lstlisting}
-  D -> $ P $
-  D -> $ ε $
-  P -> P X
-  P -> X
-  X -> ( P )
-  X -> ()
+  D → $ P $
+  D → $ ε $
+  P → P X
+  P → X
+  X → ( P )
+  X → ()
 \end{lstlisting}
 
 いま、スタックと入力が次の状態にあるとします。
@@ -1623,7 +1623,7 @@ private boolean tryReduce() {
   状態「(を読んだ直後」 + 記号「)」 → 状態「( ) を読んだ」
 \end{lstlisting}
 
-この状態遷移は決定的で、事前にすべて計算できます。3章で学んだことを思い出してください。このような状態遷移はオートマトンとして表現できるのです。
+この状態遷移は決定的で、事前にすべて計算できます。第3章で学んだことを思い出してください。このような状態遷移はオートマトンとして表現できるのです。
 
 \subsection{オートマトンの必然性}
 
@@ -1988,7 +1988,7 @@ LR(0)項集合を先取りで示しておきます。具体的な作り方は4.1
 
 たとえば \(I_3\) に到達した場合は規則 \texttt{T\ →\ x}
 で還元され、\texttt{x} をスタックから取り除いて \texttt{T}
-を積み、ひとつ前の状態（\(I_0\) か \(I_5\)）から \texttt{T}
+を積み、1つ前の状態（\(I_0\) か \(I_5\)）から \texttt{T}
 での遷移をたどって \(I_2\)
 に戻ります。つまり、図中の矢印はあくまで「シフト」と「\texttt{T} や
 \texttt{S}
@@ -2796,7 +2796,7 @@ LR(1)では文脈ごとに先読み記号が分かれているため、それぞ
   }
 \end{lstlisting}
 
-この状態で、先読みがdまたはeの時、AとBのどちらで還元すべきか決定できません（reduce/reduceコンフリクト）。
+この状態で、先読みがdまたはeのとき、AとBのどちらで還元すべきか決定できません（reduce/reduceコンフリクト）。
 
 \subsection{LALR(1)とLR(1)の実用的な比較}
 
@@ -3267,6 +3267,6 @@ Parsingを使えばPEGも線形時間になります。
 \end{itemize}
 \end{enumerate}
 
-構文解析は難しく感じるかもしれませんが、基本的なアイデアは「文字列を解析して木構造を抽出する」というシンプルなものです。この章で学んだ各手法の特徴を理解しておけば、実際の開発で構文解析が必要になった時に、適切な選択ができるはずです。
+構文解析は難しく感じるかもしれませんが、基本的なアイデアは「文字列を解析して木構造を抽出する」というシンプルなものです。この章で学んだ各手法の特徴を理解しておけば、実際の開発で構文解析が必要になったときに、適切な選択ができるはずです。
 
 次章では、ここで学んだアルゴリズムを実装したパーサージェネレータ（構文解析器生成系）について具体的に見ていきます。
