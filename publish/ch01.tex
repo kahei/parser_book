@@ -414,6 +414,7 @@ factor = NUMBER | '(' expr ')';
 
 \begin{center}
 \begin{tikzpicture}[
+  scale=0.9, transform shape,
   level distance=1.5cm,
   level 1/.style={sibling distance=3cm},
   level 2/.style={sibling distance=2cm},
@@ -427,7 +428,7 @@ factor = NUMBER | '(' expr ')';
     };
 \end{tikzpicture}
 \end{center}
-
+\vspace{-2mm}
 \subsection{もし文法の階層が逆だったら？}
 
 以下のような\textbf{誤った}文法を書いたとしましょう。
@@ -515,6 +516,7 @@ term = NUMBER | '(' expr ')';
 
 \begin{center}
 \begin{tikzpicture}[
+  scale=0.9, transform shape,
   level distance=1.5cm,
   sibling distance=2cm,
   every node/.style={circle,draw,minimum size=0.8cm},
@@ -560,6 +562,7 @@ BNFの観点から言えば、葉ノードは数値リテラルや識別子の�
 
 \begin{center}
 \begin{tikzpicture}[
+  scale=0.9, transform shape,
   level distance=1.5cm,
   sibling distance=2cm,
   every node/.style={circle,draw,minimum size=0.8cm},

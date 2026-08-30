@@ -353,7 +353,7 @@ array = LBRACKET RBRACKET | LBRACKET value {COMMA value} RBRACKET ;
 \begin{codescreen}{}
 [1,] // ,で終わっている
 \end{codescreen}
-\clearpage
+
 \subsection{value}
 
 \begin{codescreen}{}
@@ -539,7 +539,7 @@ public interface JsonAst {
 \end{codescreen}
 
 
-各クラスがBNFの左辺に対応しているのがわかるでしょうか。ただし、前述のとおり、\texttt{ws}や区切り文字（\texttt{,}、\texttt{:}）などは抽象構文木には現れません。これらは構文解析の過程で消費されますが、最終的なデータ構造には含まれないのです。
+\enlargethispage{\baselineskip}各クラスがBNFの左辺に対応しているのがわかるでしょうか。ただし、前述のとおり、\texttt{ws}や区切り文字（\texttt{,}、\texttt{:}）などは抽象構文木には現れません。これらは構文解析の過程で消費されますが、最終的なデータ構造には含まれないのです。
 
 \section{JSONの構文解析器}
 \index{JSON!構文解析器}
@@ -1690,7 +1690,7 @@ CFG）の考え方について学んでもらいます。文脈自由文法は�
 逆に、CFGの考え方さえわかってしまえば、個別の構文解析アルゴリズム自体は、それほど難しいとは感じられなくなって来るかもしれません。
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
-\clearpage
+
 \textgt{演習問題}
 
 \begin{enumerate}
