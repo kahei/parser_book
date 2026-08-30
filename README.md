@@ -25,10 +25,10 @@ ZEN大学出版会で出版予定の構文解析の技術書です。LuaLaTeX形
       chapter8.tex  // 第8章：おわりに
   docker/luatex/    // Dockerビルド環境
   build/            // ビルド出力ディレクトリ
-  code/             // サンプルコード
-    chapter3/       // JSON パーサー実装
-    chapter5/       // SLR(1) パーサー実装
-    chapter6/       // パーサージェネレータの例
+  code/             // サンプルコード（ディレクトリ名は出版版の章番号に対応）
+    ch02/           // 第2章：JSON パーサー実装
+    ch04/           // 第4章：LL(1)/LR(0)/SLR(1) パーサー実装
+    ch05/           // 第5章：パーサージェネレータの例
   .gitignore        // gitの管理対象から除外するパターン
 ```
 

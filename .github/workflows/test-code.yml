@@ -17,11 +17,11 @@ jobs:
       fail-fast: false
       matrix:
         project:
-          - chapter3
-          - chapter5
-          - chapter6:antlr
-          - chapter6:javacc
-          - chapter6:jcomb
+          - ch02
+          - ch04
+          - ch05:antlr
+          - ch05:javacc
+          - ch05:jcomb
         # 本書はJava 21を基準としつつJava 25での動作も保証したいので、両方で回す
         java: ['21', '25']
     defaults:
@@ -39,7 +39,7 @@ jobs:
         run: ./gradlew :${{ matrix.project }}:test --no-daemon
 
   yacc:
-    name: yacc/flex (chapter6/yacc)
+    name: yacc/flex (ch05/yacc)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -59,4 +59,4 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y bison flex byacc
       - name: Run smoke test
-        run: ./gradlew :chapter6:yacc:check --no-daemon
+        run: ./gradlew :ch05:yacc:check --no-daemon
