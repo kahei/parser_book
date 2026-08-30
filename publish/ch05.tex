@@ -633,11 +633,6 @@ JavaCCは構文定義ファイルの文法がかなりJavaに似ているため�
 \index{Lex}
 \index{Flex}
 \index{LALR(1)}
-\index{yylex@\texttt{yylex}}
-\index{yyparse@\texttt{yyparse}}
-\index{yyerror@\texttt{yyerror}}
-\index{left@\texttt{\%left}}
-\index{prec@\texttt{\%prec}}
 \index{error token@\texttt{error}トークン}
 
 Yaccは1970年代にAT\&Tのベル研究所にいたStephen C.
@@ -991,7 +986,6 @@ ANTLRはこういった実用上重要な痒いところにも手が届くよう
 \index{ぱーさーこんびねーた@パーサーコンビネータ}
 \index{Scala}
 \index{DSL}
-\index{chainl@\texttt{chainl}}
 
 手前味噌ですが、拙作のパーサーコンビネータである\href{https://github.com/kmizu/scomb}{SComb}も紹介しておきます。これまで紹介してきたものはすべて構文解析器生成系です。つまり、独自の言語を用いて作りたい言語の文法を記述し、そこから\textgt{対象言語}（CであったりJavaであったりさまざまですが）で書かれた構文解析器を生成するものだったわけですが、パーサーコンビネータは少々違います。
 
@@ -1047,8 +1041,6 @@ ScalaはJavaとは異なるプログラミング言語ですが、構文にJava�
 \section{パーサーコンビネータJCombを自作しよう！}
 \index{JComb}
 \index{ぱーさーこんびねーた@パーサーコンビネータ!JComb}
-\index{JParser@\texttt{JParser}}
-\index{Result@\texttt{Result}}
 \index{じぇねりくす@ジェネリクス}
 
 コンパイラについて解説した本は数えきれないほどありますし、その中で構文解析アルゴリズムについて説明した本も少なからずあります。しかし、構文解析アルゴリズムについてのみフォーカスした本はParsing Techniquesほぼ一冊といえる現状です。その上でパーサーコンビネータの自作まで踏み込んだ書籍はほぼ皆無と言っていいでしょう。読者の方には「さすがにちょっとパーサーコンビネータの自作は無理があるのでは」と思われた方もいるのではないでしょうか。
@@ -1160,7 +1152,6 @@ assert (new Result<List<String>>(List.of("a", "a", "a"), "")).equals(
 この節ではこれらのプリミティブなメソッドの実装方法について説明していきます。
 
 \subsection{string()メソッド}
-\index{string@\texttt{string()}}
 \index{JComb}
 \index{もじれつりてらる@文字列リテラル}
 
@@ -1214,7 +1205,6 @@ assert null == foo.parse("baz");
 \end{codescreen}
 
 \subsection{alt()メソッド}
-\index{alt@\texttt{alt()}}
 \index{せんたく@選択}
 \index{じゅんじょつきせんたく@順序付き選択}
 
@@ -1277,9 +1267,7 @@ class JAltParser<A> implements JParser<A> {
 PEGベースでないパーサーコンビネータを作ることもできるのですが実装がかなり複雑になってしまいます。PEGの挙動をそのままプログラミング言語に当てはめるのは非常に簡単であるため、今回はPEGを採用しましたが、もし興味があればBNFベース（文脈自由文法ベース）のパーサーコンビネータも作ってみてください。
 
 \subsection{seq()メソッド}
-\index{seq@\texttt{seq()}}
 \index{れんせつ@連接}
-\index{Pair@\texttt{Pair}}
 
 次に2つのパーサーを取って「連接」パーサーを返すメソッド\texttt{seq()}を実装します。これはPEGの連接
 \texttt{e1\ e2} に対応します。先ほどと同じくラムダ式にしてみます。
@@ -1312,8 +1300,6 @@ public class JComb {
 先ほどの\texttt{alt()}メソッドと似通った実装ですが、\texttt{p1}が失敗したら全体が失敗するのがポイントです。\texttt{p1}と\texttt{p2}の両方が成功した場合は、2つの値のペアを返しています。
 
 \subsubsection{rep0(), rep1()メソッド}
-\index{rep0@\texttt{rep0()}}
-\index{rep1@\texttt{rep1()}}
 \index{くりかえし@繰り返し}
 
 残りは0回以上の繰り返し（PEGの
@@ -1365,7 +1351,6 @@ public class JComb {
 実質的な本体は\texttt{(1)}だけで、あとは結果の値が\texttt{Pair}なのを\texttt{List}に加工しているだけですね。
 
 \subsection{map()メソッド}
-\index{map@\texttt{map()}}
 \index{せまんてぃっくあくしょん@セマンティックアクション}
 \index{らむだしき@ラムダ式}
 
@@ -1388,7 +1373,6 @@ interface JParser<R> {
 \texttt{(1)}で\texttt{f.apply(result.value())}として値を加工しているのがポイントです。
 
 \subsection{lazy()メソッド}
-\index{lazy@\texttt{lazy()}}
 \index{ちえんひょうか@遅延評価}
 \index{むげんさいき@無限再帰}
 \index{そうごさいき@相互再帰}
@@ -1443,9 +1427,7 @@ public static JParser<Integer> primary() {
 のように記述することで、この問題を解決します。
 
 \subsection{regex()メソッド}
-\index{regex@\texttt{regex()}}
 \index{せいきひょうげん@正規表現}
-\index{matcher.lookingAt@\texttt{matcher.lookingAt()}}
 
 せっかくなので正規表現を扱うメソッド\texttt{regex()}も導入してみましょう。
 
