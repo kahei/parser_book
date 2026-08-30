@@ -450,7 +450,7 @@ System.out.println("B");
 System.out.println("C");
 \end{codescreen}
 
-このように文が終端子（Terminator)で終わる文法には、文の途中に改行が挟まっても単なるスペースと同様に取り扱えるという利点があります。先ほどのプログラムを次のように書き換えても意味は変わりません。
+このように文が終端子（Terminator）で終わる文法には、文の途中に改行が挟まっても単なるスペースと同様に取り扱えるという利点があります。先ほどのプログラムを次のように書き換えても意味は変わりません。
 
 \begin{codescreen}{}
 System.out.println(
@@ -500,7 +500,7 @@ expression_statement = expression <SEMICOLON>
 expression_statement = expression (<SEMICOLON> | <LINE_TERMINATOR>)
 \end{lstlisting}
 
-\texttt{\textless{}LINE\_TERMINATOR\textgreater{}}は改行を表すトークンです。プラットフォームによって改行コードは異なるので、このように定義しておくと楽でしょう。このような規則でうまく先ほどの例全てをうまく取り扱えるかといえば、端的に言って無理です。たとえば、次のようなコードを考えてみましょう。
+\texttt{\textless{}LINE\_TERMINATOR\textgreater{}}は改行を表すトークンです。プラットフォームによって改行コードは異なるので、このように定義しておくと楽でしょう。このような規則でうまく先ほどの例すべてをうまく取り扱えるかといえば、端的に言って無理です。たとえば、次のようなコードを考えてみましょう。
 
 \begin{codescreen}{}
 println(
@@ -597,8 +597,7 @@ C言語ではこのようなややこしい構文を解析するために、構�
 \index{かいぎょう@改行}
 \index{せみころん@セミコロン}
 
-6.4
-で改行で文を終端する文法について説明しましたが、Scala 3はさらにややこしい入力を処理できなければいけません。たとえば、以下のような文を解釈できる必要があります。
+6.4節で改行で文を終端する文法について説明しましたが、Scala 3はさらにややこしい入力を処理できなければいけません。たとえば、以下のような文を解釈できる必要があります。
 
 \begin{codescreen}{}
 val x = 1
@@ -622,7 +621,7 @@ The tokens that can terminate a statement are: literals, identifiers and
 the following delimiters and reserved words:
 \end{quote}
 
-これを意訳すると、通常の場合はScalaの文はセミコロンまたは改行で終わることができるが、次の三つの条件全てを満たしたときのみ、特別なトークン\texttt{nl}として扱われる、ということになります。
+これを意訳すると、通常の場合はScalaの文はセミコロンまたは改行で終わることができるが、次の三つの条件すべてを満たしたときのみ、特別なトークン\texttt{nl}として扱われる、ということになります。
 
 \begin{enumerate}
 \item

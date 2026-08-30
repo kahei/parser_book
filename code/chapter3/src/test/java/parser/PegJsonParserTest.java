@@ -21,6 +21,16 @@ public class PegJsonParserTest {
     }
 
     @Test
+    public void parseUnterminatedStringThrows() {
+        var parser = new PegJsonParser();
+        // 開き引用符だけで入力が終わる場合は失敗しなければならない
+        // （ParseExceptionはPegJsonParserのprivate内部クラスのため
+        // RuntimeExceptionとして検査する）
+        assertThrows(RuntimeException.class, () -> parser.parse("\""));
+        assertThrows(RuntimeException.class, () -> parser.parse("\"abc"));
+    }
+
+    @Test
     public void parseBackEscapedString() {
         var parser = new PegJsonParser();
         var result = parser.parse("\"" + "\\b" + "\"");
