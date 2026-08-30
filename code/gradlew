@@ -2,4 +2,4 @@
 set -e
 
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-exec "$SCRIPT_DIR/chapter3/gradlew" "$@"
+exec "$SCRIPT_DIR/ch02/gradlew" "$@"
