@@ -181,7 +181,7 @@ JSONのBNFによる定義を簡略化したものは以下ですべてです。�
 
 ただし、\texttt{"\""}という表記は、BNFでダブルクォートを表現するためのエスケープシーケンスであり、JSON文字列のエスケープシーケンスとは関係ないことに注意してください。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 json = ws value;
 value = true | false | null | number | string | object | array;
 object = LBRACE RBRACE | LBRACE pair {COMMA pair} RBRACE;
@@ -212,7 +212,7 @@ CHAR = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "
 INT = ["-"] ("0" | (NONZERO {DIGIT})) ;
 DIGIT = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 NONZERO = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
-\end{lstlisting}
+\end{codescreen}
 
 これまで説明したJSONの要素と比較して見慣れない記号が出てきましたが、1つ1つ見ていきましょう。
 
@@ -222,9 +222,9 @@ NONZERO = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 
 一番上から読んでいきます。第1章の復習になりますが、BNFでは、
 
-\begin{lstlisting}
+\begin{codescreen}{}
 json = ws value;
-\end{lstlisting}
+\end{codescreen}
 
 のような\textgt{規則}の集まりによって、文法を表現します。各規則はセミコロン（\texttt{;}）で終わります。\texttt{=}の左側である\texttt{json}が\textgt{左辺}で、右側（ここでは
 \texttt{ws\ value}）が\textgt{本体}になります。さらに、本体の中に出てくる、他の規則を参照する部分（ここでは\texttt{value}や\texttt{ws}）を非終端記号と呼びます。非終端記号は同じBNFで定義されている規則の左辺と一致する必要があります。
@@ -235,9 +235,9 @@ json = ws value;
 
 \texttt{object}はJSONのオブジェクトを表す規則で、定義は以下のようになっています。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 object = LBRACE RBRACE | LBRACE pair {COMMA pair} RBRACE;
-\end{lstlisting}
+\end{codescreen}
 
 \texttt{pair}の定義はのちほど出てきますので心配しないでください。
 
@@ -286,38 +286,38 @@ object = LBRACE RBRACE | LBRACE pair {COMMA pair} RBRACE;
 
 \texttt{pair}（ペア）は、JSONのオブジェクト内での\texttt{"x":1}に当たる部分を表現する規則です。\texttt{value}の定義については後述します。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 pair = string COLON value;
-\end{lstlisting}
+\end{codescreen}
 
 これによってペアは\texttt{:}（\texttt{COLON}）の前に文字列リテラル（\texttt{string}）が来て、その後にJSONの値（\texttt{value}）が来ることを表しています。\texttt{pair}にマッチするテキストとしては、
 
-\begin{lstlisting}
+\begin{codescreen}{}
 "x":1
 "y":true
-\end{lstlisting}
+\end{codescreen}
 
 などがあります。一方で、以下のテキストは\texttt{pair}にマッチしません（JavaScriptのオブジェクトとJSONの違いについては前述のコラム「JSONとJavaScriptオブジェクトの違い」を参照）。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 x:1 // 文字列リテラルでないといけない
-\end{lstlisting}
+\end{codescreen}
 
 \subsection{COMMA}
 
 \texttt{COMMA}は、カンマを表す規則です。カンマそのものを表すには、単に\texttt{","}と書けばいいのですが、任意個の空白文字が続くことを表現したいため、規則\texttt{ws}（後述）を参照しています。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 COMMA = "," ws;
-\end{lstlisting}
+\end{codescreen}
 
 \subsection{array}
 
 \texttt{array}は、JSONの値の配列を表す規則です。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 array = LBRACKET RBRACKET | LBRACKET value {COMMA value} RBRACKET ;
-\end{lstlisting}
+\end{codescreen}
 
 \texttt{LBRACKET}は開き大カッコ（\texttt{{[}}）を、\texttt{RBRACKET}は閉じ大カッコ（\texttt{{]}}）を表しています。\texttt{value}の定義については後述します。
 
@@ -356,9 +356,9 @@ array = LBRACKET RBRACKET | LBRACKET value {COMMA value} RBRACKET ;
 \clearpage
 \subsection{value}
 
-\begin{lstlisting}
+\begin{codescreen}{}
 value = true | false | null | number | string | object | array;
-\end{lstlisting}
+\end{codescreen}
 
 \texttt{value}はJSONの値を表現する規則です。これは、JSONの値は、
 
@@ -385,9 +385,9 @@ value = true | false | null | number | string | object | array;
 
 \texttt{true}は、真を表すリテラルを表す規則です。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 true = "true" ws;
-\end{lstlisting}
+\end{codescreen}
 
 文字列 \texttt{true} が真を表すということでそのままですね。
 
@@ -395,17 +395,17 @@ true = "true" ws;
 
 \texttt{false}は、偽を表すリテラルを表す規則です。構造的には、\texttt{true}と同じです。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 false = "false" ws;
-\end{lstlisting}
+\end{codescreen}
 
 \subsection{null}
 
 \texttt{null}は、ヌルリテラルを表す規則です。構造的には、\texttt{true}や\texttt{false}と同じです。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 null = "null" ws;
-\end{lstlisting}
+\end{codescreen}
 
 JSON仕様は\texttt{null}の意味付けを規定しません。多くの実装ではホスト言語の\texttt{null}相当の値に対応づけますが、\texttt{null}を表現するためのリテラルがない言語では、\texttt{Option}や\texttt{Maybe}といったデータ型に対応づけることもあります。
 
@@ -413,9 +413,9 @@ JSON仕様は\texttt{null}の意味付けを規定しません。多くの実装
 
 \texttt{number}は、数値リテラルを表す規則です。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 number = INT ws;
-\end{lstlisting}
+\end{codescreen}
 
 整数（\texttt{INT}）に続いて、\texttt{ws}が来るのが\texttt{number}であるということを表現しています。簡単にするため、本章では数値を整数に限定し、小数部や指数部は扱いません（実装拡張の話題は章末の演習を参照）。
 
@@ -423,9 +423,9 @@ number = INT ws;
 
 \texttt{string}は文字列リテラルを表す規則です。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 string = "\"" {CHAR} "\"" ws;
-\end{lstlisting}
+\end{codescreen}
 
 \texttt{"}で始まって、\texttt{CHAR}で定義される文字が0個以上続いて、
 \texttt{"}
@@ -1098,9 +1098,9 @@ return new JsonAst.JsonArray(values);
 
 多少複雑になりましたが、\texttt{parseArray()}の定義が、EBNFにおける表記
 
-\begin{lstlisting}
+\begin{codescreen}{}
 array = LBRACKET RBRACKET | LBRACKET value {COMMA value} RBRACKET ;
-\end{lstlisting}
+\end{codescreen}
 
 \noindent に対応していることがわかるでしょうか
 。読み方のポイントは、\texttt{\textbar{}}の後を、例外をキャッチした後の処理ととらえることです。
@@ -1173,9 +1173,9 @@ return new JsonAst.JsonObject(new ArrayList<>());
 
 これはEBNFにおける以下の定義にそのまま対応しているのがわかるでしょう。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 pair = string COLON value;
-\end{lstlisting}
+\end{codescreen}
 
 \subsection{構文解析における再帰}
 
@@ -1237,15 +1237,15 @@ PEGは直感的でシンプルなので、最初に学ぶのに適していま�
 
 たとえば、以下の英文があったとします。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 We are parsers.
-\end{lstlisting}
+\end{codescreen}
 
 我々は構文解析器であるというジョーク的な文ですが、それはさておき、この文は
 
-\begin{lstlisting}
+\begin{codescreen}{}
 [We, are, parsers]
-\end{lstlisting}
+\end{codescreen}
 
 \noindent という3つのトークン（単語）に分解すると考えるのが字句解析の発想法です。
 
@@ -1602,11 +1602,11 @@ PEG版と異なり、途中で失敗したら後戻り（バックトラック�
   \textgt{字句解析フェーズ}:
   \texttt{tokenizeAll()}が入力全体を一度にトークン列に変換
 
-\begin{lstlisting}
+\begin{codescreen}{}
 入力: {"key": "value"}
 ↓
 トークン列: [LBRACE, STRING("key"), COLON, STRING("value"), RBRACE, EOF]
-\end{lstlisting}
+\end{codescreen}
 
 \item
   \textgt{構文解析フェーズ}:

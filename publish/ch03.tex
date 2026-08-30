@@ -935,18 +935,18 @@ john.doe@(comment1(comment2))example.com
 \bigskip
 \noindent\textgt{文脈自由の例}：
 
-\begin{lstlisting}
+\begin{codescreen}{}
 A → abc
-\end{lstlisting}
+\end{codescreen}
 
 この規則では、Aはどこに現れても常に\texttt{abc}に置き換えられます。周りの文脈（前後の文字）に関係なく適用できるので「文脈自由」です。自由というと一見「好きにできる」という印象を受けますが、ここの「自由」は、たとえば、アルコールフリー＝アルコールが含まれない、という意味での「自由」です。形式言語を扱う研究者の中にはContext-free Grammarを「文脈自由文法」と訳したのは誤解を招きやすいので、あまりよくなかったのではないか、という人もいます。
 
 \bigskip
 \noindent\textgt{文脈依存の例}：
 
-\begin{lstlisting}
+\begin{codescreen}{}
 xAy → xabcy
-\end{lstlisting}
+\end{codescreen}
 
 この規則では、Aが\texttt{x}と\texttt{y}に挟まれている時だけ\texttt{abc}に置き換えられます。文脈（周りの文字）に依存しているので「文脈依存」です。
 
