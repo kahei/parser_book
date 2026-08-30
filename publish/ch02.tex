@@ -2,7 +2,7 @@
 \index{JSON}
 \index{こうぶんかいせき@構文解析!JSON}
 
-第1章で構文解析に必要な基本概念について学ぶことができました。この章ではJSONという実際に使われている言語を題材に、より実践的な構文解析のやり方を学んでいきます。
+第1章では構文解析に必要な基本概念について学びました。この章ではJSONという実際に使われている言語を題材に、より実践的な構文解析のやり方を学んでいきます。
 
 \section{JSONの概要}
 \index{JSON!概要}
@@ -134,7 +134,7 @@ JSONとJavaScriptのオブジェクトリテラルは似ていますが、いく
 
 \subsection{真偽値}
 
-JSONには、多くのプログラミング言語にある真偽値もあります。JSONの真偽値は以下のように、\texttt{true}または\texttt{false}の二通りです。
+JSONには、多くのプログラミング言語にある真偽値もあります。JSONの真偽値は以下のように、\texttt{true}または\texttt{false}の2通りです。
 
 \begin{codescreen}{}
 true
@@ -356,11 +356,13 @@ array = LBRACKET RBRACKET | LBRACKET value {COMMA value} RBRACKET ;
 \clearpage
 \subsection{value}
 
+\texttt{value}はJSONの値を表現する規則です。
+
 \begin{codescreen}{}
 value = true | false | null | number | string | object | array;
 \end{codescreen}
 
-\texttt{value}はJSONの値を表現する規則です。これは、JSONの値は、
+これは、JSONの値は、
 
 \begin{itemize}
 \item
@@ -1177,13 +1179,13 @@ pair = string COLON value;
 
 \begin{itemize}
 \item
-  \texttt{parseArray()\ -\textgreater{}\ parseValue()\ -\textgreater{}\ parseArray()}
+  \texttt{parseArray()\ →\ parseValue()\ →\ parseArray()}
 \item
-  \texttt{parseArray()\ -\textgreater{}\ parseValue()\ -\textgreater{}\ parseObject()}
+  \texttt{parseArray()\ →\ parseValue()\ →\ parseObject()}
 \item
-  \texttt{parseObject()\ -\textgreater{}\ parseValue()\ -\textgreater{}\ parseObject()}
+  \texttt{parseObject()\ →\ parseValue()\ →\ parseObject()}
 \item
-  \texttt{parseObject()\ -\textgreater{}\ parseValue()\ -\textgreater{}\ parseArray()}
+  \texttt{parseObject()\ →\ parseValue()\ →\ parseArray()}
 \end{itemize}
 
 \noindent のような再帰呼び出しが起こり得ることがわかります。このような再帰呼び出しでは、各ステップで必ず構文解析が1文字以上進むため、JSONがどれだけ深くなっても（スタックが溢れない限り）うまく構文解析ができるのです。
