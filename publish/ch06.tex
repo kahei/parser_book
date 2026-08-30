@@ -490,15 +490,15 @@ Scalaでも一行の文字数が増えれば分割したくなりますから、
 
 このような文法を実現するのは案外ややこしいものです。Javaの\texttt{System.out.println("A");}という文は正確には「式文」と呼ばれますが、この式文は次のように定義されます。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 expression_statement = expression <SEMICOLON>
-\end{lstlisting}
+\end{codescreen}
 
 \texttt{\textless{}SEMICOLON\textgreater{}}はセミコロンを表すトークンです。では、Scala式の文法を「改行でもセミコロンでも終わることができる」と考えて次のように記述しても大丈夫でしょうか。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 expression_statement = expression (<SEMICOLON> | <LINE_TERMINATOR>)
-\end{lstlisting}
+\end{codescreen}
 
 \texttt{\textless{}LINE\_TERMINATOR\textgreater{}}は改行を表すトークンです。プラットフォームによって改行コードは異なるので、このように定義しておくと楽でしょう。このような規則でうまく先ほどの例すべてをうまく取り扱えるかといえば、端的に言って無理です。たとえば、次のようなコードを考えてみましょう。
 

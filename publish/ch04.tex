@@ -131,11 +131,11 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 
 第3章で学んだDyck言語を例に考えてみましょう。文法は以下でした。
 
-\begin{lstlisting}
-  D → P
-  P → ( P ) P
-  P → ε
-\end{lstlisting}
+\begin{codescreen}{}
+D → P
+P → ( P ) P
+P → ε
+\end{codescreen}
 
 入力文字列 \texttt{(())} を解析する際、2つの考え方があります。
 
@@ -156,11 +156,11 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 
 第3章で学んだDyck言語（括弧の対応が取れた文字列を表す言語）を例に、具体的に動作を追ってみましょう。説明のために、文法に入力の開始・終了を表す\texttt{\$}（ドル記号）を追加します。
 
-\begin{lstlisting}
-  D → $ P $
-  P → ( P ) P
-  P → ε
-\end{lstlisting}
+\begin{codescreen}{}
+D → $ P $
+P → ( P ) P
+P → ε
+\end{codescreen}
 
 この文法が、入力文字列 \texttt{(())} を受理するかどうかを判定してみましょう。
 
@@ -184,20 +184,20 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 
 では、実際に解析を開始しましょう。スタックは右が一番上で左に行くほど下になる、つまり最右がスタックトップであることに注意してください。
 
-\begin{lstlisting}
-  入力: $ ( ( ) ) $
-  スタック: [ D → ・$ P $ ]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: $ ( ( ) ) $
+スタック: [ D → ・$ P $ ]
+\end{codescreen}
 
 \begin{enumerate}
 \item
   最初の記号 \texttt{\$}
   を入力から読み込みます。スタックトップの規則が期待する記号と一致するので、ドットを進めます。
 
-\begin{lstlisting}
-  入力: ( ( ) ) $
-  スタック: [ D → $・P $ ]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: ( ( ) ) $
+スタック: [ D → $・P $ ]
+\end{codescreen}
 
 \item
   非終端記号 \texttt{P}
@@ -219,19 +219,19 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 
 というわけで、先読み文字が\texttt{(}なので、\texttt{P\ →\ (\ P\ )\ P}を選択します。この規則をスタックに追加します。
 
-\begin{lstlisting}
-  入力: ( ( ) ) $
-  スタック: [D → $・P $, P → ・( P ) P]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: ( ( ) ) $
+スタック: [D → $・P $, P → ・( P ) P]
+\end{codescreen}
 
 \item
   入力の先頭の \texttt{(}
   を読み込み、スタックトップの規則のドットを進めます。
 
-\begin{lstlisting}
-  入力: ( ) ) $
-  スタック: [D → $・P $, P → (・ P ) P]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: ( ) ) $
+スタック: [D → $・P $, P → (・ P ) P]
+\end{codescreen}
 
 \item
   非終端記号 \texttt{P} を解析するため、再び先読み文字を見ます。
@@ -240,19 +240,19 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 \texttt{P\ →\ (\ P\ )\ P}
 を選択して、この規則をスタックに追加します。
 
-\begin{lstlisting}
-  入力: ( ) ) $
-  スタック: [D → $・P $, P → ( ・ P ) P, P → ・ ( P ) P]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: ( ) ) $
+スタック: [D → $・P $, P → ( ・ P ) P, P → ・ ( P ) P]
+\end{codescreen}
 
 \item
   入力の先頭の \texttt{(}
   を読み込み、スタックトップの規則のドットを進めます。
 
-\begin{lstlisting}
-  入力: ) ) $
-  スタック: [D → $・P $, P → ( ・P ) P, P → ( ・ P ) P]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: ) ) $
+スタック: [D → $・P $, P → ( ・P ) P, P → ( ・ P ) P]
+\end{codescreen}
 
 \item
   非終端記号 \texttt{P} を解析するため、先読み文字を見ます。
@@ -260,19 +260,19 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 次の先読み文字は \texttt{)} です。今度は、\texttt{P\ →\ ε}
 を選択します。空文字列にマッチするので、ドットを進めるだけで、入力からは何も消費しません。
 
-\begin{lstlisting}
-  入力: ) ) $
-  スタック: [D → $・P $, P → ( ・P ) P, P → ( P ・ ) P]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: ) ) $
+スタック: [D → $・P $, P → ( ・P ) P, P → ( P ・ ) P]
+\end{codescreen}
 
 \item
   入力の先頭の \texttt{)}
   を読み込み、スタックトップの規則のドットを進めます。
 
-\begin{lstlisting}
-  入力: ) $
-  スタック: [D → $・P $, P → ( ・P ) P, P → ( P ) ・ P]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: ) $
+スタック: [D → $・P $, P → ( ・P ) P, P → ( P ) ・ P]
+\end{codescreen}
 
 \item
   非終端記号 \texttt{P} を解析するため、先読み文字を見ます。
@@ -280,27 +280,27 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 次の先読み文字は \texttt{)} です。ここで、\texttt{P\ →\ ε}
 を選択します。空文字列にマッチするので、ドットを進めるだけで、入力からは何も消費しません。
 
-\begin{lstlisting}
-  入力: ) $
-  スタック: [D → $・P $, P → ( ・P ) P, P → ( P ) P ・]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: ) $
+スタック: [D → $・P $, P → ( ・P ) P, P → ( P ) P ・]
+\end{codescreen}
 
 \item
   スタックトップの規則のドットが最後まで進んだので、スタックからその規則を除去すると同時に、新たなスタックトップのドットを進めます。ちょうどメソッド呼び出しが終わったのでそこから返って続きから再開するようなものです。
 
-\begin{lstlisting}
-  入力: ) $
-  スタック: [D → $・P $, P → ( P ・) P]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: ) $
+スタック: [D → $・P $, P → ( P ・) P]
+\end{codescreen}
 
 \item
   入力の先頭の \texttt{)}
   を読み込み、スタックトップの規則のドットを進めます。
 
-\begin{lstlisting}
-  入力: $
-  スタック: [D → $・P $, P → ( P ) ・ P]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: $
+スタック: [D → $・P $, P → ( P ) ・ P]
+\end{codescreen}
 
 \item
   非終端記号 \texttt{P} を解析するため、先読み文字を見ます。
@@ -309,35 +309,35 @@ LR系の各節は、後で実務で必要になったときに参照しやすい
 です。ここで、\texttt{P\ →\ ε}
 を選択します。空文字列にマッチするので、ドットを進めるだけで、入力からは何も消費しません。
 
-\begin{lstlisting}
-  入力: $
-  スタック: [D → $ ・ P $, P → ( P ) P ・]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: $
+スタック: [D → $ ・ P $, P → ( P ) P ・]
+\end{codescreen}
 
 \item
   スタックトップの規則のドットが最後まで進んだので、スタックからその規則を除去すると同時に、新たなスタックトップのドットを進めます。
 
-\begin{lstlisting}
-  入力: $
-  スタック: [D → $ P ・ $]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: $
+スタック: [D → $ P ・ $]
+\end{codescreen}
 
 \item
   入力の先頭の \texttt{\$}
   を読み込み、スタックトップの規則のドットを進めます。
 
-\begin{lstlisting}
-  入力:
-  スタック: [D → $ P $ ・]
-\end{lstlisting}
+\begin{codescreen}{}
+入力:
+スタック: [D → $ P $ ・]
+\end{codescreen}
 
 \item
   ここでスタックトップの規則のドットが最後まで進んだので、スタックからその規則を除去します。スタックが空になり、入力もすべて消費されたので、受理されます。
 
-\begin{lstlisting}
-  入力:
-  スタック: []
-\end{lstlisting}
+\begin{codescreen}{}
+入力:
+スタック: []
+\end{codescreen}
 \end{enumerate}
 
 このように、「先読み文字を見て、次に適用すべき規則を予測する」のが予測型下向き構文解析の特徴です。
@@ -484,19 +484,19 @@ public class Dyck {
 
 BNF規則とJavaコードの対応を見てみましょう。
 
-\begin{lstlisting}
-  文法規則： D → P
-  Javaコード： private boolean D() { return P(); }
+\begin{codescreen}{}
+文法規則： D → P
+Javaコード： private boolean D() { return P(); }
 
-  文法規則： P → ( P ) P | ε
-  Javaコード： private boolean P() {
-      if (先読み文字 == '(') {
-          // P → ( P ) P を適用
-      } else {
-          // P → ε を適用
-      }
-  }
-\end{lstlisting}
+文法規則： P → ( P ) P | ε
+Javaコード： private boolean P() {
+    if (先読み文字 == '(') {
+        // P → ( P ) P を適用
+    } else {
+        // P → ε を適用
+    }
+}
+\end{codescreen}
 
 \begin{itemize}
 \item
@@ -524,9 +524,9 @@ BNF規則とJavaコードの対応を見てみましょう。
 
 実際に\texttt{parse("(())")}を実行すると、以下のような呼び出しの連鎖が発生します。
 
-\begin{lstlisting}
-  parse() → D() → P() → P() → P() → ...
-\end{lstlisting}
+\begin{codescreen}{}
+parse() → D() → P() → P() → P() → ...
+\end{codescreen}
 
 この呼び出しスタックが、先ほどスタックで説明した状態と対応しているのです。
 
@@ -573,14 +573,14 @@ BNF規則とJavaコードの対応を見てみましょう。
 
 同じDyck言語を例にしますが、ナイーヴな上向き構文解析では空文字列規則（ε規則）が扱いづらいので、等価な別の文法を使います。
 
-\begin{lstlisting}
-  D → $ P $
-  D → $ ε $
-  P → P X
-  P → X
-  X → ( P )
-  X → ()
-\end{lstlisting}
+\begin{codescreen}{}
+D → $ P $
+D → $ ε $
+P → P X
+P → X
+X → ( P )
+X → ()
+\end{codescreen}
 
 この文法の特徴は以下のとおりです。
 
@@ -600,90 +600,90 @@ BNF規則とJavaコードの対応を見てみましょう。
 \item
   入力の開始を表す\texttt{\$}をシフト
 
-\begin{lstlisting}
-  入力: ( ( ) ) $
-  スタック: [ $ ]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: ( ( ) ) $
+スタック: [ $ ]
+\end{codescreen}
 
 \item
   最初の\texttt{(}をシフト
 
-\begin{lstlisting}
-  入力: ( ) ) $
-  スタック: [ $, ( ]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: ( ) ) $
+スタック: [ $, ( ]
+\end{codescreen}
 
 \item
   さらに\texttt{(}をシフト
 
-\begin{lstlisting}
-  入力: ) ) $
-  スタック: [ $, (, ( ]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: ) ) $
+スタック: [ $, (, ( ]
+\end{codescreen}
 
 \item
   さらに\texttt{)}をシフト
 
-\begin{lstlisting}
-  入力: ) $
-  スタック: [ $, (, (, ) ]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: ) $
+スタック: [ $, (, (, ) ]
+\end{codescreen}
 
 \item
   スタックの末尾\texttt{(,\ )}が規則\texttt{X\ →\ ()}の右辺と一致。2つの記号を\texttt{X}に\textgt{還元}
 
-\begin{lstlisting}
-  入力: ) $
-  スタック: [ $, (, X ]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: ) $
+スタック: [ $, (, X ]
+\end{codescreen}
 
 \item
   スタックの末尾\texttt{X}が規則\texttt{P\ →\ X}の右辺と一致。1つの記号を\texttt{P}に\textgt{還元}（この実装はシフトする前に、可能な還元をすべて試みます）
 
-\begin{lstlisting}
-  入力: ) $
-  スタック: [ $, (, P ]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: ) $
+スタック: [ $, (, P ]
+\end{codescreen}
 
 \item
   次の\texttt{)}をシフト
 
-\begin{lstlisting}
-  入力: $
-  スタック: [ $, (, P, ) ]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: $
+スタック: [ $, (, P, ) ]
+\end{codescreen}
 
 \item
   スタックの末尾\texttt{(,\ P,\ )}が規則\texttt{X\ →\ (\ P\ )}の右辺と一致。3つの記号を\texttt{X}に\textgt{還元}
 
-\begin{lstlisting}
-  入力: $
-  スタック: [ $, X ]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: $
+スタック: [ $, X ]
+\end{codescreen}
 
 \item
   スタックの末尾\texttt{X}が規則\texttt{P\ →\ X}の右辺と一致。1つの記号を\texttt{P}に\textgt{還元}
 
-\begin{lstlisting}
-  入力: $
-  スタック: [ $, P ]
-\end{lstlisting}
+\begin{codescreen}{}
+入力: $
+スタック: [ $, P ]
+\end{codescreen}
 
 \item
   \texttt{\$}をシフト
 
-\begin{lstlisting}
-  入力:
-  スタック: [ $, P, $ ]
-\end{lstlisting}
+\begin{codescreen}{}
+入力:
+スタック: [ $, P, $ ]
+\end{codescreen}
 
 \item
   スタックの末尾\texttt{\$,\ P,\ \$}が規則\texttt{D\ →\ \$\ P\ \$}の右辺と一致。3つの記号を\texttt{D}に\textgt{還元}
 
-\begin{lstlisting}
-  入力:
-  スタック: [ D ]
-\end{lstlisting}
+\begin{codescreen}{}
+入力:
+スタック: [ D ]
+\end{codescreen}
 \end{enumerate}
 
 入力が空になり、スタックに開始記号\texttt{D}だけが残ったので、受理されます。
@@ -973,17 +973,17 @@ public class DyckShiftReduce {
 
 たとえば、以下のBNFは上向き型だと普通に解析できますが、工夫なしに下向き型で実装すると無限再帰に陥ってスタックオーバーフローします。
 
-\begin{lstlisting}
-  A → A "a" | ε // 左再帰を含む文法の例 (εは空文字列)
-\end{lstlisting}
+\begin{codescreen}{}
+A → A "a" | ε // 左再帰を含む文法の例 (εは空文字列)
+\end{codescreen}
 
 この文法は「\texttt{A}は、\texttt{A}の後に\texttt{a}が続くか、何もないか」という意味ですが、\texttt{A}を解析するためにまず\texttt{A}を解析する必要があるので無限ループになります。
 
 このような問題を下向き型で解決する方法も存在します。たとえば、以下のように等価な右再帰の文法に書き換えることで除去できます。
 
-\begin{lstlisting}
-  A → "a" A | ε
-\end{lstlisting}
+\begin{codescreen}{}
+A → "a" A | ε
+\end{codescreen}
 
 この変換により、下向き構文解析で問題となる無限再帰を避けられます。ただし、文法の書き換えは常に簡単とは限りません。
 \end{enumerate}
@@ -1071,11 +1071,11 @@ LL(1)は、まさにこの「最初の1トークンで判断」というアイ�
 
 しかし、すべての構文がこのように単純ではありません。たとえば、以下の単純な算術式を考えてみましょう。\texttt{N}は数値を表す終端記号とします。
 
-\begin{lstlisting}
-  E  → N
-  E  → ( E )
-  E  → - E
-\end{lstlisting}
+\begin{codescreen}{}
+E  → N
+E  → ( E )
+E  → - E
+\end{codescreen}
 
 この場合、\texttt{E}は以下のいずれかで始まる可能性があります。
 
@@ -1092,10 +1092,10 @@ LL(1)は、まさにこの「最初の1トークンで判断」というアイ�
 
 たとえば、
 
-\begin{lstlisting}
-  E → id
-  E → id + E
-\end{lstlisting}
+\begin{codescreen}{}
+E → id
+E → id + E
+\end{codescreen}
 
 \noindent のように、\texttt{id}が式の先頭として再利用される文法では、先読み1トークンだけではどちらの規則を適用するのか判断できません。トークンが複数の構文で使い回されると、このような曖昧さが生じます。ここで触れた「1トークンで判断できない」状況は、後で扱う共通前置辞問題（4.9.7）の最も短い形だと考えてください。
 
@@ -1135,25 +1135,25 @@ LL(1)構文解析を実現するには、これらの集合を計算して利用
 
 正式には、非終端記号\texttt{A}に対して以下のように定義されます。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 FIRST(A) = { a | A ⇒* aβ であるような終端記号 a } ∪ { ε | A ⇒* ε }
-\end{lstlisting}
+\end{codescreen}
 
 \texttt{A\ ⇒*\ aβ}は、非終端記号\texttt{A}が何らかの導出を経て、終端記号\texttt{a}で始まる文字列に変換できることを意味します。
 
 たとえば、先ほどでてきた以下の算術式の文法を考えます。
 
-\begin{lstlisting}
-  E  → N
-  E  → ( E )
-  E  → - E
-\end{lstlisting}
+\begin{codescreen}{}
+E  → N
+E  → ( E )
+E  → - E
+\end{codescreen}
 
 この場合、FIRST集合は次のようになります。
 
-\begin{lstlisting}
-  FIRST(E) = { '(', '-', N }
-\end{lstlisting}
+\begin{codescreen}{}
+FIRST(E) = { '(', '-', N }
+\end{codescreen}
 
 \subsubsection{nullable --- 空文字列を生成できるか}
 
@@ -1163,17 +1163,17 @@ LL(1)構文解析で重要な概念として、\textbf{\sffamily nullable}（ヌ
 
 先ほどと同じ以下の文法を考えます。
 
-\begin{lstlisting}
-  E  → N
-  E  → ( E )
-  E  → - E
-\end{lstlisting}
+\begin{codescreen}{}
+E  → N
+E  → ( E )
+E  → - E
+\end{codescreen}
 
 この算術式文法でのnullable集合は次のようになります。
 
-\begin{lstlisting}
-  nullable(E) = false
-\end{lstlisting}
+\begin{codescreen}{}
+nullable(E) = false
+\end{codescreen}
 
 Eは明らかに空文字列を生成しないので\texttt{nullable(E)\ =\ false}となります。
 
@@ -1185,17 +1185,17 @@ Eは明らかに空文字列を生成しないので\texttt{nullable(E)\ =\ fals
 
 先ほどと同様に以下の文法を考えてみます。
 
-\begin{lstlisting}
-  E  → N
-  E  → ( E )
-  E  → - E
-\end{lstlisting}
+\begin{codescreen}{}
+E  → N
+E  → ( E )
+E  → - E
+\end{codescreen}
 
 この場合\texttt{FOLLOW}集合は次のようになります。
 
-\begin{lstlisting}
-  FOLLOW(E) = { '$', ')' }
-\end{lstlisting}
+\begin{codescreen}{}
+FOLLOW(E) = { '$', ')' }
+\end{codescreen}
 
 Eに続く可能性のあるトークンは、入力の終端記号\texttt{\$}（入力の終わり）と右括弧\texttt{)}です。
 
@@ -1223,11 +1223,11 @@ Eに続く可能性のあるトークンは、入力の終端記号\texttt{\$}�
 
 このような形になります。算術式文法を使って計算してみましょう。
 
-\begin{lstlisting}
-  E → N
-  E → ( E )
-  E → - E
-\end{lstlisting}
+\begin{codescreen}{}
+E → N
+E → ( E )
+E → - E
+\end{codescreen}
 
 計算過程：
 
@@ -1289,11 +1289,11 @@ FIRST集合全体を次の手順で計算します。
 
 同様に算術式文法で計算してみましょう。
 
-\begin{lstlisting}
-  E → N
-  E → ( E )
-  E → - E
-\end{lstlisting}
+\begin{codescreen}{}
+E → N
+E → ( E )
+E → - E
+\end{codescreen}
 
 各規則のFIRST集合を計算します。
 
@@ -1341,42 +1341,42 @@ FIRST集合全体を次の手順で計算します。
 
 同様に算術式文法で計算してみましょう。
 
-\begin{lstlisting}
-  E → N
-  E → ( E )
-  E → - E
-\end{lstlisting}
+\begin{codescreen}{}
+E → N
+E → ( E )
+E → - E
+\end{codescreen}
 
 初期状態：
 
-\begin{lstlisting}
+\begin{codescreen}{}
 - FOLLOW(E) = {$}（開始記号として）
-\end{lstlisting}
+\end{codescreen}
 
 規則 \texttt{E\ →\ (\ E\ )} から：
 
-\begin{lstlisting}
+\begin{codescreen}{}
 - Eの後に)が来るので、)をFOLLOW(E)に追加
 - FOLLOW(E) = {$, ')'}
-\end{lstlisting}
+\end{codescreen}
 
 規則 \texttt{E\ →\ -\ E} から：
 
-\begin{lstlisting}
+\begin{codescreen}{}
 - Eが末尾にあるので、FOLLOW(E)をFOLLOW(E)に追加（変化なし）
-\end{lstlisting}
+\end{codescreen}
 
 規則 \texttt{E\ →\ (\ E\ )} から（2回目）：
 
-\begin{lstlisting}
+\begin{codescreen}{}
 - すでに ) は追加済みなので、変化なし
-\end{lstlisting}
+\end{codescreen}
 
 規則 \texttt{E\ →\ -\ E} から（2回目）：
 
-\begin{lstlisting}
+\begin{codescreen}{}
 - 変化なし。すべての規則を見て変化がなくなったので終了
-\end{lstlisting}
+\end{codescreen}
 
 \textbf{結果：}
 \texttt{FOLLOW(E)\ =\ \{\$,\ \textquotesingle{})\textquotesingle{}\}}
@@ -1430,27 +1430,27 @@ LL(1)はシンプルで実用的ですが、いくつかの限界があります
 
 LL(1)では、同じ非終端記号から始まる複数の規則がある場合、先読みトークンだけではどの規則を適用すべきか判断できません。
 
-\begin{lstlisting}
-  S → a B
-  S → a C
-\end{lstlisting}
+\begin{codescreen}{}
+S → a B
+S → a C
+\end{codescreen}
 
 両方の規則が\texttt{a}で始まるため、1文字先読みでは判断できません。この問題は\textgt{左因子化}（Left
 Factoring）で解決できます。
 
-\begin{lstlisting}
-  S  → a S'
-  S' → B
-  S' → C
-\end{lstlisting}
+\begin{codescreen}{}
+S  → a S'
+S' → B
+S' → C
+\end{codescreen}
 
 左因子化は直観的には、共通の前置きを抽出して新しい非終端記号を導入することで、先読みトークンだけで規則を一意に決定できるようにする変換操作です。
 
 とはいえ、左因子化は万能ではありません。たとえば偶数長の回文を生成する文法
 
-\begin{lstlisting}
-  A → a A a | b A b | ε
-\end{lstlisting}
+\begin{codescreen}{}
+A → a A a | b A b | ε
+\end{codescreen}
 
 \noindent は、どれだけ変形しても先頭の文字だけでは分岐できず、LL(1)にはなりません。左因子化をほどこしても、LL(1)に収まらない文法が存在する、という具体例です。また、左因子化を重ねると非終端記号が増えて抽象構文木との対応が見えにくくなり、規則の直感的な形を失いやすいという副作用もあります。
 
@@ -1459,21 +1459,21 @@ Factoring）で解決できます。
 
 LL(1)の別の欠点は、\textgt{左再帰}を扱えないことです。たとえば、以下のような左再帰文法を扱うことができません。
 
-\begin{lstlisting}
-  E → E + T
-  E → T
-  T → F
-  F → ( E ) | id
-\end{lstlisting}
+\begin{codescreen}{}
+E → E + T
+E → T
+T → F
+F → ( E ) | id
+\end{codescreen}
 
 この問題は\textgt{左再帰の除去}で解決できます。
 
-\begin{lstlisting}
-  E → T E'
-  E' → + T E' | ε
-  T → F
-  F → ( E ) | id
-\end{lstlisting}
+\begin{codescreen}{}
+E → T E'
+E' → + T E' | ε
+T → F
+F → ( E ) | id
+\end{codescreen}
 
 ただし、この変換により文法（規則の形）の直感性が失われやすく、抽象構文木の構築も複雑になります。
 \end{enumerate}
@@ -1532,21 +1532,21 @@ private boolean tryReduce() {
 
 たとえば、Dyck言語の解析で考えてみましょう。文法は、「例で学ぶシフト還元構文解析」（4.6.3節）で導入したε規則なしの以下の文法を引き続き使います。
 
-\begin{lstlisting}
-  D → $ P $
-  D → $ ε $
-  P → P X
-  P → X
-  X → ( P )
-  X → ()
-\end{lstlisting}
+\begin{codescreen}{}
+D → $ P $
+D → $ ε $
+P → P X
+P → X
+X → ( P )
+X → ()
+\end{codescreen}
 
 いま、スタックと入力が次の状態にあるとします。
 
-\begin{lstlisting}
-  スタック: [ '(' ]
-  次の入力: )
-\end{lstlisting}
+\begin{codescreen}{}
+スタック: [ '(' ]
+次の入力: )
+\end{codescreen}
 
 この状態では、次にできることは以下です。
 
@@ -1559,10 +1559,10 @@ private boolean tryReduce() {
 
 別の例を考えてみましょう。
 
-\begin{lstlisting}
-  スタック: [(, (, X  ]
-  次の入力: )
-\end{lstlisting}
+\begin{codescreen}{}
+スタック: [(, (, X  ]
+次の入力: )
+\end{codescreen}
 
 還元を優先する\texttt{DyckShiftReduce}では、次のように進みます。
 
@@ -1618,10 +1618,10 @@ private boolean tryReduce() {
 
 さらに重要なことは、この「状態」は規則的に遷移するということです。
 
-\begin{lstlisting}
-  状態「(を読んだ直後」 + 記号「(」 → 状態「(を読んだ直後」
-  状態「(を読んだ直後」 + 記号「)」 → 状態「( ) を読んだ」
-\end{lstlisting}
+\begin{codescreen}{}
+状態「(を読んだ直後」 + 記号「(」 → 状態「(を読んだ直後」
+状態「(を読んだ直後」 + 記号「)」 → 状態「( ) を読んだ」
+\end{codescreen}
 
 この状態遷移は決定的で、事前にすべて計算できます。第3章で学んだことを思い出してください。このような状態遷移はオートマトンとして表現できるのです。
 
@@ -1629,11 +1629,11 @@ private boolean tryReduce() {
 
 状態と状態遷移を定義することで、素朴なシフト還元構文解析でやっていた流れをオートマトンとして表現できます。たとえば、以下はDyck言語の文法
 
-\begin{lstlisting}
-  D → P
-  P → ( P ) P
-  P → ε
-\end{lstlisting}
+\begin{codescreen}{}
+D → P
+P → ( P ) P
+P → ε
+\end{codescreen}
 
 \noindent に対して構築された簡略化されたオートマトンです。
 
@@ -1724,11 +1724,11 @@ private boolean tryReduce() {
 
 これがLR構文解析の本質です。ここから、算術式の文法を簡略化した以下の文法を使って、LRオートマトンの構築方法について説明していきます。
 
-\begin{lstlisting}
-  S → T
-  S → T + S
-  T → x
-\end{lstlisting}
+\begin{codescreen}{}
+S → T
+S → T + S
+T → x
+\end{codescreen}
 
 \subsection{拡張開始記号の必要性}
 \index{かくちょうかいしきごう@拡張開始記号}
@@ -1741,12 +1741,12 @@ symbol）を追加するのが一般的です。たとえば、先ほどの文�
 
 拡張開始記号を追加した文法は以下のようになります。
 
-\begin{lstlisting}
-  S' → S $
-  S → T
-  S → T + S
-  T → x
-\end{lstlisting}
+\begin{codescreen}{}
+S' → S $
+S → T
+S → T + S
+T → x
+\end{codescreen}
 
 \texttt{S\textquotesingle{}}が拡張開始記号であり、\texttt{\$}は入力の終端を示します。
 
@@ -1786,12 +1786,12 @@ symbol）を追加するのが一般的です。たとえば、先ほどの文�
 
 たとえば、以下のような状況を考えてみましょう。
 
-\begin{lstlisting}
-  現在の状態 = {
-      S → T・+ S    （Tを認識済み、次は+を期待）
-      S → T・       （Tを認識済み、ここで還元も可能）
-  }
-\end{lstlisting}
+\begin{codescreen}{}
+現在の状態 = {
+    S → T・+ S    （Tを認識済み、次は+を期待）
+    S → T・       （Tを認識済み、ここで還元も可能）
+}
+\end{codescreen}
 
 この状態では、2つの可能性が同時に存在しています。
 
@@ -1822,29 +1822,29 @@ LR(0)項集合を構築する上で最も重要なのが、LR(0)項の\textgt{�
 \item
   Sを認識するには、Sから始まる規則も必要
 
-\begin{lstlisting}
-  S → ・T + S
-  S → ・T
-\end{lstlisting}
+\begin{codescreen}{}
+S → ・T + S
+S → ・T
+\end{codescreen}
 
 \item
   Tを認識するためには以下の規則も必要
 
-\begin{lstlisting}
-  T → ・x
-\end{lstlisting}
+\begin{codescreen}{}
+T → ・x
+\end{codescreen}
 
 \item
   最終的に、LR(0)項\texttt{S\textquotesingle{}\ →\ ・S\ \$}の閉包は以下のようになります。
 
-\begin{lstlisting}
-  {
-    S' → ・S $,
-    S → ・T + S,
-    S → ・T,
-    T → ・x
-  }
-\end{lstlisting}
+\begin{codescreen}{}
+{
+  S' → ・S $,
+  S → ・T + S,
+  S → ・T,
+  T → ・x
+}
+\end{codescreen}
 \end{enumerate}
 
 このように、ドットの直後に非終端記号がある場合、その非終端記号が左辺にあるすべての規則を追加していく必要があります。
@@ -1853,19 +1853,19 @@ LR(0)項集合を構築する上で最も重要なのが、LR(0)項の\textgt{�
 
 以下はLR(0)項の閉包を計算するアルゴリズムです。
 
-\begin{lstlisting}[escapeinside={/*}{*/}]
-  closure(I) {
-      J = I                                   // /*{\footnotesize 初期項目集合をコピー} */
-      repeat {
-          for (各項目 A → α・Bβ in J) {    // /*{\footnotesize ドットの後に非終端記号Bがある項目を探す}*/
-              for (各規則 B → γ) {          // /*{\footnotesize Bから始まるすべての規則を取得}*/
-                  J = J ∪ {B → ・γ}        // /*{\footnotesize ドットを先頭に置いた項目を追加}*/
-              }
-          }
-      } until Jに変化がなくなる             // /*{\footnotesize 新しい項目が追加されなくなるまで繰り返す}*/
-      return J                              // /*{\footnotesize 閉包された項目集合を返す}*/
-  }
-\end{lstlisting}
+\begin{codescreen}{}
+closure(I) {
+    J = I                                   // 初期項目集合をコピー
+    repeat {
+        for (各項目 A → α・Bβ in J) {    // ドットの後に非終端記号Bがある項目を探す
+            for (各規則 B → γ) {          // Bから始まるすべての規則を取得
+                J = J ∪ {B → ・γ}        // ドットを先頭に置いた項目を追加
+            }
+        }
+    } until Jに変化がなくなる             // 新しい項目が追加されなくなるまで繰り返す
+    return J                              // 閉包された項目集合を返す
+}
+\end{codescreen}
 
 \textgt{アルゴリズムの動作解説}
 
@@ -1890,12 +1890,12 @@ LR(0)項集合を構築する上で最も重要なのが、LR(0)項の\textgt{�
 
 先ほどと同じ、以下の文法に対するLR(0)オートマトンを考えます。
 
-\begin{lstlisting}
-  S' → S $
-  S → T
-  S → T + S
-  T → x
-\end{lstlisting}
+\begin{codescreen}{}
+S' → S $
+S → T
+S → T + S
+T → x
+\end{codescreen}
 
 このオートマトンは以下のような構造になります。
 
@@ -2038,9 +2038,9 @@ LR(0)項集合を先取りで示しておきます。具体的な作り方は4.1
 
 GOTO関数は、ある状態から記号を読んだときの次の状態を計算します。
 
-\begin{lstlisting}
-  GOTO(I, X) = closure({A → αX・β | A → α・Xβ ∈ I})
-\end{lstlisting}
+\begin{codescreen}{}
+GOTO(I, X) = closure({A → αX・β | A → α・Xβ ∈ I})
+\end{codescreen}
 
 \(I_0\)からの各遷移を計算してみましょう。
 
@@ -2519,20 +2519,20 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
 
 LR(0)は効率的ですが、重要な限界があります。ここでも先ほどと同じ文法を考えてみましょう。
 
-\begin{lstlisting}
-  S → T
-  S → T + S
-  T → x
-\end{lstlisting}
+\begin{codescreen}{}
+S → T
+S → T + S
+T → x
+\end{codescreen}
 
 この文法でLR(0)オートマトンを構築すると、先ほど構築した状態\(I_2\)が以下の項を含むことになります。
 
-\begin{lstlisting}
-  I2 = {
-      S → T・       （還元準備完了）
-      S → T・+ S    （+を期待）
-  }
-\end{lstlisting}
+\begin{codescreen}{}
+I2 = {
+    S → T・       （還元準備完了）
+    S → T・+ S    （+を期待）
+}
+\end{codescreen}
 
 この状態で問題が発生します。なぜなら
 
@@ -2601,12 +2601,12 @@ LR(1)）\footnote{Frank DeRemer, ``Simple LR(k) grammars'',
 
 先ほどのコンフリクトの例を考えてみましょう。
 
-\begin{lstlisting}
-  I2 = {
-      S → T・       （還元準備完了）
-      S → T・+ S    （+を期待）
-  }
-\end{lstlisting}
+\begin{codescreen}{}
+I2 = {
+    S → T・       （還元準備完了）
+    S → T・+ S    （+を期待）
+}
+\end{codescreen}
 
 この状態で、次の入力が\texttt{+}か\texttt{\$}かによって、どのアクションを取るべきかが変わります。SLR(1)では、以下のように判断します。
 
@@ -2651,9 +2651,9 @@ SLR(1)が「文法全体から計算した大雑把なFOLLOW」を使うのに�
 
 SLR(1)では文法全体から計算したFOLLOW集合を使っていましたが、LR(1)では「その具体的な解析文脈での先読み記号」を使います。
 
-\begin{lstlisting}
-  LR(1)項の形式： [A → α・β, a]
-\end{lstlisting}
+\begin{codescreen}{}
+LR(1)項の形式： [A → α・β, a]
+\end{codescreen}
 
 ここで\texttt{a}は「この項目で還元した後に期待される記号」を表します。同じ規則でも、到達した文脈によって異なる先読み記号を持つため、SLR(1)では区別できなかった状況も正確に判断できます。
 
@@ -2702,26 +2702,26 @@ LALR(1)では統合
 
 LALR(1)の特徴は、状態数がLR(0)と同程度に抑えられること、SLR(1)より強力でほとんどの実用言語を扱えること、そしてYacc/Bisonなど主要なパーサージェネレータが標準採用していることです。LR(1)の解析能力をほぼ保ちながら、状態数をSLR(1)と同程度に抑えられる「実用的な妥協点」として広く使われています。
 
-\begin{lstlisting}
-  LR(1) 状態A = {
-      [A → α・β, a]
-      [B → γ・δ, b]
-  }
+\begin{codescreen}{}
+LR(1) 状態A = {
+    [A → α・β, a]
+    [B → γ・δ, b]
+}
 
-  LR(1) 状態B = {
-      [A → α・β, c]
-      [B → γ・δ, d]
-  }
-\end{lstlisting}
+LR(1) 状態B = {
+    [A → α・β, c]
+    [B → γ・δ, d]
+}
+\end{codescreen}
 
 これをマージすると、以下のようになります。
 
-\begin{lstlisting}
-  LALR(1) 状態 = {
-      [A → α・β, {a, c}]
-      [B → γ・δ, {b, d}]
-  }
-\end{lstlisting}
+\begin{codescreen}{}
+LALR(1) 状態 = {
+    [A → α・β, {a, c}]
+    [B → γ・δ, {b, d}]
+}
+\end{codescreen}
 
 先読み記号が和集合になることに注目してください。
 
@@ -2764,37 +2764,37 @@ LALR(1)オートマトンの構築には主に2つの方法があります。
 
 状態のマージにより、LR(1)では解決できていたコンフリクトが再発することがあります。以下の文法を考えてみましょう。
 
-\begin{lstlisting}
-  S' → S $
-  S → a A d | b B d | a B e | b A e
-  A → c
-  B → c
-\end{lstlisting}
+\begin{codescreen}{}
+S' → S $
+S → a A d | b B d | a B e | b A e
+A → c
+B → c
+\end{codescreen}
 
 この文法は、前半の記号（aかb）と後半の記号（dかe）の組み合わせで、中間のAかBを決定する必要があります。
 
 LR(1)では、以下のような、同じLR(0)コアを持つ状態が別々に存在します。
 
-\begin{lstlisting}
-  状態X: {
-      [A → c・, d]
-      [B → c・, e]
-  }
+\begin{codescreen}{}
+状態X: {
+    [A → c・, d]
+    [B → c・, e]
+}
 
-  状態Y: {
-      [A → c・, e]
-      [B → c・, d]
-  }
-\end{lstlisting}
+状態Y: {
+    [A → c・, e]
+    [B → c・, d]
+}
+\end{codescreen}
 
 LR(1)では文脈ごとに先読み記号が分かれているため、それぞれの状態では還元先を一意に決められます。しかしLALR(1)では、同じLR(0)コアを持つこれらの状態がマージされます。
 
-\begin{lstlisting}
-  マージ後の状態: {
-      [A → c・, d/e]
-      [B → c・, d/e]
-  }
-\end{lstlisting}
+\begin{codescreen}{}
+マージ後の状態: {
+    [A → c・, d/e]
+    [B → c・, d/e]
+}
+\end{codescreen}
 
 この状態で、先読みがdまたはeのとき、AとBのどちらで還元すべきか決定できません（reduce/reduceコンフリクト）。
 

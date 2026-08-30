@@ -69,14 +69,14 @@
 
 この定義に従う算術式には以下のようなものが含まれます。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 100  # 100
 1+2*3  # 7
 (1+2)*3  # 9
 3*(1+2)  # 9
 12/3  # 4
 1+3*4/2  # 7
-\end{lstlisting}
+\end{codescreen}
 
 皆さんは何かしらのプログラミング言語を使ってプログラムを書いているはずですから、上のような算術式はなじみが深いはずです。
 
@@ -146,12 +146,12 @@ Backus（ジョン・バッカス）らが開発した記法です。BNFは「�
 
 \noindent のように単純化したBNFです。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 expr = term { ('+' | '-') term };
 term = factor { ('*' | '/') factor };
 factor = NUMBER | '(' expr ')';
 NUMBER = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
-\end{lstlisting}
+\end{codescreen}
 
 たくさんの記号が出てきて戸惑われたかもしれませんが、1つずつ丁寧に見ていきましょう。
 
@@ -159,17 +159,17 @@ NUMBER = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
 
 BNFでは、以下のような\textgt{生成規則}の集まりによって、文法を表現します。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 expr = term { ('+' | '-') term };
-\end{lstlisting}
+\end{codescreen}
 
 \texttt{=}の左側である\texttt{expr}が\textgt{左辺}（この規則で定義される非終端記号）で、右側が\textgt{右辺}（その定義）になります。
 
 ここでは
 
-\begin{lstlisting}
+\begin{codescreen}{}
 term { ('+' | '-' ) term }
-\end{lstlisting}
+\end{codescreen}
 
 \noindent が右辺です。本書では、右辺のことを規則の\textgt{本体}とも呼びます。
 
@@ -179,9 +179,9 @@ term { ('+' | '-' ) term }
 
 BNFにおいて\texttt{\{\}}で囲まれたものは、その中の要素が0回以上繰り返して出現することを示しています。したがって、
 
-\begin{lstlisting}
+\begin{codescreen}{}
 term { ('+' | '-') term }
-\end{lstlisting}
+\end{codescreen}
 
 という記述は、まず\texttt{term}が出現し、その後に「\texttt{+}または\texttt{-}とそれに続く\texttt{term}」が0回以上繰り返して出現することを示しています。0回以上という言い方が重要です。というのは、\texttt{term}が1回だけ出現してその後は何も出現しない場合もあるからです。たとえば、\texttt{1}という式はこの規則にマッチしますが、\texttt{\{\}}で囲まれた部分は出現していません。
 
@@ -191,9 +191,9 @@ term { ('+' | '-') term }
 
 なお、ISO/IEC 14977のEBNFでは
 
-\begin{lstlisting}
+\begin{codescreen}{}
 expr = term, { ('+' | '-'), term };
-\end{lstlisting}
+\end{codescreen}
 
 \noindent のように要素間をカンマで区切りますが、本書では可読性を考慮してスペースで区切るようにしています。
 
@@ -202,9 +202,9 @@ expr = term, { ('+' | '-'), term };
 \texttt{term}
 は算術式の中で、掛け算や割り算を含んだ式を表す規則です。\texttt{factor}という規則を参照しています。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 term = factor { ('*' | '/') factor };
-\end{lstlisting}
+\end{codescreen}
 
 この規則は、まず\texttt{factor}が出現し、その後に「\texttt{*}または\texttt{/}とそれに続く\texttt{factor}」が0回以上繰り返して出現するものが\texttt{term}であることを示しています。
 
@@ -212,9 +212,9 @@ term = factor { ('*' | '/') factor };
 
 \texttt{factor}は算術式の中で、数値や括弧で囲まれた式を表す規則です。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 factor = NUMBER | '(' expr ')';
-\end{lstlisting}
+\end{codescreen}
 
 この規則は、\texttt{factor}が
 
@@ -231,9 +231,9 @@ factor = NUMBER | '(' expr ')';
 
 \texttt{NUMBER}は数値を表す規則です。ここでは単純化のために1桁の整数のみを扱っています。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 NUMBER = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
-\end{lstlisting}
+\end{codescreen}
 
 \texttt{NUMBER}は\texttt{0}から\texttt{9}のどれか1文字であることを示しています。
 
@@ -341,11 +341,11 @@ BNFを使った素直な解析プロセスを理解したところで、重要�
 
 その答えは、\textgt{文法の階層構造}にあります。BNFを改めて見てみましょう。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 expr = term { ('+' | '-') term };
 term = factor { ('*' | '/') factor };
 factor = NUMBER | '(' expr ')';
-\end{lstlisting}
+\end{codescreen}
 
 この文法では、次のような階層関係があります。
 
@@ -432,12 +432,12 @@ factor = NUMBER | '(' expr ')';
 
 以下のような\textbf{誤った}文法を書いたとしましょう。
 
-\begin{lstlisting}
+\begin{codescreen}{}
 // 誤った文法（優先順位が逆）
 expr = factor { ('*' | '/') factor };
 factor = term { ('+' | '-') term };
 term = NUMBER | '(' expr ')';
-\end{lstlisting}
+\end{codescreen}
 
 この場合、\texttt{1+2*3}は\texttt{(1+2)*3}として解析されてしまいます。なぜなら、以下のような解析手順になるからです。
 

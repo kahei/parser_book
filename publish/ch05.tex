@@ -47,10 +47,10 @@ Compiler」（また別のコンパイラコンパイラ）の略で、「コン
 
 PEGの記法では、\texttt{/}は「順序付き選択」を表し、BNFの\texttt{\textbar{}}とは異なり「最初の選択肢がマッチしたらそれを採用し、2番目以降は試さない」という意味になります。
 
-\begin{lstlisting}
-  D <- P;
-  P <- "(" P ")" P / ""; // "" は空文字列ε（イプシロン）を表す
-\end{lstlisting}
+\begin{codescreen}{}
+D <- P;
+P <- "(" P ")" P / ""; // "" は空文字列ε（イプシロン）を表す
+\end{codescreen}
 
 このPEGは\texttt{P} が \texttt{(P)P}
 の形であるか、または空文字列であることを示します。PEGでは非終端記号の呼び出しは関数呼び出しとみなすことができますから、この定義に対応するパーサー関数（メソッド）のスケルトンを考えると、次のようなコードのイメージになります。
@@ -795,21 +795,21 @@ flexの場合と同じく、\texttt{\%\%}から\texttt{\%\%}までが構文規�
 
 flexとyaccが出力したファイルを結合して実行ファイルを作ると、次のような入力に対して
 
-\begin{lstlisting}
-  1 + 2 * 3
-  2 + 3
-  6 / 2
-  3 / 0
-\end{lstlisting}
+\begin{codescreen}{}
+1 + 2 * 3
+2 + 3
+6 / 2
+3 / 0
+\end{codescreen}
 
 それぞれ、次のような出力を返します。
 
-\begin{lstlisting}
-  Result: 7
-  Result: 5
-  Result: 3
-  Parse error: Cannot divide by zero.
-\end{lstlisting}
+\begin{codescreen}{}
+Result: 7
+Result: 5
+Result: 3
+Parse error: Cannot divide by zero.
+\end{codescreen}
 
 Yaccはとても古いソフトウェアの1つですが、Rubyの文法定義ファイルparse.yはYacc用ですし、未だに各種言語処理系では現役で使われてもいます。
 
@@ -1036,9 +1036,9 @@ ScalaはJavaとは異なるプログラミング言語ですが、構文にJava�
 
 各メソッドに対応するBNFによる規則をコメントとして付加してみましたが、BNFと比較しても簡潔に記述できています。Scalaは記号をそのままメソッドとして記述できるなど、元々DSL（ドメイン特化言語）に向いている特徴を持った言語なのですが、その特徴を活用しています。\texttt{chainl}というメソッドについてだけは見慣れない読者の方が多そうですが、これは
 
-\begin{lstlisting}
-  // A ::= M ("+" M | "-" M)*
-\end{lstlisting}
+\begin{codescreen}{}
+// A ::= M ("+" M | "-" M)*
+\end{codescreen}
 
 \noindent のような二項演算を簡潔に記述するためのコンビネータ（メソッド）です。パーサーコンビネータの別のメリットとして、BNF（あるいはPEG）に無い演算子を後付けで導入できることも挙げられます。構文規則からの値（意味値）の取り出しもScalaのfor式（Javaのfor文とは異なり、値を生成する式です）を用いて簡潔に記述できています。
 
