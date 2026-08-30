@@ -35,6 +35,77 @@ LOCAL_PACKAGE_PATTERN = re.compile(
     r"\\usepackage(?:\s*\[[^]]*\])?\s*\{([^{}]+)\}"
 )
 
+# Artwork that exists only in the publisher's environment (like the Morisawa
+# fonts). When such a file is missing locally, the preview build substitutes a
+# generated placeholder page instead of failing validation. Every other
+# missing asset keeps failing fast so broken references are still caught.
+PUBLISHER_ONLY_ASSETS = frozenset(
+    {
+        "koubun_tobira.pdf",
+    }
+)
+
+
+def _escape_pdf_text(text: str) -> bytes:
+    encoded = text.encode("ascii", "replace")
+    return encoded.replace(b"\\", b"\\\\").replace(b"(", b"\\(").replace(b")", b"\\)")
+
+
+def build_placeholder_pdf(label: str) -> bytes:
+    """Return a single blank A4 page that names the missing publisher asset."""
+
+    stream = (
+        b"BT /F1 14 Tf 60 780 Td ("
+        + _escape_pdf_text(f"Preview placeholder: {label}")
+        + b") Tj ET\n"
+    )
+    objects = [
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        (
+            b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] "
+            b"/Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>"
+        ),
+        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+        b"<< /Length "
+        + str(len(stream)).encode("ascii")
+        + b" >>\nstream\n"
+        + stream
+        + b"endstream",
+    ]
+    out = bytearray(b"%PDF-1.4\n")
+    offsets: list[int] = []
+    for number, body in enumerate(objects, start=1):
+        offsets.append(len(out))
+        out += str(number).encode("ascii") + b" 0 obj\n" + body + b"\nendobj\n"
+    xref_position = len(out)
+    out += b"xref\n0 " + str(len(objects) + 1).encode("ascii") + b"\n"
+    out += b"0000000000 65535 f \n"
+    for offset in offsets:
+        out += f"{offset:010d} 00000 n \n".encode("ascii")
+    out += (
+        b"trailer\n<< /Size "
+        + str(len(objects) + 1).encode("ascii")
+        + b" /Root 1 0 R >>\nstartxref\n"
+        + str(xref_position).encode("ascii")
+        + b"\n%%EOF\n"
+    )
+    return bytes(out)
+
+
+def write_placeholder_assets(destination: Path, references: list[str]) -> list[str]:
+    """Materialise placeholder pages for whitelisted publisher-only assets."""
+
+    written: list[str] = []
+    for reference in references:
+        target = destination / Path(reference)
+        if target.exists():
+            continue
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(build_placeholder_pdf(reference))
+        written.append(reference)
+    return written
+
 
 class PreparationError(RuntimeError):
     """A preview tree cannot be prepared safely."""
@@ -111,9 +182,10 @@ def resolve_local_reference(
     return resolved, candidates
 
 
-def validate_local_assets(source_root: Path) -> list[str]:
+def validate_local_assets(source_root: Path) -> tuple[list[str], list[str]]:
     checked: set[str] = set()
     missing: set[str] = set()
+    placeholders: set[str] = set()
 
     for tex_path in sorted(source_root.rglob("*.tex")):
         text = strip_tex_comments(tex_path.read_text(encoding="utf-8"))
@@ -145,16 +217,20 @@ def validate_local_assets(source_root: Path) -> list[str]:
                 relative = resolved.relative_to(source_root).as_posix()
                 checked.add(relative)
             else:
+                reference = raw_reference.strip()
+                if reference in PUBLISHER_ONLY_ASSETS:
+                    placeholders.add(reference)
+                    continue
                 attempted = ", ".join(
                     candidate.relative_to(source_root).as_posix()
                     for candidate in candidates
                 )
-                missing.add(f"{raw_reference.strip()} (tried: {attempted})")
+                missing.add(f"{reference} (tried: {attempted})")
 
     if missing:
         details = "\n".join(f"  - {path}" for path in sorted(missing))
         raise PreparationError(f"missing local asset(s):\n{details}")
-    return sorted(checked)
+    return sorted(checked), sorted(placeholders)
 
 
 def validate_replacement_count(
@@ -168,7 +244,7 @@ def validate_replacement_count(
         )
 
 
-def validate_preview_inputs(repo_root: Path) -> tuple[Path, list[str]]:
+def validate_preview_inputs(repo_root: Path) -> tuple[Path, list[str], list[str]]:
     source_root = repo_root / "publish"
     class_source = Path(__file__).resolve().with_name("asciibook.cls")
     main_path = source_root / "main.tex"
@@ -180,11 +256,11 @@ def validate_preview_inputs(repo_root: Path) -> tuple[Path, list[str]]:
     if not class_source.is_file():
         raise PreparationError(f"preview compatibility class not found: {class_source}")
 
-    checked_assets = validate_local_assets(source_root)
+    checked_assets, placeholder_assets = validate_local_assets(source_root)
     main_text = main_path.read_text(encoding="utf-8")
     validate_replacement_count(main_text, MAIN_FONT_BLOCK, "main-font-config")
     validate_replacement_count(main_text, SANS_FONT_BLOCK, "sans-font-config")
-    return class_source, checked_assets
+    return class_source, checked_assets, placeholder_assets
 
 
 def replace_exactly_once(
@@ -241,12 +317,13 @@ def prepare(repo_root: Path) -> dict[str, object]:
     logs = output_root / "logs"
 
     digest_before = source_digest(source_root)
-    class_source, checked_assets = validate_preview_inputs(repo_root)
+    class_source, checked_assets, placeholder_assets = validate_preview_inputs(repo_root)
     output_root.mkdir(parents=True, exist_ok=True)
     logs.mkdir(parents=True, exist_ok=True)
     if destination.exists():
         shutil.rmtree(destination)
     shutil.copytree(source_root, destination)
+    written_placeholders = write_placeholder_assets(destination, placeholder_assets)
 
     main_path = destination / "main.tex"
     main_text = main_path.read_text(encoding="utf-8")
@@ -277,6 +354,7 @@ def prepare(repo_root: Path) -> dict[str, object]:
         "font_mode": "noto",
         "replacements": replacements,
         "checked_assets": checked_assets,
+        "placeholder_assets": written_placeholders,
         "source_digest": digest_before,
     }
     (output_root / "prepare-manifest.json").write_text(
@@ -326,13 +404,20 @@ def main(argv: list[str] | None = None) -> int:
             print(source_digest(source_root))
             return 0
         if args.check_only:
-            _class_source, checked_assets = validate_preview_inputs(
+            _class_source, checked_assets, placeholder_assets = validate_preview_inputs(
                 args.repo_root.resolve()
             )
-            print(
+            message = (
                 "Publish preview sources: OK "
                 f"({len(checked_assets)} local asset(s) checked)."
             )
+            if placeholder_assets:
+                message += (
+                    " Publisher-only asset(s) will use generated placeholder(s): "
+                    + ", ".join(placeholder_assets)
+                    + "."
+                )
+            print(message)
             return 0
         manifest = prepare(args.repo_root)
     except (OSError, UnicodeError, PreparationError) as error:
@@ -342,6 +427,13 @@ def main(argv: list[str] | None = None) -> int:
         "Prepared build/publish-preview/src "
         f"with {len(manifest['replacements'])} reviewed replacement(s)."
     )
+    placeholder_assets = manifest.get("placeholder_assets") or []
+    if placeholder_assets:
+        print(
+            "Substituted generated placeholder(s) for publisher-only asset(s): "
+            + ", ".join(str(asset) for asset in placeholder_assets)
+            + "."
+        )
     return 0
 
 

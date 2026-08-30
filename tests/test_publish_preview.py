@@ -185,6 +185,59 @@ class PublishPreviewPreparationTest(unittest.TestCase):
         self.assertIn("img/missing.pdf", result.stderr)
         self.assertIn("img/missing.eps", result.stderr)
 
+    def test_prepare_substitutes_placeholder_for_publisher_only_artwork(self) -> None:
+        main = self.repo / "publish/main.tex"
+        main.write_text(
+            main.read_text(encoding="utf-8").replace(
+                r"\begin{document}",
+                "\\begin{document}\n\\includegraphics{koubun_tobira.pdf}",
+            ),
+            encoding="utf-8",
+        )
+        self.original_publish = self.read_publish_tree()
+
+        result = self.run_prepare()
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.read_publish_tree(), self.original_publish)
+        placeholder = self.repo / "build/publish-preview/src/koubun_tobira.pdf"
+        self.assertTrue(placeholder.is_file())
+        self.assertTrue(placeholder.read_bytes().startswith(b"%PDF-"))
+        manifest = json.loads(
+            (self.repo / "build/publish-preview/prepare-manifest.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(manifest["placeholder_assets"], ["koubun_tobira.pdf"])
+        self.assertIn("koubun_tobira.pdf", result.stdout)
+
+    def test_prepare_prefers_real_publisher_artwork_when_present(self) -> None:
+        main = self.repo / "publish/main.tex"
+        main.write_text(
+            main.read_text(encoding="utf-8").replace(
+                r"\begin{document}",
+                "\\begin{document}\n\\includegraphics{koubun_tobira.pdf}",
+            ),
+            encoding="utf-8",
+        )
+        (self.repo / "publish/koubun_tobira.pdf").write_bytes(
+            b"real tobira sentinel\n"
+        )
+        self.original_publish = self.read_publish_tree()
+
+        result = self.run_prepare()
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.read_publish_tree(), self.original_publish)
+        copied = self.repo / "build/publish-preview/src/koubun_tobira.pdf"
+        self.assertEqual(copied.read_bytes(), b"real tobira sentinel\n")
+        manifest = json.loads(
+            (self.repo / "build/publish-preview/prepare-manifest.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(manifest["placeholder_assets"], [])
+
     def test_prepare_ignores_commented_local_references(self) -> None:
         main = self.repo / "publish/main.tex"
         main.write_text(
