@@ -177,7 +177,7 @@ false
 
 前の節でJSONの概要について説明し終わったところで、いよいよJSONの文法について見ていきます。JSONの文法はECMA-404の仕様書に記載されていますが、ここでは、それを若干変形したBNFで表現されたJSONの文法を見ていきます。
 
-JSONのBNFによる定義を簡略化したものは以下で全てです。特に小数点以下の部分は煩雑になる割に本質的でないので削除しました。本来のJSONでは文字列のエスケープシーケンス（\texttt{\textbackslash{}n}、\texttt{\textbackslash{}t}、\texttt{\textbackslash{}"}など）を使えますが、本章では扱いません。これらは構文解析の本質を理解する上では必須ではないためです。
+JSONのBNFによる定義を簡略化したものは以下ですべてです。特に小数点以下の部分は煩雑になる割に本質的でないので削除しました。本来のJSONでは文字列のエスケープシーケンス（\texttt{\textbackslash{}n}、\texttt{\textbackslash{}t}、\texttt{\textbackslash{}"}など）を使えますが、本章では扱いません。これらは構文解析の本質を理解する上では必須ではないためです。
 
 ただし、\texttt{"\""}という表記は、BNFでダブルクオートを表現するためのエスケープシーケンスであり、JSON文字列のエスケープシーケンスとは関係ないことに注意してください。
 
@@ -227,7 +227,7 @@ json = ws value;
 \end{lstlisting}
 
 のような\textgt{規則}の集まりによって、文法を表現します。各規則はセミコロン（\texttt{;}）で終わります。\texttt{=}の左側である\texttt{json}が\textgt{左辺}で、右側（ここでは
-\texttt{ws\ value}）が\textgt{本体}になります。さらに、本体の中に出てくる、他の規則を参照する部分（ここでは\texttt{value}や\texttt{ws})を非終端記号と呼びます。非終端記号は同じBNFで定義されている規則の左辺と一致する必要があります。
+\texttt{ws\ value}）が\textgt{本体}になります。さらに、本体の中に出てくる、他の規則を参照する部分（ここでは\texttt{value}や\texttt{ws}）を非終端記号と呼びます。非終端記号は同じBNFで定義されている規則の左辺と一致する必要があります。
 
 この規則を日本語で表現すると、「\texttt{json}という名前の規則は、\texttt{ws}の後に\texttt{value}が続く」と読めます。\texttt{value}は、JSONの値を表しているので、jsonという規則は\texttt{ws}（空白文字）の後にJSONの値が続くものを表しています。
 
@@ -245,7 +245,7 @@ object = LBRACE RBRACE | LBRACE pair {COMMA pair} RBRACE;
 
 \begin{itemize}
 \item
-  ブレースで囲まれたもの（\texttt{LBRACE\ RBRACE})である
+  ブレースで囲まれたもの（\texttt{LBRACE\ RBRACE}）である
 
   \begin{itemize}
   \item
@@ -290,7 +290,7 @@ object = LBRACE RBRACE | LBRACE pair {COMMA pair} RBRACE;
 pair = string COLON value;
 \end{lstlisting}
 
-これによってペアは\texttt{:}（\texttt{COLON}）の前に文字列リテラル（\texttt{string})が来て、その後にJSONの値（\texttt{value}）が来ることを表しています。\texttt{pair}にマッチするテキストとしては、
+これによってペアは\texttt{:}（\texttt{COLON}）の前に文字列リテラル（\texttt{string}）が来て、その後にJSONの値（\texttt{value}）が来ることを表しています。\texttt{pair}にマッチするテキストとしては、
 
 \begin{lstlisting}
 "x":1
@@ -319,15 +319,15 @@ COMMA = "," ws;
 array = LBRACKET RBRACKET | LBRACKET value {COMMA value} RBRACKET ;
 \end{lstlisting}
 
-\texttt{LBRACKET}は開き大カッコ（\texttt{{[}}）を、\texttt{RBRACKET}は閉じ大カッコ（\texttt{{]}})を表しています。\texttt{value}の定義については後述します。
+\texttt{LBRACKET}は開き大カッコ（\texttt{{[}}）を、\texttt{RBRACKET}は閉じ大カッコ（\texttt{{]}}）を表しています。\texttt{value}の定義については後述します。
 
 これによって\texttt{array}は、
 
 \begin{itemize}
 \item
-  大カッコで囲まれたもの（\texttt{LBRACKET\ RBRACKET})である
+  大カッコで囲まれたもの（\texttt{LBRACKET\ RBRACKET}）である
 \item
-  開き大カッコ（\texttt{LBRACKET}）が来た後に、\texttt{value}が1回あらわれ、さらにその後に、「\texttt{COMMA}（カンマ）とそれに続く\texttt{value}」というペアが0回以上繰り返してあらわれた後、閉じ大カッコが来る（\texttt{RBRACKET})
+  開き大カッコ（\texttt{LBRACKET}）が来た後に、\texttt{value}が1回あらわれ、さらにその後に、「\texttt{COMMA}（カンマ）とそれに続く\texttt{value}」というペアが0回以上繰り返してあらわれた後、閉じ大カッコが来る（\texttt{RBRACKET}）
 \end{itemize}
 
 \noindent のどちらかであることを表しています。よく見ると、先ほどの\texttt{object}と同様の構造を持っていることがわかります。
@@ -370,9 +370,9 @@ value = true | false | null | number | string | object | array;
 \item
   ヌル（\texttt{null}）
 \item
-  数値（\texttt{number})
+  数値（\texttt{number}）
 \item
-  文字列（\texttt{string})
+  文字列（\texttt{string}）
 \item
   オブジェクト（\texttt{object}）
 \item
@@ -933,6 +933,7 @@ private JsonAst.JsonNull parseNull() {
         }
         cursor++;
         var builder = new StringBuilder();
+        var closed = false;
         OUTER:
         while(cursor < input.length()) {
             ch = input.charAt(cursor);
@@ -943,6 +944,7 @@ private JsonAst.JsonNull parseNull() {
                     );
                 case '"':
                     cursor++;
+                    closed = true;
                     break OUTER;
                 default:
                     builder.append(ch);
@@ -951,8 +953,8 @@ private JsonAst.JsonNull parseNull() {
             }
         }
 
-        if(ch != '"') {
-            throw new ParseException("expected: " + "\"" + " actual: " + ch);
+        if(!closed) {
+            throw new ParseException("expected: " + "\"" + " actual: EOF");
         } else {
             skipWhitespace();
             return new JsonAst.JsonString(builder.toString());
@@ -984,20 +986,20 @@ private JsonAst.JsonNull parseNull() {
 
 \noindent をチェックしています。文字列は当然ながら、ダブルクォートで始まりますし、入力の終端にも達していないはずですから、それらの条件が満たされなければ例外が投げられるわけです。
 
-\texttt{while}文の中では、各文字を読み込んで文字列を構築していきます。switch文の中で最も重要なのは\texttt{default}ケースで、ここで通常の文字を\texttt{StringBuilder}に追加して文字列を構築しています。ダブルクォート（\texttt{"}）が現れたら文字列の終端として処理し、バックスラッシュ（\texttt{\textbackslash{}}）が現れた場合はエラーとして処理します。実際のJSONパーサーではエスケープシーケンスの処理が必要ですが、構文解析の本質を理解する上では必須ではないため、本書では省略しています。
+\texttt{while}文の中では、各文字を読み込んで文字列を構築していきます。switch文の中で最も重要なのは\texttt{default}ケースで、ここで通常の文字を\texttt{StringBuilder}に追加して文字列を構築しています。ダブルクォート（\texttt{"}）が現れたら文字列の終端として処理し（このとき、閉じ引用符を読んだことを変数\texttt{closed}に記録します）、バックスラッシュ（\texttt{\textbackslash{}}）が現れた場合はエラーとして処理します。実際のJSONパーサーではエスケープシーケンスの処理が必要ですが、構文解析の本質を理解する上では必須ではないため、本書では省略しています。
 
 \texttt{while}文が終わったあとで、
 
 \begin{codescreen}{}
-        if(ch != '"') {
-            throw new ParseException("expected: " + "\"" + " actual: " + ch);
+        if(!closed) {
+            throw new ParseException("expected: " + "\"" + " actual: EOF");
         } else {
             skipWhitespace();
             return new JsonAst.JsonString(builder.toString());
         }
 \end{codescreen}
 
-\noindent というチェックを入れることによって、ダブルクォートで文字列が終端していることを確認した後、空白を読み飛ばしています。
+\noindent というチェックを入れることによって、閉じのダブルクォートを読んで文字列が正しく終端したことを確認した後、空白を読み飛ばしています。閉じ引用符を読む前に入力が尽きた場合は\texttt{closed}が\texttt{false}のままなので、例外が投げられます。
 
 \subsection{配列の構文解析メソッド}
 
@@ -1097,7 +1099,7 @@ return new JsonAst.JsonArray(values);
 多少複雑になりましたが、\texttt{parseArray()}の定義が、EBNFにおける表記
 
 \begin{lstlisting}
-array = LBRACKET RBRACKET | LBRACKET {value {COMMA value}} RBRACKET ;
+array = LBRACKET RBRACKET | LBRACKET value {COMMA value} RBRACKET ;
 \end{lstlisting}
 
 \noindent に対応していることがわかるでしょうか
@@ -1654,7 +1656,7 @@ PEG版と異なり、途中で失敗したら後戻り（バックトラック�
   性能: 一般的に字句解析器を使う方式の方が高速
 \end{enumerate}
 
-PEGベースの構文解析器にはいいとこなしのように見えますが、PEGべースの構文解析器には、以下のような利点もあります。
+PEGベースの構文解析器にはいいとこなしのように見えますが、PEGベースの構文解析器には、以下のような利点もあります。
 
 \begin{enumerate}
 \item
@@ -1699,7 +1701,7 @@ CFG）の考え方について学んでもらいます。文脈自由文法は�
 
 \begin{enumerate}
 \item
-  コメントのサポート:*
+  コメントのサポート:
 
 \begin{itemize}
 \item

@@ -160,6 +160,7 @@ public class PegJsonParser implements JsonParser {
         }
         cursor++;
         var builder = new StringBuilder();
+        var closed = false;
         OUTER:
         while(cursor < input.length()) {
             ch = input.charAt(cursor);
@@ -215,6 +216,7 @@ public class PegJsonParser implements JsonParser {
                     break;
                 case '"':
                     cursor++;
+                    closed = true;
                     break OUTER;
                 default:
                     builder.append(ch);
@@ -223,8 +225,8 @@ public class PegJsonParser implements JsonParser {
             }
         }
 
-        if(ch != '"') {
-            throwParseException("expected: " + "\"" + " actual: " + ch);
+        if(!closed) {
+            throwParseException("expected: " + "\"" + " actual: EOF");
         } else {
             skipWhitespace();
             return new Ast.JsonString(builder.toString());
