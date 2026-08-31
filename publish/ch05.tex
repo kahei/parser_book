@@ -1095,7 +1095,7 @@ assert 7 == result.value();
 
 これからパーサーコンビネータを作っていくわけですが、パーサーコンビネータの基本となる「部品」を作る必要があります。
 
-まず最初に、文字列リテラルを受け取ってそれを解析できる次のような\texttt{string()}メソッドはぜひとも欲しいところです。
+まず最初に、文字列リテラルを受け取ってそれを解析できる次のような\texttt{string()}メソッドはぜひともほしいところです。
 
 \begin{codescreen}{}
 assert new Result<String>("123", "").equals(string("123").parse("123"));
@@ -1363,9 +1363,9 @@ interface JParser<R> {
 
     default <T> JParser<T> map(Function<R, T> f) {
         return (input) -> {
-            var result = this.parse(input);
-            if (result == null) return null;
-            return new Result<>(f.apply(result.value()), result.rest()); // (1)
+           var result = this.parse(input);
+           if (result == null) return null;
+           return new Result<>(f.apply(result.value()),result.rest());//(1)
         };
     }
 }
@@ -1542,7 +1542,8 @@ public class Calculator {
                     lazy(() -> expression()),
                     string(")") // 閉じ括弧
                 )
-            ).map(p -> p.b().a()) // ((, (expression, ))) の中央の値を取り出す
+            ).map(p -> p.b().a()) // ((, (expression, ))) の中央の値を
+                                  // 取り出す
         );
     }
     
