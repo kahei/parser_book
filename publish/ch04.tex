@@ -560,9 +560,9 @@ parse() → D() → P() → P() → P() → ...
 \item
   入力をスタックに積んでいく（シフト操作）
 \item
-  \textgt{スタックの中身を見て、文法規則にマッチするパターンがあれば還元操作を行う}
+  スタックの中身を見て、文法規則にマッチするパターンがあれば還元操作を行う
 \item
-  \textgt{還元とシフトを繰り返し、最終的に開始記号だけが残れば成功}
+  還元とシフトを繰り返し、最終的に開始記号だけが残れば成功
 \end{enumerate}
 
 この単純な操作の繰り返しで、複雑な構文も解析できます。テトリスのブロックを積み上げていくようなイメージです。入力文字列を1文字ずつ積み上げ、規則にマッチしたらその部分を消すことで、最終的に開始記号だけが残るようにします。
@@ -1122,7 +1122,7 @@ if (condition) { ... }
 if (condition) { ... } else { ... }
 \end{codescreen}
 
-else節は「あってもなくてもいい」要素です。このような場合、else節の後に何が来る「可能性がある」かを知る必要があります。これが\textbf{\sffamily FOLLOW}\textgt{集合}（その非終端記号の後に来る可能性のあるトークンの集合）です。
+else節は「あってもなくてもいい」要素です。このような場合、else節の後に何がくる「可能性がある」かを知る必要があります。これが\textbf{\sffamily FOLLOW}\textgt{集合}（その非終端記号の後にくる可能性のあるトークンの集合）です。
 \end{enumerate}
 
 \subsection{FIRST集合とFOLLOW集合}
@@ -1177,7 +1177,7 @@ nullable(E) = false
 
 Eは明らかに空文字列を生成しないので\texttt{nullable(E)\ =\ false}となります。
 
-ところで、なぜ\texttt{nullable}が重要かというと、\textbf{\sffamily FIRST}\textgt{集合}及び\textbf{\sffamily FOLLOW}\textgt{集合}を計算するアルゴリズムで必要になるためです。\textbf{\sffamily FIRST}\textgt{集合}の計算では、非終端記号が空文字列を生成できるかどうかを確認する必要があります。\textbf{\sffamily FOLLOW}\textgt{集合}の計算でも、非終端記号が空文字列を生成できる場合、その後に来るトークンを正しく扱うために\texttt{nullable}が必要です。
+ところで、なぜ\texttt{nullable}が重要かというと、\textbf{\sffamily FIRST}\textgt{集合}および\textbf{\sffamily FOLLOW}\textgt{集合}を計算するアルゴリズムで必要になるためです。\textbf{\sffamily FIRST}\textgt{集合}の計算では、非終端記号が空文字列を生成できるかどうかを確認する必要があります。\textbf{\sffamily FOLLOW}\textgt{集合}の計算でも、非終端記号が空文字列を生成できる場合、その後にくるトークンを正しく扱うために\texttt{nullable}が必要です。
 
 \subsubsection{FOLLOW集合}
 
@@ -1356,7 +1356,7 @@ E → - E
 規則 \texttt{E\ →\ (\ E\ )} から：
 
 \begin{codescreen}{}
-- Eの後に)が来るので、)をFOLLOW(E)に追加
+- Eの後に)がくるので、)をFOLLOW(E)に追加
 - FOLLOW(E) = {$, ')'}
 \end{codescreen}
 
@@ -1601,7 +1601,7 @@ X → ()
   \item
     次は\texttt{)}を読みたい
   \item
-    \texttt{)}が来たらシフト
+    \texttt{)}がきたらシフト
   \end{itemize}
 \item
   \textgt{「}\textbf{\sffamily ( P )}\textgt{全部読んだ状態」}
@@ -1797,7 +1797,7 @@ T → x
 
 \begin{enumerate}
 \item
-  次に\texttt{+}が来れば、最初の規則に従って解析を続ける
+  次に\texttt{+}がくれば、最初の規則に従って解析を続ける
 \item
   ここで\texttt{S\ →\ T}として還元することもできる
 \end{enumerate}
@@ -1857,12 +1857,13 @@ T → ・x
 closure(I) {
     J = I                                   // 初期項目集合をコピー
     repeat {
-        for (各項目 A → α・Bβ in J) {    // ドットの後に非終端記号Bがある項目を探す
-            for (各規則 B → γ) {          // Bから始まるすべての規則を取得
-                J = J ∪ {B → ・γ}        // ドットを先頭に置いた項目を追加
+        for (各項目 A → α・Bβ in J) {    
+                                // ドットの後に非終端記号Bがある項目を探す
+            for (各規則 B → γ) {        // Bから始まるすべての規則を取得
+                J = J ∪ {B → ・γ}      // ドットを先頭に置いた項目を追加
             }
         }
-    } until Jに変化がなくなる             // 新しい項目が追加されなくなるまで繰り返す
+    } until Jに変化がなくなる   // 新しい項目が追加されなくなるまで繰り返す
     return J                              // 閉包された項目集合を返す
 }
 \end{codescreen}
@@ -2331,7 +2332,7 @@ LR(0)オートマトンが完成したら、次は構文解析表を作成しま
 
 また、状態\(I_4\)の\texttt{acc}は、入力終端\texttt{\$}をシフトして
 \texttt{S\textquotesingle{}\ →\ S\ \$・}
-に到達した受理状態であることを示しています。実行時にはすでに\texttt{\$}を読み終えていますが、表では「この状態に来たら受理する」という印として便宜上\texttt{\$}列に\texttt{acc}を書いています。
+に到達した受理状態であることを示しています。実行時にはすでに\texttt{\$}を読み終えていますが、表では「この状態にきたら受理する」という印として便宜上\texttt{\$}列に\texttt{acc}を書いています。
 
 \subsection{LR(0)オートマトン由来の表による解析の実行}
 
@@ -2582,7 +2583,7 @@ LR(0)のコンフリクトを解決するため、\textgt{先読み}（次の入
 \begin{quote}
 要点:
 LR(0)で起こる「還元すべきか判断できない」問題を、還元する非終端記号Aの後ろにきうる記号（FOLLOW(A)）に先読み記号が含まれているときだけ還元する、というルールで解決した手法。多くのコンフリクトが消えるが、FOLLOW集合は文法全体から大雑把に計算されるため、より精密な文脈判断が必要なケースには対応しきれない（→
-LR(1) へ）。
+LR(1) へ）。\enlargethispage{\baselineskip}
 \end{quote}
 
 \textbf{\sffamily SLR(1)}（Simple
@@ -3166,7 +3167,7 @@ Parsingは、PEGのバックトラックによる指数関数的な計算量を�
 \index{くうかんけいさんりょう@空間計算量}
 \index{ひょうげんりょく@表現力}
 
-各アルゴリズムの計算量をまとめると：
+各アルゴリズムの計算量をまとめると
 
 \begin{table}[htb]
   \begin{center}

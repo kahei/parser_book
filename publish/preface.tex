@@ -1,3 +1,4 @@
+\thispagestyle{empty}
 \chapter*{序章：\\構文解析の世界へようこそ}\label{preface}\addcontentsline{toc}{chapter}{序章：構文解析の世界へようこそ}\markboth{序章}{構文解析の世界へようこそ}
 \index{こうぶんかいせき@構文解析}
 \index{ぱーしんぐ@Parsing}
@@ -182,7 +183,7 @@ b
 [a, b].forEach(x => console.log(x))  // b[a, b].forEach(...) と解釈される
 \end{codescreen}
 
-\texttt{b} の次に \texttt{{[}} が来ても、\texttt{b{[}...{]}}
+\texttt{b} の次に \texttt{{[}} がきても、\texttt{b{[}...{]}}
 というインデックスアクセスとして文を継続できてしまうため、ASIは発動せず、意図と異なる解析結果になります。このような複雑さは、構文解析器の実装を難しくする一因となります。ASIによる予期せぬ挙動を避けるために、行頭にセミコロンを記述するスタイル（いわゆるセミコロン前置記法）を採用する開発者もいます。
 
 2000年以降に登場して普及した言語は、このような特徴を持っていることが多いです。たとえば、Go、Swift、Kotlin、Scalaの文法はこのような特徴を持っています。より古い言語であるRubyやPythonも同じ特徴を持っています。このように、ちょっとした違いで構文解析結果が変わってしまう例は珍しくありません。
@@ -206,7 +207,15 @@ Actionsのワークフロー定義などがその例です。これらのDSLは�
 次の第1章では、いよいよ具体的な構文解析の世界に足を踏み入れ、簡単な算術式を題材に、手を動かしながら構文解析の第一歩を体験していただきます。お楽しみに！
 
 
-\begin{tcolorbox}[breakable,title=現代の構文解析の課題]
+\begin{tcolorbox}[
+  enhanced,
+  breakable,
+  colback=lightgray!20,
+  colframe=black,
+  % ページをまたぐ境界（上下）の線を消すための設定
+  skin first=enhancedfirst,
+  skin middle=enhancedmiddle,
+  title=現代の構文解析の課題]
   構文解析技術は長い歴史を持ちますが、現代においては新たな課題に直面しています。
 
 \begin{description}
