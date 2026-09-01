@@ -480,7 +480,7 @@ options {
 }
 
 PARSER_BEGIN(Calculator)
-package com.github.kmizu.calculator;
+package com.github.parser_book.calculator;
 public class Calculator {
   public static void main(String[] args) throws ParseException {
     Calculator parser = new Calculator(System.in);
@@ -565,11 +565,11 @@ public int primary() :
 このようにして定義した電卓プログラムは次のようにして利用できます。
 
 \begin{codescreen}{}
-package com.github.kmizu.calculator;
+package com.github.parser_book.calculator;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import com.github.kmizu.calculator.Calculator;
+import com.github.parser_book.calculator.Calculator;
 import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -917,7 +917,7 @@ WS  :   [ \t\n\r]+ -> skip ;
 \begin{codescreen}{}
 grammar PetitXML;
 @parser::header {
-    import static com.github.asciidwango.parser_book.ch5.PetitXML.*;
+    import static com.github.parser_book.ch5.PetitXML.*;
     import java.util.*;
 }
 
