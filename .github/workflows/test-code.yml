@@ -22,6 +22,7 @@ jobs:
           - ch05:antlr
           - ch05:javacc
           - ch05:jcomb
+          - ch05:peg2java
         # 本書はJava 21を基準としつつJava 25での動作も保証したいので、両方で回す
         java: ['21', '25']
     defaults:

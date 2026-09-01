@@ -207,7 +207,7 @@ public class PEG2Java {
             this.value = value;
         }
         String generate(int indentLevel) {
-            return ("match(\"" + value + "\");").indent(indentLevel);
+            return " ".repeat(indentLevel) + "match(\"" + value + "\");";
         }
     }
 
@@ -219,7 +219,7 @@ public class PEG2Java {
         }
         // 非終端記号のコード生成
         String generate(int indentLevel) {
-            return ("parse" + name + "();").indent(indentLevel);
+            return " ".repeat(indentLevel) + "parse" + name + "();";
         }
     }
     
@@ -234,7 +234,7 @@ public class PEG2Java {
         String generate(int indentLevel) {
             return exprs.stream()
                 .map(e -> e.generate(indentLevel))
-                .collect(Collectors.joining("\n")) + "\n";
+                .collect(Collectors.joining("\n"));
         }
     }
 
@@ -249,18 +249,14 @@ public class PEG2Java {
         // 順序付き選択のコード生成
         // try-catchを使ってバックトラックを実装
         String generate(int indentLevel) {
-            var code = """
-                int saved = pos;
-                try {
-                    %s
-                } catch (Failure e) {
-                    pos = saved;
-                    %s
-                }
-             """.formatted(
-                alt1.generate(indentLevel + 4).stripTrailing(), 
-                alt2.generate(indentLevel + 4));
-            return code.indent(indentLevel);
+            String indent = " ".repeat(indentLevel);
+            return indent + "int saved = pos;\n"
+                + indent + "try {\n"
+                + alt1.generate(indentLevel + 4) + "\n"
+                + indent + "} catch (Failure e) {\n"
+                + indent + "    pos = saved;\n"
+                + alt2.generate(indentLevel + 4) + "\n"
+                + indent + "}";
         }
     }
     
@@ -288,14 +284,13 @@ public class PEG2Java {
                     }
                     throw new Failure("Expected '" + str + "' at pos " + pos);
                 }
-        """.stripLeading());
+            """);
         // 各規則に対してメソッドを生成
         for (Rule rule : rules) {
-            code.append("    public void parse" + rule.name + "() {\n");
+            code.append("\n    public void parse" + rule.name + "() {\n");
             code.append(rule.body.generate(8));
-            code.append("\n");
-            code.append("        return;\n");
-            code.append("    }\n\n");
+            code.append("\n        return;\n");
+            code.append("    }\n");
         }
         code.append("}\n");
         return code.toString();
@@ -368,7 +363,6 @@ public class Parser {
             pos = saved;
             match("");
         }
-
         return;
     }
 }
@@ -1363,9 +1357,10 @@ interface JParser<R> {
 
     default <T> JParser<T> map(Function<R, T> f) {
         return (input) -> {
-           var result = this.parse(input);
-           if (result == null) return null;
-           return new Result<>(f.apply(result.value()),result.rest());//(1)
+            var result = this.parse(input);
+            if (result == null) return null;
+            return new Result<>(
+                f.apply(result.value()), result.rest()); // (1)
         };
     }
 }

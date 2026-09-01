@@ -1,26 +1,26 @@
 package parser;
-import java.util.*;
 
-public record Rule(char lhs, List<Elements.Element> rhs) {
-    private static List<Elements.Element> toElements(String string) {
-        List<Elements.Element> elements = new ArrayList<>();
-        for(int i = 0; i < string.length(); i++) {
-            elements.add(new Elements.Terminal(string.charAt(i)));
-        }
-        return elements;
+import java.util.List;
+
+public record Rule(char lhs, List<Element> rhs) {
+    // 可変長引数コンストラクタ（便利のため）
+    public Rule(char lhs, Element... rhs) {
+        this(lhs, List.of(rhs));
     }
-    public Rule(char lhs, String rhs) {
-        this(lhs, toElements(rhs));
-    }
-    public boolean matches(String sequence) {
-        return matches(toElements(sequence));
-    }
-    public boolean matches(List<Elements.Element> sequence) {
-        for(int i = 1; i <= rhs.size(); i++) {
-            var a = rhs.get(rhs.size() - i);
-            if(sequence.size() - i < 0) return false;
-            var b = sequence.get(sequence.size() - i);
-            if(!a.equals(b)) return false;
+
+    // スタックの上端がこの規則の右辺と一致するか判定
+    public boolean matches(List<Element> stack) {
+        if (stack.size() < rhs.size()) return false;
+
+        // スタックの上からrhs.size()個の要素を比較
+        for (int i = 0; i < rhs.size(); i++) {
+            Element elementInRule = rhs.get(i);
+            Element elementInStack = stack.get(
+                stack.size() - rhs.size() + i
+            );
+            if (!elementInRule.equals(elementInStack)) {
+                return false;
+            }
         }
         return true;
     }
