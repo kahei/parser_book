@@ -49,17 +49,15 @@ public class JComb {
     }
 
     public static <A> JParser<List<A>> rep1(JParser<A> p) {
+        JParser<Pair<A, List<A>>> rep1Sugar = seq(p, rep0(p));
         return (input) -> {
-            var result = p.parse(input);
+            var result = rep1Sugar.parse(input);
             if(result == null) return null;
-            var value = result.value();
-            var rest = result.rest();
-            var result2 = rep0(p).parse(rest);
-            if(result2 == null) return new Result<>(List.of(value), rest);
-            List<A> values = new ArrayList<>();
-            values.add(value);
-            values.addAll(result2.value());
-            return new Result<>(values, result2.rest());
+            var pairValue = result.value();
+            var values = new ArrayList<A>();
+            values.add(pairValue.a());
+            values.addAll(pairValue.b());
+            return new Result<>(values, result.rest());
         };
     }
 

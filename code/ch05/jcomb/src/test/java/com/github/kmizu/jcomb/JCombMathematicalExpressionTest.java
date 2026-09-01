@@ -9,14 +9,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class JCombMathematicalExpressionTest {
     public JParser<Integer> expression() {
         /*
-         * expression <- additive ( ("+" / "-") additive )*
+         * expression <- multitive ( ("+" / "-") multitive )*
          */
         return seq(
-                lazy(() -> additive()),
+                lazy(() -> multitive()),
                 rep0(
                         seq(
                                 alt(string("+"), string("-")),
-                                lazy(() -> additive())
+                                lazy(() -> multitive())
                         )
                 )
         ).map(p -> {
@@ -35,9 +35,9 @@ public class JCombMathematicalExpressionTest {
         });
     }
 
-    public JParser<Integer> additive() {
+    public JParser<Integer> multitive() {
         /*
-         * additive <- primary ( ("*" / "/") primary )*
+         * multitive <- primary ( ("*" / "/") primary )*
          */
         return seq(
                 lazy(() -> primary()),
@@ -56,6 +56,8 @@ public class JCombMathematicalExpressionTest {
                 if (op.equals("*")) {
                     left *= rightValue;
                 } else {
+                    if (rightValue == 0)
+                        throw new ArithmeticException("Division by zero");
                     left /= rightValue;
                 }
             }
